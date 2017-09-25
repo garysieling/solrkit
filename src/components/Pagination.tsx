@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { Menu } from 'semantic-ui-react';
+import { sampleResults } from './SampleData';
 import * as _ from 'lodash';
 import 'semantic-ui-css/semantic.min.css';
 
@@ -11,6 +12,22 @@ interface PaginationProps {
 interface PaginationState {
   activePage: number;
 }
+
+// TODO split into it's own file
+const PaginationProperties = [
+  {
+    name: 'data',
+    display: 'Data',
+    type: 'object[]',
+    default: sampleResults
+  },
+  {
+    name: 'pageSize',
+    display: 'Page Size',
+    type: 'number',
+    default: 10
+  }
+]
 
 class Pagination extends React.Component<PaginationProps, PaginationState> {
   constructor() {
@@ -82,4 +99,7 @@ class Pagination extends React.Component<PaginationProps, PaginationState> {
   }
 }
 
-export default Pagination;
+export {
+  Pagination,
+  PaginationProperties
+};

@@ -2,7 +2,11 @@ import * as React from 'react';
 import './App.css';
 
 import Histogram from './components/Histogram';
-import Pagination from './components/Pagination';
+import { Pagination, PaginationProperties} from './components/Pagination';
+
+import { sampleResults } from './components/SampleData';
+
+import Properties from './editor/Properties';
 
 const histogramData: [number, number, boolean][] = [
   [2019,3,false],[2018,1,false],[2017,1126,false],[2016,7848,false],
@@ -38,18 +42,16 @@ class App extends React.Component {
   }
 
   render() {
-    const sampleResults = [
-      {'title': 'A test title'}
-    ];
-
     return (
       <div className="App">
         <div className="App-header">
           <button onClick={this.onClick} />
         </div>
         <div className="App-intro">
-          <Pagination data={sampleResults} pageSize={10} />
-          <Histogram data={histogramData} />
+          <Properties properties={PaginationProperties}>
+            <Pagination data={sampleResults} pageSize={10} />
+          </Properties>
+          <Histogram data={histogramData} />          
         </div>
       </div>
     );
