@@ -2,8 +2,7 @@ import * as React from 'react';
 import './App.css';
 
 import Histogram from './components/Histogram';
-
-const logo = require('./logo.svg');
+import Pagination from './components/Pagination';
 
 const histogramData: [number, number, boolean][] = [
   [2019,3,false],[2018,1,false],[2017,1126,false],[2016,7848,false],
@@ -28,14 +27,28 @@ const histogramData: [number, number, boolean][] = [
   [1943,49,false],[1942,34,false],[1941,53,false],[1940,133,false]];
 
 class App extends React.Component {
+  constructor() {
+    super();
+
+    this.onClick = this.onClick.bind(this);
+  }
+  
+  onClick() {
+    this.setState({});
+  }
+
   render() {
+    const sampleResults = [
+      {'title': 'A test title'}
+    ];
+
     return (
       <div className="App">
         <div className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <h2>Welcome to React</h2>
+          <button onClick={this.onClick} />
         </div>
         <div className="App-intro">
+          <Pagination data={sampleResults} pageSize={10} />
           <Histogram data={histogramData} />
         </div>
       </div>
