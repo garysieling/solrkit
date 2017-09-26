@@ -73,8 +73,8 @@ let Histogram = React.createClass({
       max
     ]);
             
-    const brush = d3.brushX()
-      .on('end', this.brushend);
+    //const brush = d3.brushX()
+    //  .on('end', this.brushend);
           
     return {
       facetHandler: this.props.facetHandler,
@@ -82,13 +82,15 @@ let Histogram = React.createClass({
       y: y,
       line: line,
       xAxis: xAxis,
-      area: area,
-      brush: brush
+      area: area
+//      brush: brush
     }  
   },
   render: function() {
     return (
-      <div id={this.props.id} style={histogramStyle} />
+      <div id={this.props.id} style={histogramStyle}>
+        hi
+      </div>
     );
   },
   componentWillReceiveProps: function(nextProps: HistogramProps) {
@@ -118,13 +120,13 @@ let Histogram = React.createClass({
           .transition()
           .duration(300)
           .attr('d', this.state.area)
-        .select('g')
+        /*.select('g')
           .call(this.state.brush)
           .selectAll('rect')
           .transition()
           .duration(300)
           .attr('y', -6)
-          .attr('height', height + 7)
+          .attr('height', height + 7)*/
           ;
  
     this.svg
@@ -135,6 +137,7 @@ let Histogram = React.createClass({
       .attr('d', this.state.line);
   },
   componentDidMount: function() {   
+    debugger;
     let data = this.props.data;
     if (this.props.factor) {
       data = data.map(
@@ -164,12 +167,12 @@ let Histogram = React.createClass({
       .attr('class', 'line')
       .attr('d', this.state.line);
       
-    this.svg.append('g')
+    /*this.svg.append('g')
        .attr('class', 'x brush')
        .call(this.state.brush)
        .selectAll('rect')
        .attr('y', -6)
-       .attr('height', height + 7);
+       .attr('height', height + 7);*/
 
     this.svg.append('g')
       .attr('class', 'x axis')

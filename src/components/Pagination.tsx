@@ -49,7 +49,7 @@ class Pagination extends React.Component<PaginationProps, PaginationState> {
     let { activePage } = self.state;
     let { pageSize } = self.props || 10;
 
-    const maxPage = Math.round(this.props.data.length / pageSize);
+    const maxPage = Math.ceil(this.props.data.length / pageSize);
     if (maxPage < activePage) {
       activePage = maxPage;
     }

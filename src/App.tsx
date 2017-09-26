@@ -1,14 +1,14 @@
 import * as React from 'react';
 import './App.css';
 
-import Histogram from './components/Histogram';
+//import Histogram from './components/Histogram';
 import { Pagination, PaginationProperties} from './components/Pagination';
 
 import { sampleResults } from './components/SampleData';
 
 import Properties from './editor/Properties';
 
-const histogramData: [number, number, boolean][] = [
+/*const histogramData: [number, number, boolean][] = [
   [2019,3,false],[2018,1,false],[2017,1126,false],[2016,7848,false],
   [2015,10738,false],[2014,7620,false],[2013,7993,false],[2012,6872,false],
   [2011,4483,false],[2010,2527,false],[2009,1331,false],[2008,851,false],
@@ -29,7 +29,7 @@ const histogramData: [number, number, boolean][] = [
   [1951,55,false],[1950,196,false],[1949,33,false],[1948,43,false],
   [1947,33,false],[1946,32,false],[1945,74,false],[1944,53,false],
   [1943,49,false],[1942,34,false],[1941,53,false],[1940,133,false]];
-
+*/
 class App extends React.Component {
   constructor() {
     super();
@@ -43,17 +43,9 @@ class App extends React.Component {
 
   render() {
     return (
-      <div className="App">
-        <div className="App-header">
-          <button onClick={this.onClick} />
-        </div>
-        <div className="App-intro">
-          <Properties properties={PaginationProperties}>
-            <Pagination data={sampleResults} pageSize={10} />
-          </Properties>
-          <Histogram data={histogramData} />          
-        </div>
-      </div>
+      <Properties properties={PaginationProperties} >
+        <Pagination data={sampleResults} pageSize={10} />
+      </Properties>        
     );
   }
 }
