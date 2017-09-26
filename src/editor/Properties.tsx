@@ -7,10 +7,10 @@ interface Property {
   name: string;
   display: string;
   type: string;
-  default: string | string[] | number | number[] | boolean | object[];
 }
 
 interface PropertiesProps {
+  name: string;
   properties: Property[];
 }
 
@@ -68,7 +68,7 @@ class Properties extends React.Component<PropertiesProps, PropertiesState> {
           </Grid>        
           <Card.Content>
             <Card.Header>
-              <Icon name="paint brush" onClick={this.onFlip} /> Pagination
+              <Icon name="paint brush" onClick={this.onFlip} /> {this.props.name}
             </Card.Header>
           </Card.Content>
         </Card>

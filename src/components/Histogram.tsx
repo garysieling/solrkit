@@ -1,5 +1,6 @@
 import * as React from 'react';
 import * as d3 from 'd3';
+import * as Guid from 'guid';
 
 import 'd3-scale';
 import 'd3-svg';
@@ -11,25 +12,61 @@ let margin = {top: 0, right: 20, bottom: 35, left: 10},
 
 let histogramStyle = {
   'width': width,
-  'marginLeft': '-15px',
   'height': (height + 25)
 };
 
 interface HistogramProps {
+  max: number;
+  min: number;
+
+  precision: number;
+
+  factor: number;
+  parse: (v: string) => number;
   data: [number, number, boolean][];
+  facetHandler: (a: [number | string, number | string]) => void;
 }
 
-let Histogram = React.createClass({
+// TODO move into own file
+const HistogramProperties = [
+  {
+    name: 'data',
+    display: 'Data',
+    type: 'object[]'
+  }
+  // TODO option for LOG
+  // TODO documenation extractor
+];
+
+class Histogram extends React.Component<HistogramProps, {}> {
+  id: string;
+  svg: any;
+  x: any;
+  y: any;
+  line: any;
+  xAxis: any;
+  area: any;
+  brush: any;
+
   shouldComponentUpdate() {
     return false;
-  },
-  getInitialState: function() {
+  }
+  
+  constructor() {
+    super();
+
     const self = this;  
+
+    this.id = Guid.create().value.replace(/-/g, '');
          
-    let data: number[][] = this.props.data;    
+    let data: number[][] = []; 
     if (this.props.factor) {
       data = data.map(
-        (value: number[]) => [this.props.parse(value[0]) / this.props.factor, value[1]]
+        (value: number[]) => [this.props.parse(value[0] + '') / this.props.factor, value[1]]
+      );
+    } else {
+       data = data.map(
+        (value: number[]) => [value[0], value[1]]
       );
     }
 
@@ -67,39 +104,36 @@ let Histogram = React.createClass({
       data, 
       (d: [number, number]) => d[1]) || 0;
 
-    x.domain([xmax, xmin]);
+    x.domain([xmax || 0, xmin || 0]);
     y.domain([
       0, 
       max
     ]);
             
-    //const brush = d3.brushX()
-    //  .on('end', this.brushend);
+    const brush = d3.brushX()
+      .on('end', this.brushend);
           
-    return {
-      facetHandler: this.props.facetHandler,
-      x: x,
-      y: y,
-      line: line,
-      xAxis: xAxis,
-      area: area
-//      brush: brush
-    }  
-  },
-  render: function() {
+    this.x = x;
+    this.y = y;
+    this.line = line;
+    this.xAxis = xAxis;
+    this.area = area;
+    this.brush = brush;
+  }
+
+  render() {
     return (
-      <div id={this.props.id} style={histogramStyle}>
-        hi
-      </div>
+      <div id={this.id} style={histogramStyle} />      
     );
-  },
-  componentWillReceiveProps: function(nextProps: HistogramProps) {
+  }
+
+  componentWillReceiveProps(nextProps: HistogramProps) {
     let data = nextProps.data;    
     let desiredData: number[][] = [];
 
     if (this.props.factor) {
       desiredData = data.map(
-        (value: [number, number, boolean]) => [this.props.parse(value[0]) / this.props.factor, value[1]]
+        (value: [number, number, boolean]) => [this.props.parse(value[0] + '') / this.props.factor, value[1]]
       );
     } else {
       desiredData = 
@@ -112,21 +146,21 @@ let Histogram = React.createClass({
       (value: [number, number]) => [value[0], Math.log(1 + value[1])]
     );
     
-    this.state.y.domain([0, d3.max(data, (d) => d[1])]);            
+    this.y.domain([0, d3.max(data, (d) => d[1])]);            
    
     this.svg
         .select('.area')
           .datum(data)
           .transition()
           .duration(300)
-          .attr('d', this.state.area)
-        /*.select('g')
-          .call(this.state.brush)
+          .attr('d', this.area)
+        .select('g')
+          .call(this.brush)
           .selectAll('rect')
           .transition()
           .duration(300)
           .attr('y', -6)
-          .attr('height', height + 7)*/
+          .attr('height', height + 7)
           ;
  
     this.svg
@@ -134,23 +168,23 @@ let Histogram = React.createClass({
       .datum(data)
       .transition()
       .duration(300)
-      .attr('d', this.state.line);
-  },
-  componentDidMount: function() {   
-    debugger;
-    let data = this.props.data;
+      .attr('d', this.line);
+  }
+
+  componentDidMount() {   
+    let data: number[][] = []; 
     if (this.props.factor) {
       data = data.map(
-        (value: string[]) => [this.props.parse(value[0]) / this.props.factor, value[1]]
+        (value: number[]) => [this.props.parse(value[0] + '') / this.props.factor, value[1]]
+      );
+    } else {
+       data = data.map(
+        (value: number[]) => [value[0], value[1]]
       );
     }
-   
-    data = data.map(
-      (value: number[]) => [value[0], Math.log(1 + value[1])]
-    )
     
     this.svg = 
-      d3.select('#' + this.props.id)
+      d3.select('#' + this.id)
         .append('svg')
           .attr('width', width + margin.left + margin.right)
           .attr('height', height + margin.top + margin.bottom)
@@ -160,45 +194,46 @@ let Histogram = React.createClass({
     this.svg.append('path')
        .datum(data)
        .attr('class', 'area')
-       .attr('d', this.state.area);
+       .attr('d', this.area);
         
     this.svg.append('path')
       .datum(data)
       .attr('class', 'line')
-      .attr('d', this.state.line);
+      .attr('d', this.line);
       
-    /*this.svg.append('g')
+    this.svg.append('g')
        .attr('class', 'x brush')
-       .call(this.state.brush)
+       .call(this.brush)
        .selectAll('rect')
        .attr('y', -6)
-       .attr('height', height + 7);*/
+       .attr('height', height + 7);
 
     this.svg.append('g')
       .attr('class', 'x axis')
       .attr('transform', 'translate(0,' + height + ')')
-      .call(this.state.xAxis)
+      .call(this.xAxis)
         .selectAll('text')
         .attr('y', 0)
         .attr('x', 20)
         .attr('dy', '.35em')
         .attr('transform', 'rotate(90)')
-  },
-  brushend: function() {
-    let ext = this.state.brush.extent();
+  }
+
+  brushend() {
+    let ext = this.brush.extent();
     let val0 = ext[0];
     let val1 = ext[1]; // todo rounding might need to be configurable
     if (val1 > val0) {
       const precision = this.props.precision || 4;
 
       if (this.props.factor) {
-        this.state.facetHandler(
+        this.props.facetHandler(
           [
             (this.props.factor * val0).toPrecision(precision), 
             (this.props.factor * val1).toPrecision(precision)
           ]); // facet values are strings everywhere for consistency
       } else {
-        this.state.facetHandler(
+        this.props.facetHandler(
           [
             val0.toPrecision(precision), 
             val1.toPrecision(precision)
@@ -206,6 +241,6 @@ let Histogram = React.createClass({
       }
     }
   }
-});
+}
 
-export default Histogram;
+export { Histogram, HistogramProperties };

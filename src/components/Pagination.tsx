@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { Menu } from 'semantic-ui-react';
-import { sampleResults } from './SampleData';
 import * as _ from 'lodash';
 import 'semantic-ui-css/semantic.min.css';
 
@@ -18,8 +17,7 @@ const PaginationProperties = [
   {
     name: 'data',
     display: 'Data',
-    type: 'object[]',
-    default: sampleResults
+    type: 'object[]'
   },
   {
     name: 'pageSize',
