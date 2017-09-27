@@ -1,6 +1,7 @@
 import * as React from 'react';
 import * as d3 from 'd3';
 import * as Guid from 'guid';
+import * as _ from 'lodash';
 
 import 'd3-scale';
 import 'd3-svg';
@@ -16,15 +17,15 @@ let histogramStyle = {
 };
 
 interface HistogramProps {
-  max: number;
-  min: number;
+  max?: number;
+  min?: number;
 
-  precision: number;
+  precision?: number;
 
-  factor: number;
-  parse: (v: string) => number;
+  factor?: number;
+  parse?: (v: string) => number;
   data: [number, number, boolean][];
-  facetHandler: (a: [number | string, number | string]) => void;
+  facetHandler?: (a: [number | string, number | string]) => void;
 }
 
 // TODO move into own file
@@ -52,19 +53,23 @@ class Histogram extends React.Component<HistogramProps, {}> {
     return false;
   }
   
-  constructor() {
-    super();
-
-    const self = this;  
+  constructor(props: HistogramProps) {
+    super(props);
 
     this.id = Guid.create().value.replace(/-/g, '');
          
     let data: number[][] = []; 
-    if (this.props.factor) {
-      data = data.map(
-        (value: number[]) => [this.props.parse(value[0] + '') / this.props.factor, value[1]]
-      );
-    } else {
+    if (props.parse) {
+      if (props.factor) {
+        data = data.map(
+          (value: number[]) => [
+            (props.parse || _.identity)(value[0] + '') / 
+            (props.factor || 1), value[1]]
+        );
+      }
+    }
+
+    if (data.length == 0) {
        data = data.map(
         (value: number[]) => [value[0], value[1]]
       );
@@ -91,13 +96,13 @@ class Histogram extends React.Component<HistogramProps, {}> {
       .y((d: [number, number]) => y(d[1]));
 
     const xmin = 
-      self.props.min !== undefined ? 
-      self.props.min : 
+      props.min !== undefined ? 
+      props.min : 
       d3.min(data, (d: number[]) => d[0]);
       
     const xmax = 
-      self.props.max !== undefined ? 
-      self.props.max :
+      props.max !== undefined ? 
+      props.max :
       d3.max(data, (d: number[]) => d[0]);
       
     const max: number = d3.max(
@@ -111,7 +116,7 @@ class Histogram extends React.Component<HistogramProps, {}> {
     ]);
             
     const brush = d3.brushX()
-      .on('end', this.brushend);
+      .on('end', this.brushend.bind(this));
           
     this.x = x;
     this.y = y;
@@ -133,7 +138,10 @@ class Histogram extends React.Component<HistogramProps, {}> {
 
     if (this.props.factor) {
       desiredData = data.map(
-        (value: [number, number, boolean]) => [this.props.parse(value[0] + '') / this.props.factor, value[1]]
+        (value: [number, number, boolean]) => [
+          (this.props.parse || _.identity)(value[0] + '') /
+          (this.props.factor || 1), value[1]
+        ]
       );
     } else {
       desiredData = 
@@ -175,7 +183,9 @@ class Histogram extends React.Component<HistogramProps, {}> {
     let data: number[][] = []; 
     if (this.props.factor) {
       data = data.map(
-        (value: number[]) => [this.props.parse(value[0] + '') / this.props.factor, value[1]]
+        (value: number[]) => [
+          (this.props.parse || _.identity)(value[0] + '') / 
+          (this.props.factor || 1), value[1]]
       );
     } else {
        data = data.map(
@@ -226,18 +236,20 @@ class Histogram extends React.Component<HistogramProps, {}> {
     if (val1 > val0) {
       const precision = this.props.precision || 4;
 
-      if (this.props.factor) {
-        this.props.facetHandler(
-          [
-            (this.props.factor * val0).toPrecision(precision), 
-            (this.props.factor * val1).toPrecision(precision)
-          ]); // facet values are strings everywhere for consistency
-      } else {
-        this.props.facetHandler(
-          [
-            val0.toPrecision(precision), 
-            val1.toPrecision(precision)
-          ]); // facet values are strings everywhere for consistency
+      if (this.props.facetHandler) {
+        if (this.props.factor) {
+          this.props.facetHandler(
+            [
+              (this.props.factor * val0).toPrecision(precision), 
+              (this.props.factor * val1).toPrecision(precision)
+            ]); // facet values are strings everywhere for consistency
+        } else {
+          this.props.facetHandler(
+            [
+              val0.toPrecision(precision), 
+              val1.toPrecision(precision)
+            ]); // facet values are strings everywhere for consistency
+        }
       }
     }
   }
