@@ -6,6 +6,8 @@ import {
   SolrResponse
 } from './Data';
 
+import * as fetchJsonp from 'fetch-jsonp';
+
 function escape(value: String) {
   return value;
 }
@@ -13,12 +15,26 @@ function escape(value: String) {
 class SolrQueryBuilder<T> {
   searchResponse?: SolrResponse<T>;
 
-  prior?: SolrQueryBuilder<T>;
+  previous?: SolrQueryBuilder<T>;
   op: () => String;
 
   constructor(op: () => String, previous?: SolrQueryBuilder<T>) {
-    this.prior = previous;
     this.op = op;
+    this.previous = previous;    
+  }
+
+  get(id: string) {
+    return new SolrQueryBuilder<T>(
+      () => 'get?id=' + id,
+      this
+    );
+  }
+  
+  jsonp(callback: string) {
+    return new SolrQueryBuilder<T>(
+      () => 'wt=json&json.wrf=' + callback,
+      this
+    );
   }
 
   q(field: String, value: String) {
@@ -51,58 +67,110 @@ class SolrQueryBuilder<T> {
 
   build() {
     return (
-      this.prior ? this.prior.op() + '&' + this.op() :
-      this.op() + '&wt=json'
+      this.previous ? (
+        this.previous.previous ? (
+          this.previous.op() + '&' + this.op() 
+        ) : this.op()
+      ) : (
+        this.op() + '&wt=json'
+      )
     );
   }
 }
 
 type SelectEvent<T> = (response: SolrResponse<T>) => void;
-type ErrorEvent = (status: number, body: string) => void;
+type ErrorEvent = (error: object) => void;
+type GetEvent<T> = (object: T) => void;
 
 class DataStore<T> {
   private url: string;
   private core: string;
   private events: {
     select: SelectEvent<T>[],
-    error: ErrorEvent[]
+    error: ErrorEvent[],
+    get: GetEvent<T>[]
   };
+
+  private requestId: number = 0;
 
   constructor(url: string, core: string) {
     this.url = url;
     this.core = core;
     this.events = {
       select: [],
-      error: []
+      error: [],
+      get: []
     };
   }
 
   onSelect(op: SelectEvent<T>) {
-    this.events.select.concat(op);
+    this.events.select.push(op);
   }
 
   onError(op: ErrorEvent) {
-    this.events.error.concat(op);
+    this.events.error.push(op);
+  }
+
+  onGet(op: GetEvent<T>) {
+    this.events.get.push(op);
+  }
+
+  get(id: string) {
+    const self = this;
+    const callback = 'cb_' + this.requestId++;
+
+    const qb = 
+      new SolrQueryBuilder(() => '').get(
+        id
+      ).jsonp(
+        callback
+      );
+
+    const url = this.url + this.core + '/' + qb.build();
+
+    fetchJsonp(url, {
+      jsonpCallbackFunction: callback
+    }).then(
+      (data) => {
+        data.json().then( 
+          (responseData) => {
+            self.events.get.map(
+              (event) => event(responseData.doc)
+            );
+          }
+        ).catch(
+          (error) => {
+            self.events.error.map(
+              (event) => event(error)
+            );
+          }
+        );
+      }
+    );    
   }
 
   next(op: (event: SolrQueryBuilder<T>) => SolrQueryBuilder<T>) {
     const qb = 
       op(
-        new SolrQueryBuilder(() => '', undefined)
+        new SolrQueryBuilder(() => '')
       );
 
     const url = this.url + this.core + '/select?' + qb.build();
-    fetch(url).then(
+    fetchJsonp(url).then(
       (data) => {
-        if (data.status !== 200) {
+        data.json().catch(
+          (error) => {
           this.events.error.map(
-            (event) => event(data.status, data.body + '')
+            (event) => event(error)
           );
-        } else {
-          this.events.select.map(
-            (event) => event(Immutable(JSON.parse(data.body + '')))
-          );
-        }
+          }
+        ).then( 
+          (responseData) => {
+            this.events.get.map(
+              (event) => event(Immutable(responseData).doc)
+            );
+          }
+        );
       }
     );    
   }

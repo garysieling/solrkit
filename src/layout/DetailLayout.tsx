@@ -1,6 +1,10 @@
 import * as React from 'react';
 
-class DetailLayout extends React.Component {
+interface DetailLayoutProps<T> {
+  object: T;
+}
+
+class DetailLayout<T> extends React.Component<DetailLayoutProps<T>, {}> {
   constructor() {
     super();
   }
@@ -10,6 +14,8 @@ class DetailLayout extends React.Component {
       <div className="ui container">
 
         <h1>Theming Examples</h1>
+        
+        {JSON.stringify(this.props.object)}
 
         <h2 className="ui dividing header">Site</h2>
 
