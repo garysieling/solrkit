@@ -23,7 +23,7 @@ class Properties extends React.Component<PropertiesProps, PropertiesState> {
     super();
 
     this.state = {
-      flip: false
+      flip: true
     }
 
     this.onFlip = this.onFlip.bind(this);

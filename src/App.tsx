@@ -35,11 +35,6 @@ class App extends React.Component {
         <Properties properties={HistogramProperties} name="Histogram" >
           <Histogram 
             data={sampleHistogramData} 
-            max={null}
-            min={null}
-            precision={null}
-            factor={null}
-            parse={null}
             facetHandler={_.partial(this.onClick, 'facetHandler')} /* TODO separate out events */
           />
         </Properties>       

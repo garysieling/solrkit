@@ -1,6 +1,5 @@
 import * as React from 'react';
 import * as d3 from 'd3';
-import * as Guid from 'guid';
 import * as _ from 'lodash';
 
 import 'd3-scale';
@@ -9,7 +8,7 @@ import 'd3-brush';
 
 let margin = {top: 0, right: 20, bottom: 35, left: 10},
     width = 180 - margin.left - margin.right,
-    height = 80 - margin.top - margin.bottom;
+    height = 120 - margin.top - margin.bottom;
 
 let histogramStyle = {
   'width': width,
@@ -40,7 +39,6 @@ const HistogramProperties = [
 ];
 
 class Histogram extends React.Component<HistogramProps, {}> {
-  id: string;
   svg: any;
   x: any;
   y: any;
@@ -48,6 +46,7 @@ class Histogram extends React.Component<HistogramProps, {}> {
   xAxis: any;
   area: any;
   brush: any;
+  dom: any;
 
   shouldComponentUpdate() {
     return false;
@@ -55,25 +54,25 @@ class Histogram extends React.Component<HistogramProps, {}> {
   
   constructor(props: HistogramProps) {
     super(props);
-
-    this.id = Guid.create().value.replace(/-/g, '');
          
     let data: number[][] = []; 
     if (props.parse) {
       if (props.factor) {
-        data = data.map(
-          (value: number[]) => [
+        data = props.data.map(
+          (value: [number, number, boolean]) => [
             (props.parse || _.identity)(value[0] + '') / 
             (props.factor || 1), value[1]]
         );
       }
     }
 
-    if (data.length == 0) {
-       data = data.map(
-        (value: number[]) => [value[0], value[1]]
+    if (data.length === 0) {
+       data = props.data.map(
+        (value: [number, number, boolean]) => [value[0], value[1]]
       );
     }
+
+debugger;
 
     data = data.map(
       (value: number[]) => [value[0], Math.log(1 + value[1])]
@@ -128,32 +127,29 @@ class Histogram extends React.Component<HistogramProps, {}> {
 
   render() {
     return (
-      <div id={this.id} style={histogramStyle} />      
+      <div ref={ (dom) => {this.dom = dom; }} style={histogramStyle} />      
     );
   }
 
   componentWillReceiveProps(nextProps: HistogramProps) {
-    let data = nextProps.data;    
-    let desiredData: number[][] = [];
+    let data: number[][] = [];    
 
-    if (this.props.factor) {
-      desiredData = data.map(
+    if (nextProps.factor) {
+      data = nextProps.data.map(
         (value: [number, number, boolean]) => [
-          (this.props.parse || _.identity)(value[0] + '') /
-          (this.props.factor || 1), value[1]
-        ]
+          (this.props.parse || _.identity)(value[0] + '') / 
+          (this.props.factor || 1), value[1]]
       );
     } else {
-      desiredData = 
-        data.map(
-          (value: [number, number, boolean]) => [value[0], value[1]]
-        );
+       data = nextProps.data.map(
+        (value: [number, number, boolean]) => [value[0], value[1]]
+      );
     }
 
-    desiredData = desiredData.map(
+    data = data.map(
       (value: [number, number]) => [value[0], Math.log(1 + value[1])]
     );
-    
+
     this.y.domain([0, d3.max(data, (d) => d[1])]);            
    
     this.svg
@@ -182,19 +178,21 @@ class Histogram extends React.Component<HistogramProps, {}> {
   componentDidMount() {   
     let data: number[][] = []; 
     if (this.props.factor) {
-      data = data.map(
-        (value: number[]) => [
+      data = this.props.data.map(
+        (value: [number, number, boolean]) => [
           (this.props.parse || _.identity)(value[0] + '') / 
           (this.props.factor || 1), value[1]]
       );
     } else {
-       data = data.map(
-        (value: number[]) => [value[0], value[1]]
+       data = this.props.data.map(
+        (value: [number, number, boolean]) => [value[0], value[1]]
       );
     }
+
+    debugger;
     
     this.svg = 
-      d3.select('#' + this.id)
+      d3.select(this.dom)
         .append('svg')
           .attr('width', width + margin.left + margin.right)
           .attr('height', height + margin.top + margin.bottom)
