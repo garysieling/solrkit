@@ -1,12 +1,14 @@
 import * as React from 'react';
 import { DetailLayout } from '../layout/DetailLayout';
 import { DataStore } from '../context/DataStore';
+import { keys } from 'lodash';
 
 interface DetailPageProps<T> {
   id: string;
   url: string;
   core: string;
   initial: T;
+  detailComponent: React.ComponentClass<T>;
 }
 
 interface DetailPageState<T> {
@@ -39,13 +41,17 @@ class DetailPage<T> extends React.Component<DetailPageProps<T>, DetailPageState<
 
   componentDidMount() {
     this.dataStore.get(
-      this.props.id
+      this.props.id,
+      keys(this.props.initial)
     );
   }
 
   render() {
     return (
-      <DetailLayout object={this.state.object} />
+      <DetailLayout 
+        object={this.state.object} 
+        detailComponent={this.props.detailComponent} 
+      />
     );
   }
 }

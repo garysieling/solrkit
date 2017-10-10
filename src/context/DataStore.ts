@@ -66,15 +66,18 @@ class SolrQueryBuilder<T> {
   }
 
   build() {
-    return (
-      this.previous ? (
-        this.previous.previous ? (
-          this.previous.op() + '&' + this.op() 
-        ) : this.op()
-      ) : (
-        this.op() + '&wt=json'
-      )
-    );
+    let start = '';
+    if (this.previous) {
+      start = this.previous.build();
+    }
+
+    if (start !== '') {
+      start = start + '&';
+    }
+
+    start = start + this.op();
+
+    return start;
   }
 }
 
@@ -115,14 +118,14 @@ class DataStore<T> {
     this.events.get.push(op);
   }
 
-  get(id: string) {
+  get(id: string, fields: string[]) {
     const self = this;
     const callback = 'cb_' + this.requestId++;
 
     const qb = 
       new SolrQueryBuilder(() => '').get(
         id
-      ).jsonp(
+      ).fl(fields).jsonp(
         callback
       );
 

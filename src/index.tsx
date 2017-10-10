@@ -4,11 +4,12 @@ import registerServiceWorker from './registerServiceWorker';
 import './index.css';
 
 import { NotFound } from './pages/NotFound';
-import { DetailPage } from './pages/Detail';
 import { Search } from './pages/Search';
 
 import { Route } from 'react-router';
 import { BrowserRouter, Switch } from 'react-router-dom';
+
+import { DetailPageApp } from './example/video/DetailPage';
 
 interface RouterProps {
   history: object;
@@ -23,22 +24,19 @@ interface RouterProps {
   };
 }
 
-const DetailPageApp = (props: RouterProps) => {
-  return (
-    <DetailPage 
-      url="http://40.87.64.225:8983/solr/"
-      core="talks"
-      initial={{}}
-      id={props.match.params.id}
-    />
-  );
-};
-
 const Routes = (props) => (
   <BrowserRouter {...props}>
     <Switch>
       <Route exact={true} path="/" component={Search} />
-      <Route path="/view/:id" component={DetailPageApp} />
+      <Route 
+        path="/view/:id" 
+        component={
+          (detailProps: RouterProps) => 
+            <DetailPageApp 
+              {...detailProps.match.params} 
+            />
+        } 
+      />
       <Route path="*" component={NotFound} />
     </Switch>
   </BrowserRouter>

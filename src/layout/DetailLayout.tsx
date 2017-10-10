@@ -2,6 +2,7 @@ import * as React from 'react';
 
 interface DetailLayoutProps<T> {
   object: T;
+  detailComponent: React.ComponentClass<T>;
 }
 
 class DetailLayout<T> extends React.Component<DetailLayoutProps<T>, {}> {
@@ -10,25 +11,14 @@ class DetailLayout<T> extends React.Component<DetailLayoutProps<T>, {}> {
   }
   
   render() {
+    console.log(this.props.object);
+    const comp = this.props.detailComponent;
+    const detailComponent = 
+      React.createElement(comp, this.props.object);
+
     return (
       <div className="ui container">
-
-        <h1>Theming Examples</h1>
-        
-        {JSON.stringify(this.props.object)}
-
-        <h2 className="ui dividing header">Site</h2>
-
-        <h2 className="ui dividing header">Menu</h2>
-
-        <h2 className="ui dividing header">Buttons</h2>
-
-        <h2 className="ui dividing header">Table</h2>
-
-        <h2 className="ui dividing header">Input</h2>
-
-        <h2 className="ui dividing header">Card</h2>
-
+        {detailComponent}
       </div>
 
     );
