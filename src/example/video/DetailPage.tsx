@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { DetailPage } from '../../pages/Detail';
-
+import { MoreLikeThis } from '../../components/MoreLikeThis';
 interface Talk {
   id: string;
   title_s: string;
@@ -23,12 +23,21 @@ class VideoPlayer extends React.Component<Talk, {}> {
       <div>
         <iframe 
           id="player" 
-          width="640"
+          width="100%"
           height="390"
           src={'http://www.youtube.com/embed/' + this.youtubeId(url)} 
         />
-        <h2>{this.props.title_s}</h2>
       </div>
+    );
+  }
+}
+
+class HeaderComponent extends React.Component<Talk, {}> {
+  render() {
+    return (
+      <h2>
+        {this.props.title_s}
+      </h2>
     );
   }
 }
@@ -39,7 +48,9 @@ class DetailPageApp extends React.Component<{id: string}, {}> {
     //   Solr, core, fields
     return (
       <DetailPage 
-        detailComponent={VideoPlayer}
+        leftComponent={VideoPlayer}
+        rightComponent={MoreLikeThis}
+        headerComponent={HeaderComponent}
         url="http://40.87.64.225:8983/solr/"
         core="talks"
         initial={{

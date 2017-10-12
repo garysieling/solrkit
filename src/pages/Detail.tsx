@@ -8,7 +8,9 @@ interface DetailPageProps<T> {
   url: string;
   core: string;
   initial: T;
-  detailComponent: React.ComponentClass<T>;
+  leftComponent: React.ComponentClass<T>;
+  rightComponent: React.ComponentClass<T>;
+  headerComponent: React.ComponentClass<T>;
 }
 
 interface DetailPageState<T> {
@@ -50,7 +52,9 @@ class DetailPage<T> extends React.Component<DetailPageProps<T>, DetailPageState<
     return (
       <DetailLayout 
         object={this.state.object} 
-        detailComponent={this.props.detailComponent} 
+        leftComponent={this.props.leftComponent} 
+        rightComponent={this.props.rightComponent} 
+        headerComponent={this.props.headerComponent}
       />
     );
   }
