@@ -29,17 +29,11 @@ class DetailLayout<T> extends React.Component<DetailLayoutProps<T>, {}> {
         this.props.object);
 
     return (
-      <div>
-        <div className="ui masthead vertical segment">
-          <div className="ui container">
-            <div className="introduction">
-              <h1 className="ui header">
-                {headerComponent}
-              </h1>
-            </div>
-          </div>
+      <div className="ui segments">
+        <div className="ui segment">
+          {headerComponent}
         </div>
-        <div className="main ui intro container">
+        <div className="main ui segment">
           <div className="ui grid">
             <div className="ten wide column">
               <div className="container">

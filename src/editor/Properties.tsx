@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { Icon, Card, Input, Grid } from 'semantic-ui-react';
-//import * as _ from 'lodash';
 import 'semantic-ui-css/semantic.min.css';
 
 interface Property {
