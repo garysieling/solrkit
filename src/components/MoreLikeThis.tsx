@@ -1,24 +1,22 @@
 import * as React from 'react';
+import { SingleComponent } from '../context/DataStore';
 
-interface MoreLikeThisProps {
-
+interface MoreLikeThisProps<T> {
+  docs: T[];
+  render: SingleComponent<T>;
 }
 
-class MoreLikeThis extends React.Component<MoreLikeThisProps, {}> {
+class MoreLikeThis<T> extends React.Component<MoreLikeThisProps<T>> {
   render() {
+    const { docs, render } = this.props;
+    
     return (
       <div>
-        <a href="http://localhost:3000/view/76460">
-          <img src="http://img.youtube.com/vi/ID_gtlm_5HQ/0.jpg" />
-        </a>
-
-        <a href="http://localhost:3000/view/76460">
-          <img src="http://img.youtube.com/vi/ID_gtlm_5HQ/0.jpg" />
-        </a>
-
-        <a href="http://localhost:3000/view/76460">
-          <img src="http://img.youtube.com/vi/ID_gtlm_5HQ/0.jpg" />
-        </a>
+        {
+          docs.map(
+            (doc) => render(doc)
+          )
+        }
       </div>
     );
   }

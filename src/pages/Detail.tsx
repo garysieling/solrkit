@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { DetailLayout } from '../layout/DetailLayout';
-import { DataStore } from '../context/DataStore';
+import { BoundComponent, DataStore } from '../context/DataStore';
 import { keys } from 'lodash';
 
 interface DetailPageProps<T> {
@@ -8,9 +8,9 @@ interface DetailPageProps<T> {
   url: string;
   core: string;
   initial: T;
-  leftComponent: React.ComponentClass<T>;
-  rightComponent: React.ComponentClass<T>;
-  headerComponent: React.ComponentClass<T>;
+  leftComponent: BoundComponent<T>;
+  rightComponent: BoundComponent<T>;
+  headerComponent: BoundComponent<T>;
 }
 
 interface DetailPageState<T> {
@@ -18,20 +18,15 @@ interface DetailPageState<T> {
 }
 
 class DetailPage<T> extends React.Component<DetailPageProps<T>, DetailPageState<T>> {
-  private dataStore: DataStore<T>;
-
   constructor(props: DetailPageProps<T>) {
     super();
 
-    this.dataStore = new DataStore<T>(
-      props.url,
-      props.core
-    );
-    
     this.state = {
       object: props.initial
     };
 
+    // TODO this is broken - move into HOC that binds
+    //      individual controls to data
     this.dataStore.onGet(
       (data: T) => {
         this.setState( {
@@ -42,6 +37,8 @@ class DetailPage<T> extends React.Component<DetailPageProps<T>, DetailPageState<
   }
 
   componentDidMount() {
+    // TODO this is broken - move into HOC that binds
+    //      individual controls to data
     this.dataStore.get(
       this.props.id,
       keys(this.props.initial)
@@ -49,12 +46,14 @@ class DetailPage<T> extends React.Component<DetailPageProps<T>, DetailPageState<
   }
 
   render() {
+    // TODO this is broken - move into HOC that binds
+    //      individual controls to data
     return (
       <DetailLayout 
         object={this.state.object} 
-        leftComponent={this.props.leftComponent} 
-        rightComponent={this.props.rightComponent} 
-        headerComponent={this.props.headerComponent}
+        leftComponent={undefined/*this.props.leftComponent(this.dataStore)*/} 
+        rightComponent={undefined/*this.props.rightComponent(this.dataStore)*/} 
+        headerComponent={undefined/*this.props.headerComponent(this.dataStore)*/}
       />
     );
   }

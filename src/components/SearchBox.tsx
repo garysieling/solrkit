@@ -7,8 +7,6 @@ interface SearchBoxProps {
   initialQuery: string;
   placeholder: string;
   onDoSearch: (query: string) => void;
-  selectedMode: string;
-  modes: string[];
   loading: boolean;
   sampleSearches: string[];
 }
