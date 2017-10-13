@@ -188,8 +188,6 @@ debugger;
         (value: [number, number, boolean]) => [value[0], value[1]]
       );
     }
-
-    debugger;
     
     this.svg = 
       d3.select(this.dom)
