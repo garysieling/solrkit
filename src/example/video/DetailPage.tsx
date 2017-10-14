@@ -17,7 +17,6 @@ class VideoPlayer extends React.Component<Talk, {}> {
 
   render() {
     const url = this.props.url_s;
-    console.log(this.props);
 
     if (this.props.url_s === '') {
       return null;
@@ -70,7 +69,7 @@ class TalkSearchDataStore extends DataStore {
   get talks(): TalkCoreCapabilities {
     if (!this.talksCore) {
       this.talksCore = super.registerCore({
-        url: '',
+        url: 'http://40.87.64.225:8983/solr/',
         core: 'talks',
         primaryKey: 'id',
         // Unfortunately these have to be repeated 
@@ -113,31 +112,45 @@ class TalkSearchDataStore extends DataStore {
 
     */
 
-class DataBound<T> extends React.Component<{
-  dataStore: SolrGet<T>,
-  render: (props: T) => JSX.Element
-}, {object?: T}> {
-  constructor() {
-    super();
+interface DataBoundProps<T> {
+  dataStore: SolrGet<T> & SolrMoreLikeThis<T>;
+  render: (props: T) => JSX.Element;
+}
+
+interface DataBoundState<T> {
+  object?: T;
+  moreLikeThis?: T[];
+}
+
+class DataBound<T> extends React.Component<DataBoundProps<T>, DataBoundState<T>> {
+  constructor(props: DataBoundProps<T>) {
+    super(props);
 
     this.state = {
-      object: undefined
+      object: undefined,
+      moreLikeThis: undefined
     };
-  }
 
-  componentDidMount() {
-    // TODO this is broken - move into HOC that binds
-    //      individual controls to data
-    this.props.dataStore.onGet(
+    // This needs to happen early
+    props.dataStore.onGet(
       (data: T) => {
         this.setState( {
           object: data
         });
       }
     );
+
+    props.dataStore.onMoreLikeThis(
+      (data: T[]) => {
+        this.setState( {
+          moreLikeThis: data
+        });
+      }
+    );
   }
-  
+
   render() {
+    // TODO these need to be named or something
     if (!this.state.object) {
       return null;
     }
@@ -164,20 +177,20 @@ function databind<T>(
 class DetailPageApp extends React.Component<{id: string}, {}> {
   private dataStore: TalkSearchDataStore = new TalkSearchDataStore();
 
+  private left: () => JSX.Element;
+  private right: () => JSX.Element;
+  private header: () => JSX.Element;
+
   constructor() {
     super();
-  }
-  
-  render() {
-    const self = this;
 
-    const left = databind(
-      self.dataStore.talks,
+    this.left = databind(
+      this.dataStore.talks,
       (talk: Talk) => (<VideoPlayer {...talk} />)
     );
 
-    const right = databind(
-      self.dataStore.talks,
+    this.right = databind(
+      this.dataStore.talks,
       (talks: Talk[]) => (
         <MoreLikeThis 
           docs={talks} 
@@ -191,8 +204,8 @@ class DetailPageApp extends React.Component<{id: string}, {}> {
         />)
     );
 
-    const header = databind(
-      self.dataStore.talks,
+    this.header = databind(
+      this.dataStore.talks,
       (talk: Talk) => (
         <SearchBox 
           initialQuery="" 
@@ -205,16 +218,19 @@ class DetailPageApp extends React.Component<{id: string}, {}> {
         />
       )
     );
+  }
 
-
-    // basic problem:
-    
-
+  componentDidMount() {
+    this.dataStore.talks.doGet(this.props.id);
+    this.dataStore.talks.doMoreLikeThis(this.props.id);
+  }
+  
+  render() { 
     return (
       <DetailLayout 
-        leftComponent={left}
-        rightComponent={right}
-        headerComponent={header}
+        leftComponent={this.left}
+        rightComponent={this.right}
+        headerComponent={this.header}
       />
     );
   }

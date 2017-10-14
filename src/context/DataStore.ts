@@ -32,7 +32,7 @@ class SolrQueryBuilder<T> {
   
   moreLikeThis(handler: string, col: string, id: string | number) {
     return new SolrQueryBuilder<T>(
-      () => handler + '/get?q=' + col + ':' + id,
+      () => handler + '?q=' + col + ':' + id,
       this
     );
   }
@@ -159,7 +159,7 @@ class SolrCore<T> {
       mlt: []
     };
 
-    this.onGet = this.memoize(this.onGet);
+    // this.onGet = this.memoize(this.onGet);
   }
 
   onQuery(op: QueryEvent<T>) {
@@ -192,7 +192,9 @@ class SolrCore<T> {
         data.json().then( 
           (responseData) => {
             self.events.mlt.map(
-              (event) => event(responseData.docs)
+              (event) => {
+                event(responseData.response.docs);
+              }
             );
           }
         ).catch(
