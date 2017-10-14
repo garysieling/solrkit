@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { DetailLayout } from '../../layout/DetailLayout';
-// import { MoreLikeThis } from '../../components/MoreLikeThis';
+import { MoreLikeThis } from '../../components/MoreLikeThis';
 import { SearchBox } from '../../components/SearchBox';
 import { DataStore, SolrCore, SolrGet, SolrMoreLikeThis, SolrQuery } from '../../context/DataStore';
 
@@ -55,7 +55,11 @@ interface Talk {
 //    get needs to be a property?
 type TalkCoreCapabilities = SolrCore<Talk> & SolrGet<Talk> & SolrMoreLikeThis<Talk> & SolrQuery<Talk>;
 class TalkSearchDataStore extends DataStore {
-    private talksCore: TalkCoreCapabilities;
+  private talksCore: TalkCoreCapabilities;
+
+  constructor() {
+    super();
+  }
 
   // Every core should have it's own function
   // registered in your datastore
@@ -86,20 +90,10 @@ class TalkSearchDataStore extends DataStore {
   () => this.setState()
 )*/
 
-class DetailPageApp extends React.Component<{id: string}, {}> {
-  private dataStore: TalkSearchDataStore;
+/*
 
-  constructor() {
-    super();
-
-    this.dataStore = new TalkSearchDataStore();
-  }
-  
-  render() {
     // TODO - the invidivual components should register what they need:
     //   Solr, core, fields
-    const left = 
-        (talk) => (<VideoPlayer {...talk} />);
 
     // mlt component
     const right = 
@@ -111,16 +105,110 @@ class DetailPageApp extends React.Component<{id: string}, {}> {
 
     // todo - maybe loading should just go in everything
     const header = () => ( 
-      <SearchBox 
-        initialQuery="" 
-        placeholder="Search..."
-        onDoSearch={(query: String) => {
-          // do something
-        }}
-        loading={false}
-        sampleSearches={[]}
-      />
+      
     );
+
+    //rightComponent={right}
+    //headerComponent={header}
+
+    */
+
+class DataBound<T> extends React.Component<{
+  dataStore: SolrGet<T>,
+  render: (props: T) => JSX.Element
+}, {object?: T}> {
+  constructor() {
+    super();
+
+    this.state = {
+      object: undefined
+    };
+  }
+
+  componentDidMount() {
+    // TODO this is broken - move into HOC that binds
+    //      individual controls to data
+    this.props.dataStore.onGet(
+      (data: T) => {
+        this.setState( {
+          object: data
+        });
+      }
+    );
+  }
+  
+  render() {
+    if (!this.state.object) {
+      return null;
+    }
+
+    return (
+      this.props.render(this.state.object)
+    );
+  }
+}
+
+function databind<T>(
+    ds: SolrCore<T>,
+    render: 
+      (v: T | T[]) => JSX.Element
+) {
+  return () => (
+    <DataBound
+      dataStore={ds}
+      render={render}
+    />
+  );
+}
+
+class DetailPageApp extends React.Component<{id: string}, {}> {
+  private dataStore: TalkSearchDataStore = new TalkSearchDataStore();
+
+  constructor() {
+    super();
+  }
+  
+  render() {
+    const self = this;
+
+    const left = databind(
+      self.dataStore.talks,
+      (talk: Talk) => (<VideoPlayer {...talk} />)
+    );
+
+    const right = databind(
+      self.dataStore.talks,
+      (talks: Talk[]) => (
+        <MoreLikeThis 
+          docs={talks} 
+          render={
+            (talk: Talk) => (
+              <div>
+                {talk.title_s}
+              </div>
+            )
+          }
+        />)
+    );
+
+    const header = databind(
+      self.dataStore.talks,
+      (talk: Talk) => (
+        <SearchBox 
+          initialQuery="" 
+          placeholder="Search..."
+          onDoSearch={(query: String) => {
+            // do something
+          }}
+          loading={false}
+          sampleSearches={[]}
+        />
+      )
+    );
+
+
+    // basic problem:
+    
 
     return (
       <DetailLayout 
