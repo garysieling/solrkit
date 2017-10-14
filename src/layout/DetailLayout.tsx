@@ -1,13 +1,12 @@
 import * as React from 'react';
 
-interface DetailLayoutProps<T> {
-  object: T;
-  leftComponent?: React.ComponentClass<T>;
-  rightComponent?: React.ComponentClass<T>;
-  headerComponent?: React.ComponentClass<T>;
+interface DetailLayoutProps {
+  leftComponent?: () => JSX.Element;
+  rightComponent?: () => JSX.Element;
+  headerComponent?: () => JSX.Element;
 }
 
-class DetailLayout<T> extends React.Component<DetailLayoutProps<T>, {}> {
+class DetailLayout extends React.Component<DetailLayoutProps, {}> {
   constructor() {
     super();
   }
@@ -15,23 +14,17 @@ class DetailLayout<T> extends React.Component<DetailLayoutProps<T>, {}> {
   render() {
     const headerComponent = 
       this.props.headerComponent ? (
-      React.createElement(
-        this.props.headerComponent, 
-        this.props.object)
+        this.props.headerComponent()
       ) : null;
         
     const leftComponent = 
       this.props.leftComponent ? (
-        React.createElement(
-          this.props.leftComponent, 
-          this.props.object)
+        this.props.leftComponent()
       ) : null;
 
     const rightComponent = 
       this.props.rightComponent ? (
-        React.createElement(
-          this.props.rightComponent, 
-          this.props.object)
+        this.props.rightComponent()
       ) : null;
 
     return (

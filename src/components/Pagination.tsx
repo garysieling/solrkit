@@ -3,8 +3,8 @@ import { Menu } from 'semantic-ui-react';
 import * as _ from 'lodash';
 import 'semantic-ui-css/semantic.min.css';
 
-interface PaginationProps<T> {
-  data: T[];
+interface PaginationProps {
+  data: object[];
   pageSize: number;
 }
 
@@ -27,7 +27,7 @@ const PaginationProperties = [
   }
 ];
 
-class Pagination<T> extends React.Component<PaginationProps<T>, PaginationState> {
+class Pagination extends React.Component<PaginationProps, PaginationState> {
   constructor() {
     super();
 

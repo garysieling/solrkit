@@ -7,6 +7,7 @@ import {
 } from './Data';
 
 import * as fetchJsonp from 'fetch-jsonp';
+import * as React from 'react';
 
 function escape(value: String) {
   return value;
@@ -287,7 +288,7 @@ class SolrCore<T> {
   next(op: (event: SolrQueryBuilder<T>) => SolrQueryBuilder<T>) {
     const qb = 
       op(
-        new SolrQueryBuilder(() => '')
+        new SolrQueryBuilder<T>(() => '')
       ).fl(this.solrConfig.fields);
 
     const url = this.solrConfig.url + this.solrConfig.core + '/select?' + qb.build();
@@ -339,6 +340,37 @@ class DataStore {
 type SingleComponent<T> =
   (data: T) => object;
 
+
+class SingleBoundComponent<T> extends React.Component<{
+  dataStore: SolrGet<T>,
+  componentClass: (props: T) => React.SFCElement<object>
+}, {object: T}> {
+  constructor() {
+    super();
+
+    // TODO this is broken - move into HOC that binds
+    //      individual controls to data
+    this.props.dataStore.onGet(
+      (data: T) => {
+        this.setState( {
+          object: data
+        });
+      }
+    );
+  }
+  
+  render() {
+    if (!this.state.object) {
+      return null;
+    }
+
+    return (
+      this.props.componentClass(this.state.object)
+    );
+  }
+}
+
+
 export { 
   SolrQueryBuilder,
   SingleComponent,
@@ -346,5 +378,6 @@ export {
   SolrCore, 
   SolrGet, 
   SolrMoreLikeThis, 
-  SolrQuery
+  SolrQuery,
+  SingleBoundComponent
 };

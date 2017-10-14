@@ -1,26 +1,12 @@
 import * as React from 'react';
 import { ResultsLayout } from '../layout/ResultsLayout';
-import { SolrResponse } from '../context/Data';
 
-class Search<T> extends React.Component<{}, {data: SolrResponse<T>}> {
+class Search<T extends object> extends React.Component<{}, {data: T[]}> {
   constructor() {
     super();
 
     this.state = {
-      data: {
-        responseHeader: {
-          status: 0,
-          QTime: 0,
-          params: {
-            q: ''
-          }
-        }, 
-        response: {
-          numFound: 0,
-          start: 0,
-          docs: []
-        }
-      }
+      data: []
     };
   }
   render() {

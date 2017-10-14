@@ -1,14 +1,14 @@
 import * as React from 'react';
 
 import { Pagination } from '../components/Pagination';
-import { SolrResponse } from '../context/Data';
 
-interface ResultsConfig<T> {
+interface ResultsConfig {
   pageSize: number;
-  data: SolrResponse<T>;
+  data: object[];
 }
 
-class ResultsLayout<T> extends React.Component<ResultsConfig<T>, {}> {
+
+class ResultsLayout extends React.Component<ResultsConfig, {}> {
   constructor() {
     super();
   }
@@ -17,7 +17,7 @@ class ResultsLayout<T> extends React.Component<ResultsConfig<T>, {}> {
     return (
       <div>
         <Pagination
-          data={this.props.data.response.docs}
+          data={this.props.data}
           pageSize={this.props.pageSize}
         />
       </div>

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { DetailPage } from '../../pages/Detail';
+import { DetailLayout } from '../../layout/DetailLayout';
 // import { MoreLikeThis } from '../../components/MoreLikeThis';
 import { SearchBox } from '../../components/SearchBox';
 import { DataStore, SolrCore, SolrGet, SolrMoreLikeThis, SolrQuery } from '../../context/DataStore';
@@ -17,6 +17,7 @@ class VideoPlayer extends React.Component<Talk, {}> {
 
   render() {
     const url = this.props.url_s;
+    console.log(this.props);
 
     if (this.props.url_s === '') {
       return null;
@@ -79,7 +80,7 @@ class TalkSearchDataStore extends DataStore {
   }
 }
 
-//const tds = new TalkSearchDataStore();
+// const tds = new TalkSearchDataStore();
 // Good spot for HOC here
 /*tds.talks.onGet(
   () => this.setState()
@@ -97,15 +98,16 @@ class DetailPageApp extends React.Component<{id: string}, {}> {
   render() {
     // TODO - the invidivual components should register what they need:
     //   Solr, core, fields
-    const left = (talk: Talk) => 
-      <VideoPlayer {...talk} />;
+    const left = 
+        (talk) => (<VideoPlayer {...talk} />);
 
     // mlt component
-    const right = (talk: Talk) => (
-      <div>
-        {talk.title_s}
-      </div>
-    );
+    const right = 
+        (talk) => (
+          <div>
+            {talk.title_s}
+          </div>
+        );
 
     // todo - maybe loading should just go in everything
     const header = () => ( 
@@ -113,7 +115,7 @@ class DetailPageApp extends React.Component<{id: string}, {}> {
         initialQuery="" 
         placeholder="Search..."
         onDoSearch={(query: String) => {
-          console.log('do search');
+          // do something
         }}
         loading={false}
         sampleSearches={[]}
@@ -121,18 +123,10 @@ class DetailPageApp extends React.Component<{id: string}, {}> {
     );
 
     return (
-      <DetailPage 
+      <DetailLayout 
         leftComponent={left}
         rightComponent={right}
         headerComponent={header}
-        url="http://40.87.64.225:8983/solr/"
-        core="talks"
-        initial={{
-          id: '',
-          title_s: '',
-          url_s: ''
-        }}
-        id={this.props.id}
       />
     );
   }
