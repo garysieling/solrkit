@@ -78,9 +78,10 @@ class Pagination extends React.Component<PaginationProps, PaginationState> {
         (idx: number) => 
           idx === -1 ? 
           (
-            <Menu.Item disabled={true}>...</Menu.Item>
+            <Menu.Item ey={idx} disabled={true}>...</Menu.Item>
           ) : (
-            <Menu.Item 
+            <Menu.Item
+              key={idx}
               name={idx + ''} 
               active={activePage === idx} 
               onClick={this.handlePaging(idx)} 

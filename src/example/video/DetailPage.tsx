@@ -235,7 +235,7 @@ class DetailPageApp extends React.Component<{id: string}, {}> {
     this.dataStore.talks.doGet(this.props.id);
     this.dataStore.talks.doMoreLikeThis(this.props.id);
   }
-  
+
   render() { 
     return (
       <DetailLayout 

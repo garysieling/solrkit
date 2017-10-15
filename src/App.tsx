@@ -9,7 +9,7 @@ import { sampleResults, sampleHistogramData } from './editor/SampleData';
 
 import Properties from './editor/Properties';
 
-class App extends React.Component {
+class App extends React.Component<{}, {}> {
   constructor() {
     super();
 
@@ -17,10 +17,8 @@ class App extends React.Component {
   }
   
   onClick(event: string) {
-    debugger;
-    //this.setState({});
+    //
   }
-
 
   render() {
     return (

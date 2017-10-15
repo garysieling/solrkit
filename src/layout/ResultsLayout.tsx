@@ -7,7 +7,6 @@ interface ResultsConfig {
   data: object[];
 }
 
-
 class ResultsLayout extends React.Component<ResultsConfig, {}> {
   constructor() {
     super();
