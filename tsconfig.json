@@ -14,7 +14,19 @@
     "noImplicitThis": true,
     "strictNullChecks": true,
     "suppressImplicitAnyIndexErrors": true,
-    "noUnusedLocals": true
+    "noUnusedLocals": true,
+    "baseUrl": ".",
+    "paths": {
+      "@component/*": [
+        "./src/component/*"
+      ],
+      "@context/*": [
+        "./src/context/*"
+      ],
+      "@layout": [
+        "./src/layout/*"
+      ]
+    }
   },
   "exclude": [
     "node_modules",

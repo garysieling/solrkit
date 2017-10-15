@@ -1,10 +1,9 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import registerServiceWorker from '../../registerServiceWorker';
 import './index.css';
 
-import { NotFound } from '../../pages/NotFound';
-import { Search } from '../../pages/Search';
+import { NotFound } from './pages/NotFound';
+import { Search } from './pages/Search';
 
 import { Route } from 'react-router';
 import { BrowserRouter, Switch } from 'react-router-dom';
@@ -85,6 +84,4 @@ export function main() {
     <Routes />,
     document.getElementById('root') as HTMLElement
   );
-
-  registerServiceWorker();
 }

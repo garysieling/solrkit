@@ -1,8 +1,9 @@
 import * as React from 'react';
-import { DetailLayout } from '../../layout/DetailLayout';
-import { MoreLikeThis } from '../../components/MoreLikeThis';
-import { SearchBox } from '../../components/SearchBox';
-import { DataStore, SolrCore, SolrGet, SolrMoreLikeThis, SolrQuery } from '../../context/DataStore';
+import { DetailLayout } from 'layout/DetailLayout';
+import { MoreLikeThis } from 'component/MoreLikeThis';
+import { SearchBox } from 'component/SearchBox';
+import { DataStore, SolrCore, SolrGet, SolrMoreLikeThis, SolrQuery } from 'context/DataStore';
+import { databind } from 'context/DataBinding';
 
 interface Talk {
   id: string;
@@ -82,87 +83,6 @@ class TalkSearchDataStore extends DataStore {
     }
 
     return this.talksCore;
-  }
-}
-
-// const tds = new TalkSearchDataStore();
-// Good spot for HOC here
-/*tds.talks.onGet(
-  () => this.setState()
-)*/
-
-/*
-
-    // TODO - the invidivual components should register what they need:
-    //   Solr, core, fields
-
-    // mlt component
-    const right = 
-        (talk) => (
-          <div>
-            {talk.title_s}
-          </div>
-        );
-
-    // todo - maybe loading should just go in everything
-    const header = () => ( 
-      
-    );
-
-    //rightComponent={right}
-    //headerComponent={header}
-
-    */
-
-function databind<T>(
-    fn: Function,
-    ds: SolrCore<T>,
-    render: 
-      (v: T | T[]) => JSX.Element | null
-) {
-  return () => {
-      return (
-        <DataBound
-          fn={fn}
-          dataStore={ds}
-          render={render}
-        />
-      );
-    };
-}
-
-interface DataBoundProps<T> {
-  fn: Function;
-  dataStore: SolrGet<T> & SolrMoreLikeThis<T>;
-  render: (props: T | T[] | undefined) => JSX.Element | null;
-}
-
-interface DataBoundState<T> {
-  data?: T | T[];
-}
-
-class DataBound<T> extends React.Component<DataBoundProps<T>, DataBoundState<T>> {
-  constructor(props: DataBoundProps<T>) {
-    super(props);
-
-    this.state = {};
-
-    // This needs to happen early
-    props.fn.call(
-      props.dataStore,
-      (data: T | T[]) => {
-        this.setState( {
-          data: data
-        });
-      }
-    );
-  }
-
-  render() {
-    // TODO these need to be named or something
-    return (
-      this.props.render(this.state.data)
-    );
   }
 }
 

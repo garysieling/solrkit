@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import { Pagination } from '../components/Pagination';
+import { Pagination } from '../component/Pagination';
 
 interface ResultsConfig {
   pageSize: number;
