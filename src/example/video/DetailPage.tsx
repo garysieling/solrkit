@@ -112,38 +112,45 @@ class TalkSearchDataStore extends DataStore {
 
     */
 
+function databind<T>(
+    fn: Function,
+    ds: SolrCore<T>,
+    render: 
+      (v: T | T[]) => JSX.Element | null
+) {
+  return () => {
+      return (
+        <DataBound
+          fn={fn}
+          dataStore={ds}
+          render={render}
+        />
+      );
+    };
+}
+
 interface DataBoundProps<T> {
+  fn: Function;
   dataStore: SolrGet<T> & SolrMoreLikeThis<T>;
-  render: (props: T) => JSX.Element;
+  render: (props: T | T[]) => JSX.Element | null;
 }
 
 interface DataBoundState<T> {
-  object?: T;
-  moreLikeThis?: T[];
+  data?: T | T[];
 }
 
 class DataBound<T> extends React.Component<DataBoundProps<T>, DataBoundState<T>> {
   constructor(props: DataBoundProps<T>) {
     super(props);
 
-    this.state = {
-      object: undefined,
-      moreLikeThis: undefined
-    };
+    this.state = {};
 
     // This needs to happen early
-    props.dataStore.onGet(
-      (data: T) => {
+    props.fn.call(
+      props.dataStore,
+      (data: T | T[]) => {
         this.setState( {
-          object: data
-        });
-      }
-    );
-
-    props.dataStore.onMoreLikeThis(
-      (data: T[]) => {
-        this.setState( {
-          moreLikeThis: data
+          data: data
         });
       }
     );
@@ -151,27 +158,18 @@ class DataBound<T> extends React.Component<DataBoundProps<T>, DataBoundState<T>>
 
   render() {
     // TODO these need to be named or something
-    if (!this.state.object) {
+    if (!this.state.data) {
       return null;
     }
 
     return (
-      this.props.render(this.state.object)
+      this.props.render(this.state.data)
     );
   }
 }
 
-function databind<T>(
-    ds: SolrCore<T>,
-    render: 
-      (v: T | T[]) => JSX.Element
-) {
-  return () => (
-    <DataBound
-      dataStore={ds}
-      render={render}
-    />
-  );
+function ytId(url: string) {
+  return url.split('v=')[1].split('&')[0];
 }
 
 class DetailPageApp extends React.Component<{id: string}, {}> {
@@ -185,26 +183,39 @@ class DetailPageApp extends React.Component<{id: string}, {}> {
     super();
 
     this.left = databind(
+      this.dataStore.talks.onGet,
       this.dataStore.talks,
       (talk: Talk) => (<VideoPlayer {...talk} />)
     );
 
     this.right = databind(
+      this.dataStore.talks.onMoreLikeThis,
       this.dataStore.talks,
       (talks: Talk[]) => (
         <MoreLikeThis 
           docs={talks} 
           render={
             (talk: Talk) => (
-              <div>
-                {talk.title_s}
-              </div>
+              talk.url_s.indexOf('youtube.com') > 0 ? (
+                <div>
+                  <p>
+                    <b>{talk.title_s}</b>
+                  </p>
+                  <a href={'/view/' + talk.id}>
+                    <img 
+                      src={'http://img.youtube.com/vi/' + ytId(talk.url_s) + '/mqdefault.jpg'} 
+                      alt={talk.title_s}
+                    />
+                  </a>
+                </div>
+              ) : null
             )
           }
         />)
     );
 
     this.header = databind(
+      this.dataStore.talks.onMoreLikeThis,
       this.dataStore.talks,
       (talk: Talk) => (
         <SearchBox 

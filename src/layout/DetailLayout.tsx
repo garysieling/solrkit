@@ -39,7 +39,7 @@ class DetailLayout extends React.Component<DetailLayoutProps, {}> {
                 {leftComponent}
               </div>
             </div>
-            <div className="two wide column">
+            <div className="six wide column">
               <div className="container">
                 {rightComponent}
               </div>

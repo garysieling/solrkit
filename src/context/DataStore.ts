@@ -339,7 +339,7 @@ class DataStore {
 }
 
 type SingleComponent<T> =
-  (data: T) => object;
+  (data: T) => object | null | undefined;
 
 export { 
   SolrQueryBuilder,

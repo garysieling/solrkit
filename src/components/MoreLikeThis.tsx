@@ -14,7 +14,7 @@ class MoreLikeThis<T> extends React.Component<MoreLikeThisProps<T>> {
       <div>
         {
           docs.map(
-            (doc) => render(doc)
+            (doc, i) => <div key={i}>{render(doc)}</div>
           )
         }
       </div>
@@ -23,5 +23,6 @@ class MoreLikeThis<T> extends React.Component<MoreLikeThisProps<T>> {
 }
 
 export {
-  MoreLikeThis
+  MoreLikeThis, 
+  MoreLikeThisProps
 };

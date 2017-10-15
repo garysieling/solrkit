@@ -109,4 +109,7 @@ class SearchBox extends React.Component<SearchBoxProps, SearchBoxState> {
   }
 }
 
-export { SearchBox };
+export { 
+  SearchBox,
+  SearchBoxProps
+};
