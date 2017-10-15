@@ -18,7 +18,11 @@ class VideoPlayer extends React.Component<Talk, {}> {
   render() {
     const url = this.props.url_s;
 
-    const ytUrl: string | undefined = url ? 'https://www.youtube.com/embed/' + this.youtubeId(url) : undefined;
+    const ytUrl: string | undefined = 
+      url ? (
+        'https://www.youtube.com/embed/' + this.youtubeId(url) 
+        + '?modestbranding=true'
+      ) : undefined;
     
     return (
       <div>
@@ -294,9 +298,17 @@ class DetailPageApp extends React.Component<DetailAppProps, {}> {
     );
   }
 
-  componentDidMount() {
+  init() {
     dataStore.talks.doGet(this.props.id);
     dataStore.talks.doMoreLikeThis(this.props.id);
+  }
+
+  componentWillReceiveProps() {
+    this.init();
+  }
+
+  componentDidMount() {
+    this.init();
   }
 
   componentWillUnmount() {

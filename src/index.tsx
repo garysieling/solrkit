@@ -25,15 +25,44 @@ interface RouterProps {
 }
 
 import createHistory from 'history/createBrowserHistory';
-const history = createHistory();
+const history = createHistory({
+  basename: '/view/',
+  hashType: 'noslash'
+});
+
+class DetailComponent extends React.Component<RouterProps, {id: string}> {
+  constructor(props: RouterProps) {
+    super();
+
+    this.state = {
+      id: props.match.params.id
+    };
+
+    history.listen((location, action) => {
+      console.log(location);
+      if (location.key) {
+        this.setState({
+          id: location.pathname.substring(1)
+        });
+      }
+    });
+  }
+
+  render() {
+    return (
+      <DetailPageApp 
+        load={(id: string) => {
+          history.push(id, {});
+        }}
+        id={this.state.id}
+      />
+    );
+  }
+}
 
 class Routes extends React.Component<{}, {}> {
   constructor() {
     super();
-
-    /*history.listen((location, action) => {
-      
-    });*/
   }
 
   render() {    
@@ -43,20 +72,7 @@ class Routes extends React.Component<{}, {}> {
           <Route exact={true} path="/" component={Search} />
           <Route 
             path="/view/:id" 
-            component={
-              (detailProps: RouterProps) => 
-                <DetailPageApp 
-                  load={(id: string) => {
-                    history.push('/view/' + id);
-
-                    this.setState({
-                      id
-                    });
-                  }}
-                  {...detailProps.match.params} 
-                  {...this.state}
-                />
-            } 
+            component={DetailComponent} 
           />
           <Route path="*" component={NotFound} />
         </Switch>

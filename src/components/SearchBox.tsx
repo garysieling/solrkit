@@ -85,7 +85,7 @@ class SearchBox extends React.Component<SearchBoxProps, SearchBoxState> {
       ),
       5
     ).map(
-      (title) => {return {title}}
+      (title) => { return {title}; }
     );
 
     return (
