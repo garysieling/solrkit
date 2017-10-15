@@ -19,7 +19,7 @@ class MoreLikeThis<T> extends React.Component<MoreLikeThisProps<T>> {
       <div>
         {titleDiv}
         {
-          docs.map(
+          (docs || []).map(
             (doc, i) => <div key={i}>{render(doc)}</div>
           )
         }

@@ -4,5 +4,12 @@ import { DetailPageApp } from './example/video/DetailPage';
 
 it('DetailPageApp renders without crashing', () => {
   const div = document.createElement('div');
-  ReactDOM.render(<DetailPageApp id="example" />, div);
+  ReactDOM.render(
+    <DetailPageApp 
+      id="example" 
+      load={(id: string) => { 
+        //
+      }} 
+    />, 
+    div);
 });

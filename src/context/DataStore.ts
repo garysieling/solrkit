@@ -7,6 +7,7 @@ import {
 } from './Data';
 
 import * as fetchJsonp from 'fetch-jsonp';
+import * as _ from 'lodash';
 
 function escape(value: String) {
   return value;
@@ -132,26 +133,17 @@ class SolrCore<T> {
 
   private requestId: number = 0;
 
-  private cache = {};
-  memoize(fn: Function) {
-    const name = fn.name;
-    return (...args) => {
-      const key = name + ' ' + args.join(' ');
-      let result = this.cache[key];
-      if (result) {
-        return result;
-      }
-
-      result = fn.call(this, args);
-
-      this.cache[key] = result;
-
-      return result;
-    };
-  }
+  private getCache = {};
+  private mltCache = {};
 
   constructor(solrConfig: SolrConfig) {
     this.solrConfig = solrConfig;
+    this.clearEvents();
+
+    // this.onGet = this.memoize(this.onGet);
+  }
+
+  clearEvents() {
     this.events = {
       select: [],
       error: [],
@@ -159,7 +151,13 @@ class SolrCore<T> {
       mlt: []
     };
 
-    // this.onGet = this.memoize(this.onGet);
+    if (_.keys(this.getCache).length > 100) {
+      this.getCache = {};
+    }
+    
+    if (_.keys(this.mltCache).length > 100) {
+      this.mltCache = {};
+    }
   }
 
   onQuery(op: QueryEvent<T>) {
@@ -171,41 +169,72 @@ class SolrCore<T> {
   }
 
   doMoreLikeThis(id: string | number) {
+    this.prefetchMoreLikeThis(id, true);
+  }
+
+  prefetchMoreLikeThis(id: string | number, prefetch: boolean) {
     const self = this;
-    const callback = 'cb_' + this.requestId++;
+   
+    if (!self.mltCache[id]) {
+      const callback = 'cb_' + self.requestId++;
 
-    const qb = 
-      new SolrQueryBuilder(() => '').moreLikeThis(
-        'mlt', // TODO - configurable
-        this.solrConfig.primaryKey,
-        id
-      ).fl(this.solrConfig.fields).jsonp(
-        callback
-      );
-
-    const url = this.solrConfig.url + this.solrConfig.core + '/' + qb.build();
-
-    fetchJsonp(url, {
-      jsonpCallbackFunction: callback
-    }).then(
-      (data) => {
-        data.json().then( 
-          (responseData) => {
-            self.events.mlt.map(
-              (event) => {
-                event(responseData.response.docs);
-              }
-            );
-          }
-        ).catch(
-          (error) => {
-            self.events.error.map(
-              (event) => event(error)
-            );
-          }
+      const qb = 
+        new SolrQueryBuilder(() => '').moreLikeThis(
+          'mlt', // TODO - configurable
+          self.solrConfig.primaryKey,
+          id
+        ).fl(self.solrConfig.fields).jsonp(
+          callback
         );
-      }
-    );    
+
+      const url = self.solrConfig.url + self.solrConfig.core + '/' + qb.build();
+
+      fetchJsonp(url, {
+        jsonpCallbackFunction: callback
+      }).then(
+        (data) => {
+          data.json().then( 
+            (responseData) => {
+              const mlt = responseData.response.docs;
+              if (prefetch) {
+                self.events.mlt.map(
+                  (event) => {
+                    event(mlt);
+                  }
+                );
+
+                mlt.map(
+                  (doc) => {
+                    self.prefetchMoreLikeThis(
+                      doc[this.solrConfig.primaryKey],
+                      false
+                    );
+                  }
+                );
+              }
+            
+              responseData.response.docs.map(
+                (doc) => self.getCache[id] = responseData.doc
+              );
+
+              self.mltCache[id] = responseData.response.docs;
+            }
+          ).catch(
+            (error) => {
+              self.events.error.map(
+                (event) => event(error)
+              );
+            }
+          );
+        }
+      );    
+    } else {
+      self.events.mlt.map(
+        (event) => {
+          event(this.mltCache[id]);
+        }
+      );
+    }     
   }
 
   onMoreLikeThis(op: (v: T[]) => void) {
@@ -229,26 +258,34 @@ class SolrCore<T> {
 
     const url = this.solrConfig.url + this.solrConfig.core + '/' + qb.build();
 
-    fetchJsonp(url, {
-      jsonpCallbackFunction: callback
-    }).then(
-      (data) => {
-        data.json().then( 
-          (responseData) => {
-            self.events.get.map(
-              (event) => event(responseData.doc)
-            );
-          }
-        ).catch(
-          (error) => {
-            self.events.error.map(
-              (event) => event(error)
-            );
-          }
-        );
-      }
-    );    
-  }
+    if (!this.getCache[id]) {
+      fetchJsonp(url, {
+        jsonpCallbackFunction: callback
+      }).then(
+        (data) => {
+          data.json().then( 
+            (responseData) => {
+              self.events.get.map(
+                (event) => event(responseData.doc)
+              );
+
+              this.getCache[id] = responseData.doc;
+            }
+          ).catch(
+            (error) => {
+              self.events.error.map(
+                (event) => event(error)
+              );
+            }
+          );
+        }
+      );    
+    } else {
+      self.events.get.map(
+        (event) => event(this.getCache[id])
+      );
+    }
+  } 
 
   // TODO - this thing needs a lot more definition to be useful
   doQuery(query: GenericSolrQuery) {
@@ -319,6 +356,13 @@ class SolrCore<T> {
 //       a properties picker UI
 class DataStore {
   cores: { [ keys: string ]: object } = {};
+
+  clearEvents() {
+    _.map(
+      this.cores,
+      (v: SolrCore<object>, k) => v.clearEvents()
+    );
+  }
 
   registerCore<T>(config: SolrConfig): SolrCore<T> {
     // Check if this exists - Solr URL + core should be enough

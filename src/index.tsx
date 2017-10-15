@@ -24,23 +24,48 @@ interface RouterProps {
   };
 }
 
-const Routes = (props) => (
-  <BrowserRouter {...props}>
-    <Switch>
-      <Route exact={true} path="/" component={Search} />
-      <Route 
-        path="/view/:id" 
-        component={
-          (detailProps: RouterProps) => 
-            <DetailPageApp 
-              {...detailProps.match.params} 
-            />
-        } 
-      />
-      <Route path="*" component={NotFound} />
-    </Switch>
-  </BrowserRouter>
-);
+import createHistory from 'history/createBrowserHistory';
+const history = createHistory();
+
+class Routes extends React.Component<{}, {}> {
+  constructor() {
+    super();
+
+    /*history.listen((location, action) => {
+      
+    });*/
+  }
+
+  render() {    
+    return (
+      <BrowserRouter>
+        <Switch>
+          <Route exact={true} path="/" component={Search} />
+          <Route 
+            path="/view/:id" 
+            component={
+              (detailProps: RouterProps) => 
+                <DetailPageApp 
+                  load={(id: string) => {
+                    history.push('/view/' + id);
+
+                    this.setState({
+                      id
+                    });
+                  }}
+                  {...detailProps.match.params} 
+                  {...this.state}
+                />
+            } 
+          />
+          <Route path="*" component={NotFound} />
+        </Switch>
+      </BrowserRouter>
+    );
+  }
+}
+
+/*const unlisten = */
 
 ReactDOM.render(
   <Routes />,
