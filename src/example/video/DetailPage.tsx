@@ -195,20 +195,27 @@ class DetailPageApp extends React.Component<{id: string}, {}> {
       this.dataStore.talks,
       (talks: Talk[]) => (
         <MoreLikeThis 
+          title="More Like This:"
           docs={talks} 
           render={
             (talk: Talk) => (
               talk.url_s.indexOf('youtube.com') > 0 ? (
-                <div>
-                  <p>
+                <div style={{height: '140px'}}>
+                  <div style={{float: 'left', width: '50%'}}>
+                    <a 
+                      style={{paddingBottom: '10px', height: '12px'}}
+                      href={'/view/' + talk.id}
+                    >
+                      <img 
+                        height="120px"
+                        src={'http://img.youtube.com/vi/' + ytId(talk.url_s) + '/mqdefault.jpg'} 
+                        alt={talk.title_s}
+                      />
+                    </a>
+                  </div>
+                  <div style={{float: 'right', width: '50%', height: '120px'}}>
                     <b>{talk.title_s}</b>
-                  </p>
-                  <a href={'/view/' + talk.id}>
-                    <img 
-                      src={'http://img.youtube.com/vi/' + ytId(talk.url_s) + '/mqdefault.jpg'} 
-                      alt={talk.title_s}
-                    />
-                  </a>
+                   </div>
                 </div>
               ) : null
             )
