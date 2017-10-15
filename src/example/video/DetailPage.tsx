@@ -231,7 +231,7 @@ class DetailPageApp extends React.Component<{id: string}, {}> {
           initialQuery="" 
           placeholder="Search..."
           onDoSearch={(query: String) => {
-            // do something
+            location.href = 'https://www.findlectures.com/?q=' + query;
           }}
           loading={false}
           sampleSearches={suggestions}
