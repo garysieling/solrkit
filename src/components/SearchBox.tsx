@@ -39,9 +39,7 @@ class SearchBox extends React.Component<SearchBoxProps, SearchBoxState> {
     if (event.keyCode === 13) { 
       this.props.onDoSearch(this.state.query);
       this.setState({shouldBeOpen: false});      
-    }
-
-    if (event.keyCode === 27) { 
+    } else if (event.keyCode === 27) { 
        this.setState({shouldBeOpen: false});
     }
   }
@@ -50,7 +48,7 @@ class SearchBox extends React.Component<SearchBoxProps, SearchBoxState> {
     this.setState(
       {
         query: data.value + '',
-        shouldBeOpen: (data || '').length > 0,
+        shouldBeOpen: (data.value || '').length > 0,
         searchEditedByUser: true
       }
     );
@@ -80,11 +78,14 @@ class SearchBox extends React.Component<SearchBoxProps, SearchBoxState> {
         self.state.query :
         self.props.initialQuery) || '';
 
+    const lc = query.toLowerCase();
     const filteredSearches = take(
       (self.props.sampleSearches || []).filter(
-        (search) => search.indexOf(query.toLowerCase()) === 0
+        (search) => search.indexOf(lc) === 0
       ),
       5
+    ).map(
+      (title) => {return {title}}
     );
 
     return (
@@ -96,7 +97,7 @@ class SearchBox extends React.Component<SearchBoxProps, SearchBoxState> {
         onResultSelect={self.onSelectTypeahead}
         onSearchChange={self.onChangeQuery}
         results={filteredSearches}
-        input={{ fluid: true }}
+        input={{fluid: true}}
         value={query}
         showNoResults={false}
         fluid={true}
