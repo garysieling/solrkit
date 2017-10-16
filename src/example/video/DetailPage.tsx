@@ -174,27 +174,30 @@ class DetailPageApp extends React.Component<DetailAppProps, {}> {
           render={
             (talk: Talk) => (
               talk.url_s.indexOf('youtube.com') > 0 ? (
-                <div style={{height: '140px'}}>
-                  <div style={{float: 'left', width: '50%'}}>
-                    <a 
-                      style={{paddingBottom: '10px', height: '12px'}}
-                      href="#"
-                      onClick={() => this.props.load(talk.id)}
-                    >
-                      <img 
-                        height="120px"
-                        src={'https://img.youtube.com/vi/' + ytId(talk.url_s) + '/mqdefault.jpg'} 
-                        alt={talk.title_s}
-                      />
-                    </a>
-                  </div>
-                  <div 
-                    style={{float: 'right', width: '50%', height: '120px'}}
-                    onClick={() => this.props.load(talk.id)}
-                  >
-                    <b>{talk.title_s}</b>
-                  </div>
-                </div>
+                <table style={{ width: '100%' }}>
+                  <tr>
+                    <td style={{ width: '50%' }}>
+                      <a 
+                        style={{paddingBottom: '10px', height: '12px'}}
+                        href="#"
+                        onClick={() => this.props.load(talk.id)}
+                      >
+                        <img 
+                          style={{ width: '100%' }}
+                          src={'https://img.youtube.com/vi/' + ytId(talk.url_s) + '/mqdefault.jpg'} 
+                          alt={talk.title_s}
+                        />
+                      </a>
+                    </td>
+                    <td>                  
+                      <div
+                        onClick={() => this.props.load(talk.id)}
+                      >
+                        <b>{talk.title_s}</b>
+                      </div>
+                    </td>
+                  </tr>
+                </table>
               ) : null
             )
           }
