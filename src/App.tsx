@@ -2,8 +2,8 @@ import * as React from 'react';
 import * as _ from 'lodash';
 import './App.css';
 
-import { Histogram, HistogramProperties } from './components/Histogram';
-import { Pagination, PaginationProperties } from './components/Pagination';
+import { Histogram, HistogramProperties } from './component/Histogram';
+import { Pagination, PaginationProperties } from './component/Pagination';
 
 import { sampleResults, sampleHistogramData } from './editor/SampleData';
 

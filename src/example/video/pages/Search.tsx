@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { ResultsLayout } from 'layout/ResultsLayout';
+import { ResultsLayout } from '../../../layout/ResultsLayout';
 
 class Search<T extends object> extends React.Component<{}, {data: T[]}> {
   constructor() {

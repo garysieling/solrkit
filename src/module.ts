@@ -6,8 +6,8 @@ const context = {
   DataStore
 };
 
-import * as MoreLikeThis from './components/MoreLikeThis';
-import * as SearchBox from './components/MoreLikeThis';
+import * as MoreLikeThis from './component/MoreLikeThis';
+import * as SearchBox from './component/MoreLikeThis';
 
 const components = {
   MoreLikeThis,

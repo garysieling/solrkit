@@ -1,9 +1,9 @@
 import * as React from 'react';
-import { DetailLayout } from 'layout/DetailLayout';
-import { MoreLikeThis } from 'component/MoreLikeThis';
-import { SearchBox } from 'component/SearchBox';
-import { DataStore, SolrCore, SolrGet, SolrMoreLikeThis, SolrQuery } from 'context/DataStore';
-import { databind } from 'context/DataBinding';
+import { DetailLayout } from '../../layout/DetailLayout';
+import { MoreLikeThis } from '../../component/MoreLikeThis';
+import { SearchBox } from '../../component/SearchBox';
+import { DataStore, SolrCore, SolrGet, SolrMoreLikeThis, SolrQuery } from '../../context/DataStore';
+import { databind } from '../../context/DataBinding';
 
 interface Talk {
   id: string;
