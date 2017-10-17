@@ -101,7 +101,7 @@
     ],
     "globals": {
       "ts-jest": {
-        "tsConfigFile": "D:\\projects\\solrkit\\tsconfig.test.json"
+        "tsConfigFile": "tsconfig.test.json"
       }
     }
   },
