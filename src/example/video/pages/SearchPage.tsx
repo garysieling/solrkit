@@ -6,6 +6,7 @@ import { Pagination } from '../../../component/Pagination';
 import { databind } from '../../../context/DataBinding';
 import { suggestions } from './talks/suggestions';
 import { PaginationData } from '../../../context/DataStore';
+import { CheckFacet } from '../../../component/CheckFacet';
 import { TalkSearchDataStore } from './talks/TalkSearchDataStore';
 import { Talk } from './talks/Talk';
 
@@ -27,14 +28,9 @@ class SearchPageApp extends React.Component<DetailAppProps, {}> {
 
     this.left = () => (
       <div>
-        sidebar
+        <CheckFacet values={['Audio', 'Video']} />
       </div>
     );
-    /*databind(
-      dataStore.talks.onGet,
-      dataStore.talks,
-      (talk: Talk) => (<VideoPlayer {...talk} />)
-    );*/
 
     this.right = databind(
       dataStore.talks.onQuery,
