@@ -43,9 +43,13 @@ class SolrQueryBuilder<T> {
     );
   }
 
-  q(field: String, value: String) {
+  q(search: {field: string, value: string}[]) {
     return new SolrQueryBuilder<T>(
-      () => 'q=' + escape(field) + ':' + escape(value),
+      () => 'q=' +
+        search.map(
+          (fieldQuery) => escape(fieldQuery.field) + ':' + escape(fieldQuery.value)
+        ).join('%20OR%20')
+      ,
       this
     );
   }
@@ -122,8 +126,7 @@ interface SolrMoreLikeThis<T> {
 
 // TODO - this needs a lot more definition to be useful
 interface GenericSolrQuery {
-  field: string;
-  value: string;
+  query: { field: string; value: string }[];
   rows?: number;
 }
 
@@ -302,11 +305,10 @@ class SolrCore<T> {
   doQuery(query: GenericSolrQuery) {
     const self = this;
     const callback = 'cb_' + this.requestId++;
-
+console.log(query.query);
     const qb = 
       new SolrQueryBuilder(() => '').q(
-        query.field,
-        query.value
+        query.query
       ).fl(this.solrConfig.fields).jsonp(
         callback
       ).rows(

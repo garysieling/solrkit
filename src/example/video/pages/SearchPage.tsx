@@ -5,7 +5,7 @@ import { SearchBox } from '../../../component/SearchBox';
 import { Pagination } from '../../../component/Pagination';
 import { databind } from '../../../context/DataBinding';
 import { suggestions } from './talks/suggestions';
-import { PaginationData} from '../../../context/DataStore';
+import { PaginationData } from '../../../context/DataStore';
 import { TalkSearchDataStore } from './talks/TalkSearchDataStore';
 import { Talk } from './talks/Talk';
 
@@ -55,14 +55,20 @@ class SearchPageApp extends React.Component<DetailAppProps, {}> {
     );
 
     this.header = databind(
-      dataStore.talks.onMoreLikeThis,
+      dataStore.talks.onQuery,
       dataStore.talks,
-      (talk: Talk) => (
+      (talks: Talk[], pagination: PaginationData) => (
         <SearchBox 
           initialQuery="" 
           placeholder="Search..."
           onDoSearch={(query: string) => {
-            dataStore.talks.doQuery({field: 'title_s', value: query});
+            dataStore.talks.doQuery({
+              rows: 10,
+              query: [
+                {field: 'title_s', value: query},
+                {field: 'auto_transcript_txt_en', value: query}
+              ]
+            });
           }}
           loading={false}
           sampleSearches={suggestions}
@@ -83,7 +89,13 @@ class SearchPageApp extends React.Component<DetailAppProps, {}> {
   }
 
   init() {
-    dataStore.talks.doQuery({field: '*', value: '*'});
+    dataStore.talks.doQuery({
+      rows: 10,
+      query: [{
+        field: '*', 
+        value: '*'
+      }]
+    });
   }
 
   componentWillReceiveProps() {
