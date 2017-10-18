@@ -3,12 +3,12 @@ import * as ReactDOM from 'react-dom';
 import './index.css';
 
 import { NotFound } from './pages/NotFound';
-import { Search } from './pages/Search';
+import { SearchPageApp } from './pages/SearchPage';
 
 import { Route } from 'react-router';
 import { BrowserRouter, Switch } from 'react-router-dom';
 
-import { DetailPageApp } from './DetailPage';
+import { DetailPageApp } from './pages/DetailPage';
 
 interface RouterProps {
   history: object;
@@ -67,7 +67,7 @@ class Routes extends React.Component<{}, {}> {
     return (
       <BrowserRouter>
         <Switch>
-          <Route exact={true} path="/" component={Search} />
+          <Route exact={true} path="/" component={SearchPageApp} />
           <Route 
             path="/view/:id" 
             component={DetailComponent} 

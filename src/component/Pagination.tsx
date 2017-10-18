@@ -4,8 +4,9 @@ import * as _ from 'lodash';
 import 'semantic-ui-css/semantic.min.css';
 
 interface PaginationProps {
-  data: object[];
+  numRows: number;
   pageSize: number;
+  start: number;
 }
 
 interface PaginationState {
@@ -30,10 +31,6 @@ const PaginationProperties = [
 class Pagination extends React.Component<PaginationProps, PaginationState> {
   constructor() {
     super();
-
-    this.state = {
-      activePage: 1
-    };
   }
 
   handlePaging(idx: number) {    
@@ -44,10 +41,11 @@ class Pagination extends React.Component<PaginationProps, PaginationState> {
 
   render() {
     const self = this;
-    let { activePage } = self.state;
-    let { pageSize } = self.props || 10;
-
-    const maxPage = Math.ceil(this.props.data.length / pageSize);
+    const pageSize = self.props.pageSize || 10;
+    const numRows = self.props.numRows || 0;
+    let activePage = 1 + self.props.start / pageSize;
+       
+    const maxPage = Math.ceil(numRows / pageSize);
     if (maxPage < activePage) {
       activePage = maxPage;
     }
@@ -68,7 +66,7 @@ class Pagination extends React.Component<PaginationProps, PaginationState> {
       pages.unshift(1);
     }
 
-    if (pages[pages.length] < maxPage) {
+    if (pages[pages.length - 1] < maxPage) {
       pages.push(-1);
       pages.push(maxPage);
     }
@@ -78,7 +76,7 @@ class Pagination extends React.Component<PaginationProps, PaginationState> {
         (idx: number) => 
           idx === -1 ? 
           (
-            <Menu.Item ey={idx} disabled={true}>...</Menu.Item>
+            <Menu.Item key={idx} disabled={true}>...</Menu.Item>
           ) : (
             <Menu.Item
               key={idx}

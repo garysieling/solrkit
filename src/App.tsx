@@ -5,7 +5,7 @@ import './App.css';
 import { Histogram, HistogramProperties } from './component/Histogram';
 import { Pagination, PaginationProperties } from './component/Pagination';
 
-import { sampleResults, sampleHistogramData } from './editor/SampleData';
+import { sampleHistogramData } from './editor/SampleData';
 
 import Properties from './editor/Properties';
 
@@ -25,7 +25,8 @@ class App extends React.Component<{}, {}> {
       <div>
         <Properties properties={PaginationProperties} name="Pagination" >
           <Pagination 
-            data={sampleResults} 
+            numRows={100}
+            start={2}
             pageSize={10} 
           />
         </Properties>        

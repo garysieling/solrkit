@@ -1,6 +1,4 @@
-import {
-  Immutable
-} from 'seamless-immutable';
+import Immutable from 'seamless-immutable';
 
 import {
   SolrResponse
@@ -65,6 +63,13 @@ class SolrQueryBuilder<T> {
       this
     );
   }
+
+  rows(rows: number) {
+    return new SolrQueryBuilder<T>(
+      () => 'rows=' + rows,
+      this
+    );
+  }
   
   sort(fields: string[]) {
     return new SolrQueryBuilder<T>(
@@ -89,7 +94,13 @@ class SolrQueryBuilder<T> {
   }
 }
 
-type QueryEvent<T> = (response: SolrResponse<T>) => void;
+interface PaginationData {
+  numFound: number;
+  start: number;
+  pageSize: number;
+}
+
+type QueryEvent<T> = (object: T[], paging: PaginationData) => void;
 type ErrorEvent = (error: object) => void;
 type GetEvent<T> = (object: T) => void;
 type MoreLikeThisEvent<T> = (object: T[]) => void;
@@ -113,6 +124,7 @@ interface SolrMoreLikeThis<T> {
 interface GenericSolrQuery {
   field: string;
   value: string;
+  rows?: number;
 }
 
 interface SolrConfig {
@@ -125,7 +137,7 @@ interface SolrConfig {
 class SolrCore<T> {
   solrConfig: SolrConfig;
   private events: {
-    select: QueryEvent<T>[],
+    query: QueryEvent<T>[],
     error: ErrorEvent[],
     get: GetEvent<T>[],
     mlt: MoreLikeThisEvent<T>[],
@@ -145,7 +157,7 @@ class SolrCore<T> {
 
   clearEvents() {
     this.events = {
-      select: [],
+      query: [],
       error: [],
       get: [],
       mlt: []
@@ -161,7 +173,7 @@ class SolrCore<T> {
   }
 
   onQuery(op: QueryEvent<T>) {
-    this.events.select.push(op);
+    this.events.query.push(op);
   }
 
   onError(op: ErrorEvent) {
@@ -199,7 +211,7 @@ class SolrCore<T> {
               if (prefetch) {
                 self.events.mlt.map(
                   (event) => {
-                    event(mlt);
+                    event(Immutable(mlt));
                   }
                 );
 
@@ -231,7 +243,7 @@ class SolrCore<T> {
     } else {
       self.events.mlt.map(
         (event) => {
-          event(this.mltCache[id]);
+          event(Immutable(this.mltCache[id]));
         }
       );
     }     
@@ -266,7 +278,7 @@ class SolrCore<T> {
           data.json().then( 
             (responseData) => {
               self.events.get.map(
-                (event) => event(responseData.doc)
+                (event) => event(Immutable(responseData.doc))
               );
 
               this.getCache[id] = responseData.doc;
@@ -282,12 +294,11 @@ class SolrCore<T> {
       );    
     } else {
       self.events.get.map(
-        (event) => event(this.getCache[id])
+        (event) => event(Immutable(this.getCache[id]))
       );
     }
   } 
 
-  // TODO - this thing needs a lot more definition to be useful
   doQuery(query: GenericSolrQuery) {
     const self = this;
     const callback = 'cb_' + this.requestId++;
@@ -298,19 +309,29 @@ class SolrCore<T> {
         query.value
       ).fl(this.solrConfig.fields).jsonp(
         callback
+      ).rows(
+        query.rows || 10
       );
 
-    const url = this.solrConfig.url + this.solrConfig.core + '/' + qb.build();
+    const url = this.solrConfig.url + this.solrConfig.core + '/select?' + qb.build();
 
     fetchJsonp(url, {
       jsonpCallbackFunction: callback
     }).then(
       (data) => {
         data.json().then( 
-          (responseData) => {
-            self.events.get.map(
-              (event) => event(responseData.doc)
-            );
+          (responseData) => {           
+            self.events.query.map(
+              (event) => 
+                event(
+                  Immutable(responseData.response.docs),
+                  Immutable({
+                    numFound: responseData.response.numFound,
+                    start: responseData.response.start,
+                    pageSize: query.rows || 10
+                  })
+                )
+              );
           }
         ).catch(
           (error) => {
@@ -324,24 +345,27 @@ class SolrCore<T> {
   }
 
   next(op: (event: SolrQueryBuilder<T>) => SolrQueryBuilder<T>) {
+    const self = this;
+
     const qb = 
       op(
         new SolrQueryBuilder<T>(() => '')
-      ).fl(this.solrConfig.fields);
+      ).fl(self.solrConfig.fields);
 
-    const url = this.solrConfig.url + this.solrConfig.core + '/select?' + qb.build();
+    const url = self.solrConfig.url + self.solrConfig.core + '/select?' + qb.build();
+
     fetchJsonp(url).then(
       (data) => {
         data.json().catch(
           (error) => {
-          this.events.error.map(
+          self.events.error.map(
             (event) => event(error)
           );
           }
         ).then( 
           (responseData) => {
-            this.events.get.map(
-              (event) => event(Immutable(responseData).doc)
+            self.events.get.map(
+              (event) => event(Immutable(responseData.response.docs))
             );
           }
         );
@@ -392,5 +416,6 @@ export {
   SolrCore, 
   SolrGet, 
   SolrMoreLikeThis, 
-  SolrQuery
+  SolrQuery,
+  PaginationData
 };
