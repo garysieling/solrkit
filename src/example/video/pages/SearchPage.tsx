@@ -64,10 +64,7 @@ class SearchPageApp extends React.Component<DetailAppProps, {}> {
           onDoSearch={(query: string) => {
             dataStore.talks.doQuery({
               rows: 10,
-              query: [
-                {field: 'title_s', value: query},
-                {field: 'auto_transcript_txt_en', value: query}
-              ]
+              query
             });
           }}
           loading={false}
@@ -91,10 +88,7 @@ class SearchPageApp extends React.Component<DetailAppProps, {}> {
   init() {
     dataStore.talks.doQuery({
       rows: 10,
-      query: [{
-        field: '*', 
-        value: '*'
-      }]
+      query: '*'
     });
   }
 

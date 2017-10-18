@@ -32,6 +32,7 @@ class TalkSearchDataStore extends DataStore {
         // since there is no apparent way to sync
         // this with Typescript
         fields: ['title_s', 'url_s', 'id'],
+        defaultSearchFields: ['title_s', 'auto_transcript_txt_en']
       });
     }
 
