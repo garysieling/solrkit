@@ -6,8 +6,13 @@ import { Pagination } from '../../../component/Pagination';
 import { databind } from '../../../context/DataBinding';
 import { suggestions } from './talks/suggestions';
 import { PaginationData } from '../../../context/DataStore';
-import { CheckFacet } from '../../../component/CheckFacet';
+import { CheckFacet } from '../../../component/facet/CheckFacet';
+import { RadioFacet } from '../../../component/facet/RadioFacet';
 import { TalkSearchDataStore } from './talks/TalkSearchDataStore';
+import { ToggleFacet } from '../../../component/facet/ToggleFacet';
+import { DropdownFacet } from '../../../component/facet/DropdownFacet';
+import { TagFacet } from '../../../component/facet/TagFacet';
+
 import { Talk } from './talks/Talk';
 
 interface DetailAppProps {
@@ -28,7 +33,11 @@ class SearchPageApp extends React.Component<DetailAppProps, {}> {
 
     this.left = () => (
       <div>
-        <CheckFacet values={['Audio', 'Video']} />
+        <CheckFacet title="Test 1" values={['Audio', 'Video']} />
+        <RadioFacet title="Test 2" values={['Audio', 'Video']} />
+        <ToggleFacet title="Test 2" values={['Audio', 'Video']} />
+        <DropdownFacet title="Test 2" name="test" values={['Audio', 'Video']} />
+        <TagFacet title="Test 2" name="test" values={['Audio', 'Video']} />        
       </div>
     );
 

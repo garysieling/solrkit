@@ -2,7 +2,7 @@ import * as React from 'react';
 import * as _ from 'lodash';
 import './App.css';
 
-import { Histogram, HistogramProperties } from './component/Histogram';
+import { Histogram, HistogramProperties } from './component/facet/Histogram';
 import { Pagination, PaginationProperties } from './component/Pagination';
 
 import { sampleHistogramData } from './editor/SampleData';
