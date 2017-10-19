@@ -12,6 +12,7 @@ import { TalkSearchDataStore } from './talks/TalkSearchDataStore';
 import { ToggleFacet } from '../../../component/facet/ToggleFacet';
 import { DropdownFacet } from '../../../component/facet/DropdownFacet';
 import { TagFacet } from '../../../component/facet/TagFacet';
+import { SingleNumber } from '../../../component/statistics/SingleNumber';
 
 import { Talk } from './talks/Talk';
 
@@ -27,6 +28,7 @@ class SearchPageApp extends React.Component<DetailAppProps, {}> {
   private right: () => JSX.Element;
   private header: () => JSX.Element;
   private footer: () => JSX.Element;
+  private rightRail: () => JSX.Element;
 
   constructor() {
     super();
@@ -41,9 +43,14 @@ class SearchPageApp extends React.Component<DetailAppProps, {}> {
       </div>
     );
 
-    this.right = databind(
-      dataStore.talks.onQuery,
-      dataStore.talks,
+    const databindTalksQuery = 
+      (fn: ((talks: Talk[], pagination: PaginationData) => JSX.Element)) => 
+        databind(
+          dataStore.talks.onQuery,
+          dataStore.talks,
+          fn);
+
+    this.right = databindTalksQuery(
       (talks: Talk[], pagination: PaginationData) => {
         return (
           <ResultsList 
@@ -59,9 +66,7 @@ class SearchPageApp extends React.Component<DetailAppProps, {}> {
       }
     );
 
-    this.header = databind(
-      dataStore.talks.onQuery,
-      dataStore.talks,
+    this.header = databindTalksQuery(
       (talks: Talk[], pagination: PaginationData) => (
         <SearchBox 
           initialQuery="" 
@@ -78,15 +83,19 @@ class SearchPageApp extends React.Component<DetailAppProps, {}> {
       )
     );
     
-    this.footer = databind(
-      dataStore.talks.onQuery,
-      dataStore.talks,
+    this.footer = databindTalksQuery(
       (talks: Talk[], pagination: PaginationData) => (
         <Pagination
           numRows={pagination.numFound}
           start={pagination.start}
           pageSize={pagination.pageSize}
         />)
+    );
+
+    this.rightRail = databindTalksQuery(
+      (talks: Talk[], pagination: PaginationData) => (
+        <SingleNumber value={pagination.numFound} label="Talks" />
+      )
     );
   }
 
@@ -116,6 +125,7 @@ class SearchPageApp extends React.Component<DetailAppProps, {}> {
         rightComponent={this.right}
         headerComponent={this.header}
         footerComponent={this.footer}
+        rightRailComponent={this.rightRail}
       />
     );
   }

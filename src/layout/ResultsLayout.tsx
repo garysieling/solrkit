@@ -5,6 +5,7 @@ interface ResultsLayoutProps {
   rightComponent?: () => JSX.Element;
   headerComponent?: () => JSX.Element;
   footerComponent?: () => JSX.Element;
+  rightRailComponent?: () => JSX.Element;
 }
 
 class ResultsLayout extends React.Component<ResultsLayoutProps, {}> {
@@ -33,6 +34,20 @@ class ResultsLayout extends React.Component<ResultsLayoutProps, {}> {
         this.props.footerComponent()
       ) : null;
 
+    const rightRailComponent = 
+      this.props.rightRailComponent ? (
+        <div className="two wide column">
+          <div className="container">
+            {this.props.rightRailComponent()}
+          </div>
+        </div>
+      ) : null;
+
+    const rightColumns =
+      rightRailComponent ? 
+        'ten wide column' :
+        'twelve wide column';
+
     return (
       <div className="ui segments">
         <div className="ui segment">
@@ -45,11 +60,12 @@ class ResultsLayout extends React.Component<ResultsLayoutProps, {}> {
                 {leftComponent}
               </div>
             </div>
-            <div className="twelve wide column">
+            <div className={rightColumns}>
               <div className="container">
                 {rightComponent}
               </div>
             </div>
+            {rightRailComponent}
             <div className="four wide column" />
             <div className="ten wide column">
               {footerComponent}
