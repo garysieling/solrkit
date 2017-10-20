@@ -24,15 +24,12 @@ interface SearchParams {
   type?: 'QUERY' | 'MLT' | 'DETAILS';
   query?: string;
   start?: number;
+  facets?: { [ key: string ]: string[] };
 }
 
 type QueryParam = string | number;
 type NamespacedUrlParam = [UrlParams, QueryParam];
-type UrlFragment = [UrlParams | NamespacedUrlParam, QueryParam] | null; // k, v
-
-function namespaceUrlParam(param: UrlParams, nsValue: QueryParam): NamespacedUrlParam {
-  return [param, nsValue];
-}
+type UrlFragment = [UrlParams | NamespacedUrlParam, QueryParam | [string, QueryParam[]]] | null; // k, v
 
 class QueryBeingBuilt {
   solrUrlFragment: string;
@@ -119,13 +116,14 @@ class SolrQueryBuilder<T> {
     );
   }
 
-  fq(field: string, value: QueryParam) {
+  fq(field: string, values: QueryParam[]) {
     return new SolrQueryBuilder<T>(
-      () => 
-        new QueryBeingBuilt(
-          'fq=' + escape(field) + ':' + escape(value),
-          [namespaceUrlParam(UrlParams.FQ, field), value]
-        ),
+      () => {
+        return new QueryBeingBuilt(
+          'fq=' + escape(field) + ':' + values.map(escape).join('%20OR%20'),
+          [UrlParams.FQ, [field, values]]
+        );
+      },
       this
     );
   }
@@ -176,7 +174,7 @@ class SolrQueryBuilder<T> {
           // add(field1, mul(field2, field3)) and you don't want to expose the
           // internals to external search engines, or they'll index the site in
           // a way that would make this hard to change
-          null 
+          null
         ),
       this
     );
@@ -210,7 +208,19 @@ class SolrQueryBuilder<T> {
     result.map(
       (p: UrlFragment) => {
         if (p !== null) {
-          searchParams[p[0] as string] = p[1];
+          if (p[0] === UrlParams.FQ) {
+            console.log('found facet', p);
+            const facet = p[1][0];
+            const values = p[1][1];
+
+            if (!searchParams.facets) {
+              searchParams.facets = {};
+            }
+
+            searchParams.facets[facet] = values;
+          } else {
+            searchParams[p[0] as string] = p[1];
+          }
         }
       }
     );
@@ -478,7 +488,7 @@ class SolrCore<T> implements SolrTransitions {
         qb = qb.requestFacet(k);
       }
     );
-
+    
     if (cb) {
      qb = cb(qb); 
     }
@@ -582,9 +592,21 @@ class SolrCore<T> implements SolrTransitions {
           query: newState.query || '*'
         }, 
         (qb: SolrQueryBuilder<{}>) => {
-          return qb.start(
+          let response = qb.start(
             newState.start || 0
           );
+
+          _.map(
+            newState.facets,
+            (values: string[], k: string) => {
+              response =
+                response.fq(
+                  k, values
+                );
+            }
+          );
+
+          return response;
         }
       );
     } else {

@@ -1,6 +1,7 @@
 import { PaginationData, SearchParams, SolrCore, SolrMoreLikeThis, SolrGet, SolrTransitions } from './DataStore';
 import * as React from 'react';
 import { PropTypes } from 'react';
+import * as _ from 'lodash';
 
 type RenderLambda<T> = 
   (v: T | T[], p?: PaginationData) => JSX.Element;
@@ -51,7 +52,6 @@ class DataBound<T> extends React.Component<DataBoundProps<T>, DataBoundState<T>>
     };
 
     // This needs to happen early
-    console.log(props.fn);
     props.fn.call(
       props.dataStore,
       (data: T | T[], paging: PaginationData) => {
@@ -64,17 +64,33 @@ class DataBound<T> extends React.Component<DataBoundProps<T>, DataBoundState<T>>
   }
 
   transition(args: SearchParams) {
+    const currentParams = this.props.dataStore.getCurrentParameters();
     const newParams: SearchParams = Object.assign(
       {},
-      this.props.dataStore.getCurrentParameters(),
+      currentParams,
       args      
     );
 
+    if (args.facets) {
+      newParams.facets = Object.assign({}, currentParams.facets, args.facets);      
+    }
+
+    console.log(newParams);
+
     // TODO - should handle different classes of route
     const page: number = (newParams.start || 0) / 10 + 1;
+
+    let facets = '';
+    if (newParams.facets) {
+      facets = '?' + _.map(
+        newParams.facets,
+        (k, v) => v + '=' + k
+      ).join('&');
+    }
+    
     this.context.router.history.push(
       '/search/' + newParams.query + '/' + 
-      page
+      page + facets
     );
 
     this.props.dataStore.stateTransition(newParams);

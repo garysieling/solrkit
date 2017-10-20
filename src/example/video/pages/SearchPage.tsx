@@ -45,26 +45,31 @@ class SearchPageApp extends React.Component<SearchPageProps, {}> {
             <CheckFacet 
               title="Features" 
               values={data}
+              facet="features_ss"
               render={(label: string, value: number) => label + ': ' + value.toLocaleString()}
             />
 
             <DropdownFacet 
               title="Features" 
+              facet="features_ss"
               values={data}
             />
 
             <RadioFacet 
               title="Features" 
+              facet="features_ss"
               values={data}
             />
 
             <ToggleFacet
               title="Features" 
+              facet="features_ss"
               values={data}
             />
 
             <TagFacet 
               title="Features" 
+              facet="features_ss"
               values={data}
             />
           </div>

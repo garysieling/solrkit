@@ -8,6 +8,7 @@ function defaultRenderer(value: string, count: number): string {
 
 interface FacetProps {
   title?: string;
+  facet: string;
   values: FacetValue[];
   render?: FacetRenderer;
 }
