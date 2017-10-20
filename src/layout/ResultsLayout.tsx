@@ -55,7 +55,7 @@ class ResultsLayout extends React.Component<ResultsLayoutProps, {}> {
         </div>
         <div className="main ui segment">
           <div className="ui grid">
-            <div className="four wide column">
+            <div className="three wide column">
               <div className="container">
                 {leftComponent}
               </div>
@@ -66,7 +66,7 @@ class ResultsLayout extends React.Component<ResultsLayoutProps, {}> {
               </div>
             </div>
             {rightRailComponent}
-            <div className="four wide column" />
+            <div className="three wide column" />
             <div className="ten wide column">
               {footerComponent}
             </div>

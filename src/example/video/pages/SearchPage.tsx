@@ -99,10 +99,10 @@ class SearchPageApp extends React.Component<SearchPageProps, {}> {
     this.header = databindTalksQuery(
       (talks: Talk[], pagination: PaginationData) => (
         <div className="ui grid">
-          <div className="one wide column">
-            <SingleNumber value={pagination.numFound} label="Talks" />
+          <div className="three wide column">
+            <SingleNumber horizontal={true} value={pagination.numFound} label="Talks" />
           </div>
-          <div className="fifteen wide column">
+          <div className="thirteen wide column">
             <SearchBox 
               placeholder="Search..."
               loading={false}
