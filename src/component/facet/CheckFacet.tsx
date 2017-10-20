@@ -27,7 +27,7 @@ class CheckFacet extends React.Component<FacetProps, {}> {
       const thisFacet = {};
       thisFacet[this.props.facet] = selections;
       console.log(thisFacet);
-      
+
       this.context.transition(
         {facets: thisFacet}
       );
@@ -43,10 +43,10 @@ class CheckFacet extends React.Component<FacetProps, {}> {
         {title ? (<h4>{title}</h4>) : null}
         {
           this.props.values.map(
-            ([value, count], i) => (
+            ([value, count, checked], i) => (
               <div style={{display: 'block'}} >
                 <div className="ui checkbox">
-                  <input onClick={this.onClick(value)} type="checkbox" name={i + ''} />
+                  <input onClick={this.onClick(value)} checked={checked} type="checkbox" name={i + ''} />
                   <label onClick={this.onClick(value)}>{render(value, count)}</label>
                 </div>
               </div>

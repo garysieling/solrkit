@@ -144,8 +144,8 @@ class SolrQueryBuilder<T> {
       () => 
         new QueryBeingBuilt(
           `facet.field={!ex=${field}_q}${field}&` + 
-          `facet.${field}.mincount=1` +
-          `facet.${field}.limit=50` +
+          `facet.mincount=1&` +
+          `facet.${field}.limit=50&` +
           `facet.${field}.sort=count`,
           null
         ),
@@ -240,7 +240,7 @@ interface PaginationData {
 }
 
 type QueryEvent<T> = (object: T[], paging: PaginationData) => void;
-type FacetEvent = (object: [string, number][]) => void;
+type FacetEvent = (object: [string, number, boolean][]) => void;
 type ErrorEvent = (error: object) => void;
 type GetEvent<T> = (object: T) => void;
 type MoreLikeThisEvent<T> = (object: T[]) => void;
@@ -527,12 +527,17 @@ class SolrCore<T> implements SolrTransitions {
                   self.events.facet,
                   (events, k) => {
                     if (facetFields[k]) {
+                      const previousValues = (this.currentParameters.facets || {})[k];
+
                       const facetLabels = facetFields[k].filter( (v, i) => i % 2 === 0 );
                       const facetLabelCount = facetFields[k].filter( (v, i) => i % 2 === 1 );
+                      const facetSelections = facetLabels.map(
+                        (value) => _.includes(previousValues, value)
+                      );
 
                       events.map(
                         (event) => {
-                          event(_.zipWith(facetLabels, facetLabelCount));
+                          event(_.zipWith(facetLabels, facetLabelCount, facetSelections));
                         }
                       );
                     }

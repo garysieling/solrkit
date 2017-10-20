@@ -1,5 +1,5 @@
 
-type FacetValue = [string, number];
+type FacetValue = [string, number, boolean];
 type FacetRenderer = (v: string, count: number) => string;
 
 function defaultRenderer(value: string, count: number): string {

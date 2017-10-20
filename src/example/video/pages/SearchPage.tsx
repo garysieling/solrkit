@@ -37,7 +37,7 @@ class SearchPageApp extends React.Component<SearchPageProps, {}> {
       databind(
         dataStore.talks.registerFacet('features_ss'),
         dataStore.talks,
-        (data: [string, number][]) => (
+        (data: [string, number, boolean][]) => (
           <div>
             <CheckFacet 
               title="Features" 
