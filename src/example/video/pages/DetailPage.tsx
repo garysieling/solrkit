@@ -101,11 +101,7 @@ class DetailPageApp extends React.Component<DetailAppProps, {}> {
       dataStore.talks,
       (talk: Talk) => (
         <SearchBox 
-          initialQuery="" 
           placeholder="Search..."
-          onDoSearch={(query: String) => {
-            location.href = 'https://www.findlectures.com/?q=' + query;
-          }}
           loading={false}
           sampleSearches={suggestions}
         />

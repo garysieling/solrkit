@@ -22,6 +22,8 @@ interface SearchPageProps {
 const dataStore: TalkSearchDataStore = new TalkSearchDataStore();
 
 class SearchPageApp extends React.Component<SearchPageProps, {}> {
+  static dataStore = dataStore;
+
   private left: () => JSX.Element;
   private right: () => JSX.Element;
   private header: () => JSX.Element;
@@ -67,14 +69,7 @@ class SearchPageApp extends React.Component<SearchPageProps, {}> {
     this.header = databindTalksQuery(
       (talks: Talk[], pagination: PaginationData) => (
         <SearchBox 
-          initialQuery="" 
           placeholder="Search..."
-          onDoSearch={(query: string) => {
-            dataStore.talks.doQuery({
-              rows: 10,
-              query
-            });
-          }}
           loading={false}
           sampleSearches={suggestions}
         />
@@ -95,25 +90,6 @@ class SearchPageApp extends React.Component<SearchPageProps, {}> {
         <SingleNumber value={pagination.numFound} label="Talks" />
       )
     );
-  }
-
-  init() {
-    dataStore.talks.doQuery({
-      rows: 10,
-      query: '*'
-    });
-  }
-
-  componentWillReceiveProps() {
-    this.init();
-  }
-
-  componentDidMount() {
-    this.init();
-  }
-
-  componentWillUnmount() {
-    dataStore.clearEvents();
   }
 
   render() { 

@@ -1,12 +1,11 @@
 import * as React from 'react';
+import { PropTypes } from 'react';
 
 import { Search, SearchResultData, SearchProps } from 'semantic-ui-react';
 import { take } from 'lodash';
 
 interface SearchBoxProps {
-  initialQuery: string;
   placeholder: string;
-  onDoSearch: (query: string) => void;
   loading: boolean;
   sampleSearches: string[];
 }
@@ -18,6 +17,10 @@ interface SearchBoxState {
 }
 
 class SearchBox extends React.Component<SearchBoxProps, SearchBoxState> {
+  static contextTypes = {
+    router: PropTypes.object
+  };
+
   state = {
     query: '',
     shouldBeOpen: false,
@@ -32,12 +35,12 @@ class SearchBox extends React.Component<SearchBoxProps, SearchBoxState> {
     this.onChangeQuery = this.onChangeQuery.bind(this);
     this.onSelectTypeahead = this.onSelectTypeahead.bind(this);
   }
-  
+
   onKeyUp(event: React.KeyboardEvent<object>) {
     event.preventDefault(); 
 
     if (event.keyCode === 13) { 
-      this.props.onDoSearch(this.state.query);
+      this.onDoSearch(this.state.query);
       this.setState({shouldBeOpen: false});      
     } else if (event.keyCode === 27) { 
        this.setState({shouldBeOpen: false});
@@ -63,7 +66,11 @@ class SearchBox extends React.Component<SearchBoxProps, SearchBoxState> {
       }
     );
 
-    this.props.onDoSearch(data + '');
+    this.onDoSearch(data + '');
+  }
+
+  onDoSearch(value: string) {
+    this.context.router.history.push('/search/' + value + '/1');
   }
 
   onBlur() {
@@ -76,7 +83,7 @@ class SearchBox extends React.Component<SearchBoxProps, SearchBoxState> {
     const query = 
       (self.state.searchEditedByUser ? 
         self.state.query :
-        self.props.initialQuery) || '';
+        '' /*self.props.initialQuery*/) || '';
 
     const lc = query.toLowerCase();
     const filteredSearches = take(

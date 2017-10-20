@@ -75,6 +75,13 @@ class SolrQueryBuilder<T> {
       this
     );
   }
+  
+  start(start: number) {
+    return new SolrQueryBuilder<T>(
+      () => new QueryBeingBuilt('start=' + start, null),
+      this
+    );
+  }
 
   jsonp(callback: string) {
     return new SolrQueryBuilder<T>(
@@ -197,6 +204,10 @@ interface SolrMoreLikeThis<T> {
   onMoreLikeThis: (cb: MoreLikeThisEvent<T>) => void;
 }
 
+interface SolrTransitions {
+  getTransitions: () => object;
+}
+
 // TODO - this needs a lot more definition to be useful
 interface GenericSolrQuery {
   query: string;
@@ -211,7 +222,7 @@ interface SolrConfig {
   fields: string[];
 }
 
-class SolrCore<T> {
+class SolrCore<T> implements SolrTransitions {
   solrConfig: SolrConfig;
   private events: {
     query: QueryEvent<T>[],
@@ -378,21 +389,27 @@ class SolrCore<T> {
     }
   } 
 
-  doQuery(query: GenericSolrQuery) {
+  doQuery(query: GenericSolrQuery, cb?: (qb: SolrQueryBuilder<{}>) => SolrQueryBuilder<{}>)  {
     const self = this;
     const callback = 'cb_' + this.requestId++;
 
-    const qb = 
+    let qb = 
       new SolrQueryBuilder(
         () => new QueryBeingBuilt('', null),
       ).q(
         this.solrConfig.defaultSearchFields,
         query.query
-      ).fl(this.solrConfig.fields).jsonp(
-        callback
-      ).rows(
+      ).fl(this.solrConfig.fields).rows(
         query.rows || 10
       );
+    
+    if (cb) {
+     qb = cb(qb); 
+    }
+      
+    qb = qb.jsonp(
+      callback
+    );
 
     const url = this.solrConfig.url + this.solrConfig.core + '/select?' + qb.buildSolrUrl();
 
@@ -455,6 +472,17 @@ class SolrCore<T> {
       }
     );    
   }
+
+  getTransitions() {
+    return {
+      page: (pageNumber: number) => {
+        return '/';
+      },
+      query: (query: string) => {
+        return '';
+      }
+    };
+  }
 }
 
 // TODO: I want a way to auto-generate these from Solr management APIs
@@ -462,7 +490,7 @@ class SolrCore<T> {
 //       auto-registered version can be used to bind controls through
 //       a properties picker UI
 class DataStore {
-  cores: { [ keys: string ]: object } = {};
+  cores: { [ keys: string ]: SolrCore<object> } = {};
 
   clearEvents() {
     _.map(
@@ -471,7 +499,7 @@ class DataStore {
     );
   }
 
-  registerCore<T>(config: SolrConfig): SolrCore<T> {
+  registerCore<T extends object>(config: SolrConfig): SolrCore<T> {
     // Check if this exists - Solr URL + core should be enough
     let key = config.url;
     
@@ -486,7 +514,7 @@ class DataStore {
     }
 
     return (this.cores[key] as SolrCore<T>);
-  }
+  }  
 }
 
 type SingleComponent<T> =
@@ -500,5 +528,6 @@ export {
   SolrGet, 
   SolrMoreLikeThis, 
   SolrQuery,
-  PaginationData
+  PaginationData,
+  SolrTransitions
 };

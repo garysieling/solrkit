@@ -1,5 +1,6 @@
-import { PaginationData, SolrCore, SolrMoreLikeThis, SolrGet } from './DataStore';
+import { PaginationData, SolrCore, SolrMoreLikeThis, SolrGet, SolrTransitions } from './DataStore';
 import * as React from 'react';
+import { PropTypes } from 'react';
 
 type RenderLambda<T> = 
   (v: T | T[], p?: PaginationData) => JSX.Element;
@@ -10,19 +11,19 @@ function databind<T>(
     render: RenderLambda<T>
 ) {
   return () => {
-      return (
-        <DataBound
-          fn={fn}
-          dataStore={ds}
-          render={render}
-        />
-      );
-    };
+    return (
+      <DataBound
+        fn={fn}
+        dataStore={ds}
+        render={render}
+      />
+    );
+  };
 }
 
 interface DataBoundProps<T> {
   fn: Function;
-  dataStore: SolrGet<T> & SolrMoreLikeThis<T>;
+  dataStore: SolrGet<T> & SolrMoreLikeThis<T> & SolrTransitions;
   render: RenderLambda<T>;
 }
 
@@ -32,6 +33,10 @@ interface DataBoundState<T> {
 }
 
 class DataBound<T> extends React.Component<DataBoundProps<T>, DataBoundState<T>> {
+  static childContextTypes = {
+    transitions: PropTypes.object
+  };
+
   constructor(props: DataBoundProps<T>) {
     super(props);
 
@@ -50,6 +55,12 @@ class DataBound<T> extends React.Component<DataBoundProps<T>, DataBoundState<T>>
         });
       }
     );
+  }
+
+  getChildContext() {
+    return {
+      transitions: this.props.dataStore.getTransitions
+    };
   }
 
   render() {
