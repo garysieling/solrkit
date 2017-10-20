@@ -26,7 +26,6 @@ class CheckFacet extends React.Component<FacetProps, {}> {
 
       const thisFacet = {};
       thisFacet[this.props.facet] = selections;
-      console.log(thisFacet);
 
       this.context.transition(
         {facets: thisFacet}
