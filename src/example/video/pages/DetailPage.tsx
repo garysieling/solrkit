@@ -44,7 +44,6 @@ function ytId(url: string) {
 
 interface DetailAppProps {
   id: string;
-  load: (id: string) => void;
 }
 
 const dataStore: TalkSearchDataStore = new TalkSearchDataStore();

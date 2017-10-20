@@ -10,54 +10,6 @@ import { BrowserRouter, Switch } from 'react-router-dom';
 
 import { DetailPageApp } from './pages/DetailPage';
 
-interface RouterProps {
-  history: object;
-  location: object;
-  match: {
-    isExact: boolean;
-    params: {
-      id: string;
-    };
-    path: string;
-    url: string;
-  };
-}
-
-import createHistory from 'history/createBrowserHistory';
-const history = createHistory({
-  basename: '/view/',
-  hashType: 'noslash'
-});
-
-class DetailComponent extends React.Component<RouterProps, {id: string}> {
-  constructor(props: RouterProps) {
-    super();
-
-    this.state = {
-      id: props.match.params.id
-    };
-
-    history.listen((location, action) => {
-      if (location.key) {
-        this.setState({
-          id: location.pathname.substring(1)
-        });
-      }
-    });
-  }
-
-  render() {
-    return (
-      <DetailPageApp 
-        load={(id: string) => {
-          history.push(id, {});
-        }}
-        id={this.state.id}
-      />
-    );
-  }
-}
-
 class Routes extends React.Component<{}, {}> {
   constructor() {
     super();
@@ -76,7 +28,7 @@ class Routes extends React.Component<{}, {}> {
           />
           <Route 
             path="/view/:id" 
-            component={DetailComponent} 
+            render={({match}) => <DetailPageApp id={match.params.id} />}
           />
           <Route path="*" component={NotFound} />
         </Switch>

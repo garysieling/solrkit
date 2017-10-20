@@ -8,9 +8,6 @@ it('DetailPageApp renders without crashing', () => {
   ReactDOM.render(
     <DetailPageApp 
       id="example" 
-      load={(id: string) => { 
-        //
-      }} 
     />, 
     div);
 });
