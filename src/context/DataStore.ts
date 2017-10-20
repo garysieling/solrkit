@@ -599,10 +599,12 @@ class SolrCore<T> implements SolrTransitions {
           _.map(
             newState.facets,
             (values: string[], k: string) => {
-              response =
-                response.fq(
-                  k, values
-                );
+              if (values.length > 0) {
+                response =
+                  response.fq(
+                    k, values
+                  );
+              }
             }
           );
 

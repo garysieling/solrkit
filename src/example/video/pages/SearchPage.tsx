@@ -33,9 +33,6 @@ class SearchPageApp extends React.Component<SearchPageProps, {}> {
   constructor() {
     super();
 
-    /*
-    
-    */
     this.left = 
       databind(
         dataStore.talks.registerFacet('features_ss'),
@@ -101,11 +98,18 @@ class SearchPageApp extends React.Component<SearchPageProps, {}> {
 
     this.header = databindTalksQuery(
       (talks: Talk[], pagination: PaginationData) => (
-        <SearchBox 
-          placeholder="Search..."
-          loading={false}
-          sampleSearches={suggestions}
-        />
+        <div className="ui grid">
+          <div className="one wide column">
+            <SingleNumber value={pagination.numFound} label="Talks" />
+          </div>
+          <div className="fifteen wide column">
+            <SearchBox 
+              placeholder="Search..."
+              loading={false}
+              sampleSearches={suggestions}
+            />
+          </div>
+        </div>
       )
     );
     
@@ -115,12 +119,6 @@ class SearchPageApp extends React.Component<SearchPageProps, {}> {
           numRows={pagination.numFound}
           pageSize={pagination.pageSize}
         />)
-    );
-
-    this.rightRail = databindTalksQuery(
-      (talks: Talk[], pagination: PaginationData) => (
-        <SingleNumber value={pagination.numFound} label="Talks" />
-      )
     );
   }
 
