@@ -13,17 +13,15 @@ import { ToggleFacet } from '../../../component/facet/ToggleFacet';
 import { DropdownFacet } from '../../../component/facet/DropdownFacet';
 import { TagFacet } from '../../../component/facet/TagFacet';
 import { SingleNumber } from '../../../component/statistics/SingleNumber';
-
+import { Link } from 'react-router-dom';
 import { Talk } from './talks/Talk';
 
-interface DetailAppProps {
-  id: string;
-  load: (id: string) => void;
+interface SearchPageProps {
 }
 
 const dataStore: TalkSearchDataStore = new TalkSearchDataStore();
 
-class SearchPageApp extends React.Component<DetailAppProps, {}> {
+class SearchPageApp extends React.Component<SearchPageProps, {}> {
   private left: () => JSX.Element;
   private right: () => JSX.Element;
   private header: () => JSX.Element;
@@ -57,9 +55,9 @@ class SearchPageApp extends React.Component<DetailAppProps, {}> {
             docs={talks} 
             render={
               (talk: Talk) => 
-                <a href={'/view/' + talk.id}>
+                <Link to={'/view/' + talk.id}>
                   {talk.title_s}
-                </a>
+                </Link>
             }
           />
         );

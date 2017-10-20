@@ -6,6 +6,7 @@ import { TalkSearchDataStore } from './talks/TalkSearchDataStore';
 import { databind } from '../../../context/DataBinding';
 import { Talk } from './talks/Talk';
 import { suggestions } from './talks/suggestions';
+import { Link } from 'react-router-dom';
 
 class VideoPlayer extends React.Component<Talk, {}> {
   youtubeId(url: String) {
@@ -75,24 +76,18 @@ class DetailPageApp extends React.Component<DetailAppProps, {}> {
                 <table style={{ width: '100%' }}>
                   <tr>
                     <td style={{ width: '50%' }}>
-                      <a 
-                        style={{paddingBottom: '10px', height: '12px'}}
-                        href="#"
-                        onClick={() => this.props.load(talk.id)}
-                      >
+                      <Link to={'/view/' + talk.id}>
                         <img 
                           style={{ width: '100%' }}
                           src={'https://img.youtube.com/vi/' + ytId(talk.url_s) + '/mqdefault.jpg'} 
                           alt={talk.title_s}
                         />
-                      </a>
+                      </Link>
                     </td>
-                    <td>                  
-                      <div
-                        onClick={() => this.props.load(talk.id)}
-                      >
+                    <td>
+                      <Link to={'/view/' + talk.id}>
                         <b>{talk.title_s}</b>
-                      </div>
+                      </Link>
                     </td>
                   </tr>
                 </table>

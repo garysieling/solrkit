@@ -67,7 +67,13 @@ class Routes extends React.Component<{}, {}> {
     return (
       <BrowserRouter>
         <Switch>
-          <Route exact={true} path="/" component={SearchPageApp} />
+          <Route 
+            exact={true} 
+            path="/" 
+            render={
+              () => <SearchPageApp />
+            }
+          />
           <Route 
             path="/view/:id" 
             component={DetailComponent} 

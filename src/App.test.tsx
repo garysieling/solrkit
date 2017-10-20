@@ -18,11 +18,6 @@ it('DetailPageApp renders without crashing', () => {
 it('SearchPageApp renders without crashing', () => {
   const div = document.createElement('div');
   ReactDOM.render(
-    <SearchPageApp 
-      id="example" 
-      load={(id: string) => { 
-        //
-      }} 
-    />, 
+    <SearchPageApp />, 
     div);
 });
