@@ -80,7 +80,6 @@ class SearchPageApp extends React.Component<SearchPageProps, {}> {
       (talks: Talk[], pagination: PaginationData) => (
         <Pagination
           numRows={pagination.numFound}
-          start={pagination.start}
           pageSize={pagination.pageSize}
         />)
     );

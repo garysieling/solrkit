@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { PropTypes } from 'react';
 import { Menu } from 'semantic-ui-react';
 import * as _ from 'lodash';
 import 'semantic-ui-css/semantic.min.css';
@@ -6,7 +7,6 @@ import 'semantic-ui-css/semantic.min.css';
 interface PaginationProps {
   numRows: number;
   pageSize: number;
-  start: number;
 }
 
 interface PaginationState {
@@ -29,13 +29,18 @@ const PaginationProperties = [
 ];
 
 class Pagination extends React.Component<PaginationProps, PaginationState> {
+  static contextTypes = {
+    searchState: PropTypes.object,
+    transition: PropTypes.func
+  };
+  
   constructor() {
     super();
   }
 
-  handlePaging(idx: number) {    
+  handlePaging(idx: number) { 
     return () => {
-      this.setState({ activePage: idx });
+      this.context.transition({start: (idx - 1) * this.props.pageSize});
     };
   }
 
@@ -43,7 +48,7 @@ class Pagination extends React.Component<PaginationProps, PaginationState> {
     const self = this;
     const pageSize = self.props.pageSize || 10;
     const numRows = self.props.numRows || 0;
-    let activePage = 1 + self.props.start / pageSize;
+    let activePage = 1 + self.context.searchState.start / pageSize;
        
     const maxPage = Math.ceil(numRows / pageSize);
     if (maxPage < activePage) {

@@ -1,4 +1,4 @@
-import { PaginationData, SolrCore, SolrMoreLikeThis, SolrGet, SolrTransitions } from './DataStore';
+import { PaginationData, SearchParams, SolrCore, SolrMoreLikeThis, SolrGet, SolrTransitions } from './DataStore';
 import * as React from 'react';
 import { PropTypes } from 'react';
 
@@ -34,7 +34,12 @@ interface DataBoundState<T> {
 
 class DataBound<T> extends React.Component<DataBoundProps<T>, DataBoundState<T>> {
   static childContextTypes = {
-    transitions: PropTypes.object
+    transition: PropTypes.func,
+    searchState: PropTypes.object
+  };
+
+  static contextTypes = {
+    router: PropTypes.object
   };
 
   constructor(props: DataBoundProps<T>) {
@@ -57,9 +62,27 @@ class DataBound<T> extends React.Component<DataBoundProps<T>, DataBoundState<T>>
     );
   }
 
+  transition(args: SearchParams) {
+    const newParams: SearchParams = Object.assign(
+      {},
+      this.props.dataStore.getCurrentParameters(),
+      args      
+    );
+
+    // TODO - should handle different classes of route
+    const page: number = (newParams.start || 0) / 10 + 1;
+    this.context.router.history.push(
+      '/search/' + newParams.query + '/' + 
+      page
+    );
+
+    this.props.dataStore.stateTransition(newParams);
+  }
+
   getChildContext() {
     return {
-      transitions: this.props.dataStore.getTransitions
+      searchState: this.props.dataStore.getCurrentParameters(),
+      transition: this.transition.bind(this)
     };
   }
 

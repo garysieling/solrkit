@@ -14,9 +14,16 @@ function escape(value: QueryParam): string {
 // Note that the stored versions of these end up namespaced and/or aliased
 enum UrlParams {
   ID = 'id',
-  QUERY = 'q',
+  QUERY = 'query',
   FQ = 'fq',
-  START = 'start'
+  START = 'start',
+  TYPE = 'type'
+}
+
+interface SearchParams {
+  type?: 'QUERY' | 'MLT' | 'DETAILS';
+  query?: string;
+  start?: number;
 }
 
 type QueryParam = string | number;
@@ -68,6 +75,13 @@ class SolrQueryBuilder<T> {
       this
     );
   }
+
+  select() {
+    return new SolrQueryBuilder<T>(
+      () => new QueryBeingBuilt('select?', [UrlParams.TYPE, 'QUERY']),
+      this
+    );
+  }  
   
   moreLikeThis(handler: string, col: string, id: QueryParam) {
     return new SolrQueryBuilder<T>(
@@ -78,7 +92,7 @@ class SolrQueryBuilder<T> {
   
   start(start: number) {
     return new SolrQueryBuilder<T>(
-      () => new QueryBeingBuilt('start=' + start, null),
+      () => new QueryBeingBuilt('start=' + start, [UrlParams.START, start]),
       this
     );
   }
@@ -154,8 +168,8 @@ class SolrQueryBuilder<T> {
     );
   }
 
-  construct(): [string, string[]] {
-    let start: [string, string[]] = ['', []];
+  construct(): [string, Array<UrlFragment>] {
+    let start: [string, Array<UrlFragment>] = ['', []];
     if (this.previous) {
       start = this.previous.construct();
     }
@@ -168,9 +182,26 @@ class SolrQueryBuilder<T> {
 
     return [
       start[0] + output.solrUrlFragment,
-      start[1].concat(output.solrUrlFragment)
+      start[1].concat([output.appUrlFragment])
     ];
-    // TODO save off url fragments
+  }
+
+  buildCurrentParameters(): SearchParams {
+    const initialParams = this.construct()[1];
+    const result: Array<UrlFragment> = initialParams;
+    
+    const searchParams: SearchParams = {      
+    };
+
+    result.map(
+      (p: UrlFragment) => {
+        if (p !== null) {
+          searchParams[p[0] as string] = p[1];
+        }
+      }
+    );
+
+    return searchParams;
   }
 
   buildSolrUrl() {
@@ -205,7 +236,9 @@ interface SolrMoreLikeThis<T> {
 }
 
 interface SolrTransitions {
-  getTransitions: () => object;
+  getNamespace: () => string;
+  getCurrentParameters: () => SearchParams;
+  stateTransition: (v: SearchParams) => void;
 }
 
 // TODO - this needs a lot more definition to be useful
@@ -232,7 +265,8 @@ class SolrCore<T> implements SolrTransitions {
   };
 
   private requestId: number = 0;
-
+  private currentParameters: SearchParams = {};
+  
   private getCache = {};
   private mltCache = {};
 
@@ -270,6 +304,10 @@ class SolrCore<T> implements SolrTransitions {
 
   doMoreLikeThis(id: string | number) {
     this.prefetchMoreLikeThis(id, true);
+  }  
+
+  getNamespace() {
+    return '';
   }
 
   prefetchMoreLikeThis(id: string | number, prefetch: boolean) {
@@ -396,7 +434,7 @@ class SolrCore<T> implements SolrTransitions {
     let qb = 
       new SolrQueryBuilder(
         () => new QueryBeingBuilt('', null),
-      ).q(
+      ).select().q(
         this.solrConfig.defaultSearchFields,
         query.query
       ).fl(this.solrConfig.fields).rows(
@@ -411,12 +449,14 @@ class SolrCore<T> implements SolrTransitions {
       callback
     );
 
-    const url = this.solrConfig.url + this.solrConfig.core + '/select?' + qb.buildSolrUrl();
+    const url = this.solrConfig.url + this.solrConfig.core + '/' + qb.buildSolrUrl();
 
     fetchJsonp(url, {
       jsonpCallbackFunction: callback
     }).then(
       (data) => {
+        this.currentParameters = qb.buildCurrentParameters();
+
         data.json().then( 
           (responseData) => {           
             self.events.query.map(
@@ -473,15 +513,26 @@ class SolrCore<T> implements SolrTransitions {
     );    
   }
 
-  getTransitions() {
-    return {
-      page: (pageNumber: number) => {
-        return '/';
-      },
-      query: (query: string) => {
-        return '';
-      }
-    };
+  stateTransition(newState: SearchParams) {
+    if (newState.type === 'QUERY') {
+      this.doQuery(
+        {
+          rows: 10,
+          query: newState.query || '*'
+        }, 
+        (qb: SolrQueryBuilder<{}>) => {
+          return qb.start(
+            newState.start || 0
+          );
+        }
+      );
+    } else {
+      throw 'INVALID STATE TRANSITION: ' + JSON.stringify(newState);
+    }
+  }
+
+  getCurrentParameters(): SearchParams {
+    return this.currentParameters;
   }
 }
 
@@ -529,5 +580,6 @@ export {
   SolrMoreLikeThis, 
   SolrQuery,
   PaginationData,
-  SolrTransitions
+  SolrTransitions,
+  SearchParams
 };

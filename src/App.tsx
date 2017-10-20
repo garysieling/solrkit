@@ -26,7 +26,6 @@ class App extends React.Component<{}, {}> {
         <Properties properties={PaginationProperties} name="Pagination" >
           <Pagination 
             numRows={100}
-            start={2}
             pageSize={10} 
           />
         </Properties>        

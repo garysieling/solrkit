@@ -1,5 +1,6 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
+
 import './index.css';
 
 import { NotFound } from './pages/NotFound';
@@ -9,43 +10,56 @@ import { Route } from 'react-router';
 import { BrowserRouter, Switch } from 'react-router-dom';
 
 import { DetailPageApp } from './pages/DetailPage';
-import { DataStore, SolrQueryBuilder } from '../../context/DataStore';
+import { SearchParams, SolrCore, DataStore } from '../../context/DataStore';
 import * as _ from 'lodash';
 
 interface RequiredAppProps {
   dataStore: DataStore;
 }
 
-interface SearchParams {
-  query?: string;
+interface PageParams {
   page: string;
+  query: string;
 }
 
 interface SearchAppProps {
   app: RequiredAppProps;
-  params: SearchParams;
+  params: PageParams;
+}
+
+function namespace(params: SearchParams, core: SolrCore<{}>, ns: string): [SolrCore<{}>, SearchParams] {
+  const result: [SolrCore<{}>, SearchParams] = [core, {
+    // TODO NAMESPACING
+    type: 'QUERY',
+    query: params.query,
+    start: params.start
+  }];
+
+  return result;
+}
+
+function fixParams(params: PageParams): SearchParams {
+  return {
+    type: 'QUERY',
+    query: params.query,
+    start: (parseInt(params.page || '1', 10) - 1) * 10
+  };
 }
 
 class SearchApp extends React.Component<SearchAppProps, {}> {
-  init() {
-    _.map(
-      this.props.app.dataStore.cores,
-      (core) => core.doQuery(
-        {
-          rows: 10,
-          query: this.props.params.query || '*'
-        }, 
-        (qb: SolrQueryBuilder<{}>) => {
-          return qb.start(
-            (parseInt(this.props.params.page, 10) - 1) * 10
-          );
-        }
-      )
-    );
+  constructor() {
+    super();
   }
 
-  componentWillReceiveProps() {
-    this.init();
+  init() {
+    // TODO I think this is the point where namespacing would start
+    _.map(
+      this.props.app.dataStore.cores,
+      (core, i) => namespace(fixParams(this.props.params), core, core.getNamespace())
+    ).map(
+      (thisCore: [SolrCore<object>, SearchParams]) => 
+        thisCore[0].stateTransition(thisCore[1])
+      );
   }
 
   componentDidMount() {
@@ -63,7 +77,7 @@ class SearchApp extends React.Component<SearchAppProps, {}> {
 
 const defaultParams = {
   page: '1',
-  query: undefined
+  query: '*'
 };
 
 class Routes extends React.Component<{}, {}> {

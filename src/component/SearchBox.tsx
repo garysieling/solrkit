@@ -18,7 +18,8 @@ interface SearchBoxState {
 
 class SearchBox extends React.Component<SearchBoxProps, SearchBoxState> {
   static contextTypes = {
-    router: PropTypes.object
+    searchState: PropTypes.object,
+    transition: PropTypes.func
   };
 
   state = {
@@ -66,11 +67,11 @@ class SearchBox extends React.Component<SearchBoxProps, SearchBoxState> {
       }
     );
 
-    this.onDoSearch(data + '');
+    this.onDoSearch(data.value + '');
   }
 
   onDoSearch(value: string) {
-    this.context.router.history.push('/search/' + value + '/1');
+    this.context.transition({query: value, start: 0});
   }
 
   onBlur() {
@@ -83,7 +84,7 @@ class SearchBox extends React.Component<SearchBoxProps, SearchBoxState> {
     const query = 
       (self.state.searchEditedByUser ? 
         self.state.query :
-        '' /*self.props.initialQuery*/) || '';
+        self.context.searchState.query) || '';
 
     const lc = query.toLowerCase();
     const filteredSearches = take(
