@@ -51,6 +51,7 @@ class DataBound<T> extends React.Component<DataBoundProps<T>, DataBoundState<T>>
     };
 
     // This needs to happen early
+    console.log(props.fn);
     props.fn.call(
       props.dataStore,
       (data: T | T[], paging: PaginationData) => {

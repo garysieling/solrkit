@@ -1,23 +1,24 @@
 import * as React from 'react';
 import { Menu, Dropdown, DropdownItemProps } from 'semantic-ui-react';
 
-interface TagFacetProps {
-  title?: string;
-  values: string[];
-  name: string;
-}
+import {
+  FacetRenderer,
+  defaultRenderer,
+  FacetProps
+} from './FacetTypes';
 
-class TagFacet extends React.Component<TagFacetProps, {}> {
+class TagFacet extends React.Component<FacetProps, {}> {
   render() {
-    const title = this.props.title || '';
+    const title = this.props.title;
+    const render: FacetRenderer = this.props.render || defaultRenderer;
 
     const options: DropdownItemProps[] =
       this.props.values.map(
         (value, i) => {
           return { 
             key: i,
-            text: value, 
-            value: value 
+            text: render(value[0], render[1]), 
+            value: value[0] 
           };
         }
       );

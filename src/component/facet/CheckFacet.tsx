@@ -1,22 +1,15 @@
 import * as React from 'react';
 
-type Value = [string, number];
-type Renderer = (v: string, count: number) => (JSX.Element | string);
+import {
+  FacetRenderer,
+  defaultRenderer,
+  FacetProps
+} from './FacetTypes';
 
-interface CheckFacetProps {
-  title?: string;
-  values: Value[];
-  render?: Renderer;
-}
-
-function defaultRenderer(value: string, count: number): (JSX.Element | string) {
-  return value;
-}
-
-class CheckFacet extends React.Component<CheckFacetProps, {}> {
+class CheckFacet extends React.Component<FacetProps, {}> {
   render() {
     const title = this.props.title;
-    const render: Renderer = this.props.render || defaultRenderer;
+    const render: FacetRenderer = this.props.render || defaultRenderer;
 
     return (
       <div className="ui" style={{marginBottom: '1em'}}>
