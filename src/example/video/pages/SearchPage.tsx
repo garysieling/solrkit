@@ -7,11 +7,11 @@ import { databind } from '../../../context/DataBinding';
 import { suggestions } from './talks/suggestions';
 import { PaginationData } from '../../../context/DataStore';
 import { CheckFacet } from '../../../component/facet/CheckFacet';
-import { RadioFacet } from '../../../component/facet/RadioFacet';
+// import { RadioFacet } from '../../../component/facet/RadioFacet';
 import { TalkSearchDataStore } from './talks/TalkSearchDataStore';
-import { ToggleFacet } from '../../../component/facet/ToggleFacet';
-import { DropdownFacet } from '../../../component/facet/DropdownFacet';
-import { TagFacet } from '../../../component/facet/TagFacet';
+// import { ToggleFacet } from '../../../component/facet/ToggleFacet';
+// import { DropdownFacet } from '../../../component/facet/DropdownFacet';
+// import { TagFacet } from '../../../component/facet/TagFacet';
 import { SingleNumber } from '../../../component/statistics/SingleNumber';
 import { Link } from 'react-router-dom';
 import { Talk } from './talks/Talk';
@@ -33,15 +33,24 @@ class SearchPageApp extends React.Component<SearchPageProps, {}> {
   constructor() {
     super();
 
-    this.left = () => (
-      <div>
-        <CheckFacet title="Test 1" values={['Audio', 'Video']} />
-        <RadioFacet title="Test 2" values={['Audio', 'Video']} />
+    /*
+    <RadioFacet title="Test 2" values={['Audio', 'Video']} />
         <ToggleFacet title="Test 2" values={['Audio', 'Video']} />
         <DropdownFacet title="Test 2" name="test" values={['Audio', 'Video']} />
         <TagFacet title="Test 2" name="test" values={['Audio', 'Video']} />        
-      </div>
-    );
+    */
+    this.left = 
+      databind(
+        dataStore.talks.registerFacet('features_ss'),
+        dataStore.talks,
+        (data: [string, number][]) => (
+          <CheckFacet 
+            title="Features" 
+            values={data}
+            render={(label: string, value: number) => label + ': ' + value.toLocaleString()}
+          />
+        )
+      );
 
     const databindTalksQuery = 
       (fn: ((talks: Talk[], pagination: PaginationData) => JSX.Element)) => 

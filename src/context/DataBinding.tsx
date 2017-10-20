@@ -7,7 +7,7 @@ type RenderLambda<T> =
 
 function databind<T>(
     fn: Function,
-    ds: SolrCore<T>,
+    ds: SolrCore<object>,
     render: RenderLambda<T>
 ) {
   return () => {

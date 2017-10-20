@@ -78,7 +78,7 @@ class SolrQueryBuilder<T> {
 
   select() {
     return new SolrQueryBuilder<T>(
-      () => new QueryBeingBuilt('select?', [UrlParams.TYPE, 'QUERY']),
+      () => new QueryBeingBuilt('select?facet=true', [UrlParams.TYPE, 'QUERY']),
       this
     );
   }  
@@ -135,6 +135,20 @@ class SolrQueryBuilder<T> {
       () => 
         new QueryBeingBuilt(
           'fl=' + fields.map(escape).join(','),
+          null
+        ),
+      this
+    );
+  }
+
+  requestFacet(field: string) {
+    return new SolrQueryBuilder<T>(
+      () => 
+        new QueryBeingBuilt(
+          `facet.field={!ex=${field}_q}${field}&` + 
+          `facet.${field}.mincount=1` +
+          `facet.${field}.limit=50` +
+          `facet.${field}.sort=count`,
           null
         ),
       this
@@ -216,6 +230,7 @@ interface PaginationData {
 }
 
 type QueryEvent<T> = (object: T[], paging: PaginationData) => void;
+type FacetEvent = (object: [string, number][]) => void;
 type ErrorEvent = (error: object) => void;
 type GetEvent<T> = (object: T) => void;
 type MoreLikeThisEvent<T> = (object: T[]) => void;
@@ -228,6 +243,7 @@ interface SolrGet<T> {
 interface SolrQuery<T> {
   doQuery: (q: GenericSolrQuery) => void;
   onQuery: (cb: QueryEvent<T>) => void;
+  registerFacet: (facet: string) => (cb: FacetEvent) => void;
 }
 
 interface SolrMoreLikeThis<T> {
@@ -262,6 +278,7 @@ class SolrCore<T> implements SolrTransitions {
     error: ErrorEvent[],
     get: GetEvent<T>[],
     mlt: MoreLikeThisEvent<T>[],
+    facet: { [key: string]: FacetEvent[] };
   };
 
   private requestId: number = 0;
@@ -282,7 +299,8 @@ class SolrCore<T> implements SolrTransitions {
       query: [],
       error: [],
       get: [],
-      mlt: []
+      mlt: [],
+      facet: {}
     };
 
     if (_.keys(this.getCache).length > 100) {
@@ -296,6 +314,19 @@ class SolrCore<T> implements SolrTransitions {
 
   onQuery(op: QueryEvent<T>) {
     this.events.query.push(op);
+  }
+
+  registerFacet(facetName: string) {
+    const events = this.events.facet;
+    
+    return function facetBind(cb: FacetEvent) {
+      // this works differently than the other event types because
+      // you may not know in advance what all the facets should be
+      events[facetName] = 
+        (events[facetName] || []);
+        
+      events[facetName].push(cb);
+    };
   }
 
   onError(op: ErrorEvent) {
@@ -440,7 +471,14 @@ class SolrCore<T> implements SolrTransitions {
       ).fl(this.solrConfig.fields).rows(
         query.rows || 10
       );
-    
+
+    _.map(
+      this.events.facet,
+      (v, k) => {
+        qb = qb.requestFacet(k);
+      }
+    );
+
     if (cb) {
      qb = cb(qb); 
     }
@@ -470,6 +508,29 @@ class SolrCore<T> implements SolrTransitions {
                   })
                 )
               );
+
+            const facetCounts = responseData.facet_counts;
+            if (facetCounts) {
+              const facetFields = facetCounts.facet_fields;
+              if (facetFields) {
+                _.map(
+                  self.events.facet,
+                  (events, k) => {
+                    if (facetFields[k]) {
+                      const facetLabels = facetFields[k].filter( (v, i) => i % 2 === 0 );
+                      const facetLabelCount = facetFields[k].filter( (v, i) => i % 2 === 1 );
+
+                      events.map(
+                        (event) => {
+                          event(_.zipWith(facetLabels, facetLabelCount));
+                        }
+                      );
+                    }
+                  }
+                );
+              }
+            }
+            
           }
         ).catch(
           (error) => {
