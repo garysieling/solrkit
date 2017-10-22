@@ -253,7 +253,7 @@ interface SolrGet<T> {
 interface SolrQuery<T> {
   doQuery: (q: GenericSolrQuery) => void;
   onQuery: (cb: QueryEvent<T>) => void;
-  registerFacet: (facet: string) => (cb: FacetEvent) => void;
+  registerFacet: (facet: string[]) => (cb: FacetEvent) => void;
 }
 
 interface SolrMoreLikeThis<T> {
@@ -326,16 +326,21 @@ class SolrCore<T> implements SolrTransitions {
     this.events.query.push(op);
   }
 
-  registerFacet(facetName: string) {
+  registerFacet(facetNames: string[]) {
     const events = this.events.facet;
     
     return function facetBind(cb: FacetEvent) {
       // this works differently than the other event types because
       // you may not know in advance what all the facets should be
-      events[facetName] = 
-        (events[facetName] || []);
+      facetNames.map(
+        (facetName) => {
+          events[facetName] = 
+            (events[facetName] || []);
         
-      events[facetName].push(cb);
+          events[facetName].push(cb);
+        }
+      );
+      
     };
   }
 

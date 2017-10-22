@@ -77,21 +77,21 @@ const defaultParams = {
 const Routes = [(
     <Route 
       exact={true} 
-      path="/talks" 
+      path="/glass" 
       render={() => <SearchApp params={defaultParams} app={SearchPageApp} />}
     />
   ), (
     <Route 
       exact={true} 
-      path="/talks/:query/:page" 
+      path="/glass/:query/:page" 
       render={({match}) => <SearchApp params={match.params} app={SearchPageApp} />}
     />
   ), (
     <Route 
-      path="/view/:id" 
+      path="/window/:id" 
       component={({match}) => <DetailPageApp id={match.params.id} />}
     />
   )
 ];
 
-export { Routes }; 
+export { Routes };

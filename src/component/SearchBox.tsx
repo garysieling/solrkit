@@ -7,7 +7,7 @@ import { take } from 'lodash';
 interface SearchBoxProps {
   placeholder: string;
   loading: boolean;
-  sampleSearches: string[];
+  sampleSearches?: string[];
 }
 
 interface SearchBoxState {

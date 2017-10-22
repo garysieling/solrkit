@@ -5,22 +5,11 @@ import { SearchBox } from '../../../component/SearchBox';
 import { AppDataStore } from './data/AppDataStore';
 import { databind } from '../../../context/DataBinding';
 import { Document } from './data/Document';
-import { suggestions } from './data/suggestions';
 import { Link } from 'react-router-dom';
 
-class VideoPlayer extends React.Component<Document, {}> {
-  youtubeId(url: String) {
-    return url.replace(/.*v=/, '');
-  }
-
+class DocumentDetails extends React.Component<Document, {}> {
   render() {
-    const url = this.props.url_s;
-
-    const ytUrl: string | undefined = 
-      url ? (
-        'https://www.youtube.com/embed/' + this.youtubeId(url) 
-        + '?modestbranding=true'
-      ) : undefined;
+    const url = this.props.url;
     
     return (
       <div>
@@ -28,18 +17,14 @@ class VideoPlayer extends React.Component<Document, {}> {
           id="player" 
           width="100%"
           height="390"
-          src={ytUrl} 
+          src={url} 
         />
         <h2>
-          {this.props.title_s}
+          {this.props.file}
         </h2>
       </div>
     );
   }
-}
-
-function ytId(url: string) {
-  return url.split('v=')[1].split('&')[0];
 }
 
 interface DetailAppProps {
@@ -57,61 +42,57 @@ class DetailPageApp extends React.Component<DetailAppProps, {}> {
     super();
 
     this.left = databind(
-      dataStore.talks.onGet,
-      dataStore.talks,
-      (talk: Document) => (<VideoPlayer {...talk} />)
+      dataStore.windows.onGet,
+      dataStore.windows,
+      (talk: Document) => (<DocumentDetails {...talk} />)
     );
 
     this.right = databind(
-      dataStore.talks.onMoreLikeThis,
-      dataStore.talks,
-      (talks: Document[]) => (
+      dataStore.windows.onMoreLikeThis,
+      dataStore.windows,
+      (windows: Document[]) => (
         <MoreLikeThis 
           title="More Like This:"
-          docs={talks} 
+          docs={windows} 
           render={
-            (talk: Document) => (
-              talk.url_s.indexOf('youtube.com') > 0 ? (
+            (window: Document) => (
                 <table style={{ width: '100%' }}>
                   <tr>
                     <td style={{ width: '50%' }}>
-                      <Link to={'/view/' + talk.id}>
+                      <Link to={'/view/' + window.id}>
                         <img 
                           style={{ width: '100%' }}
-                          src={'https://img.youtube.com/vi/' + ytId(talk.url_s) + '/mqdefault.jpg'} 
-                          alt={talk.title_s}
+                          src={window.url} 
                         />
                       </Link>
                     </td>
                     <td>
-                      <Link to={'/view/' + talk.id}>
-                        <b>{talk.title_s}</b>
+                      <Link to={'/view/' + window.id}>
+                        <b>{window.file}</b>
                       </Link>
                     </td>
                   </tr>
                 </table>
-              ) : null
-            )
-          }
+              )
+            }
         />)
     );
 
     this.header = databind(
-      dataStore.talks.onMoreLikeThis,
-      dataStore.talks,
+      dataStore.windows.onMoreLikeThis,
+      dataStore.windows,
       (talk: Document) => (
         <SearchBox 
           placeholder="Search..."
           loading={false}
-          sampleSearches={suggestions}
         />
       )
     );
   }
 
   init() {
-    dataStore.talks.doGet(this.props.id);
-    dataStore.talks.doMoreLikeThis(this.props.id);
+    dataStore.windows.doGet(this.props.id);
+    dataStore.windows.doMoreLikeThis(this.props.id);
   }
 
   componentWillReceiveProps() {

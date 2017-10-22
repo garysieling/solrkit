@@ -1,5 +1,5 @@
 import { DataStore, SolrCore, SolrGet, SolrMoreLikeThis, SolrQuery } from '../../../../context/DataStore';
-import { Talk } from './Talk';
+import { Document } from './Document';
 // Ideally you want to write code like this:
 // 
 //  DataStore.books.get = (talk: Talk) => <Detail {...talk} />
@@ -8,9 +8,9 @@ import { Talk } from './Talk';
 //  Which would suggest that...
 //    We need a different type T for each core
 //    get needs to be a property?
-type TalkCoreCapabilities = SolrCore<Talk> & SolrGet<Talk> & SolrMoreLikeThis<Talk> & SolrQuery<Talk>;
-class TalkSearchDataStore extends DataStore {
-  private talksCore: TalkCoreCapabilities;
+type CoreCapabilities = SolrCore<Document> & SolrGet<Document> & SolrMoreLikeThis<Document> & SolrQuery<Document>;
+class AppDataStore extends DataStore {
+  private core: CoreCapabilities;
 
   constructor() {
     super();
@@ -22,9 +22,9 @@ class TalkSearchDataStore extends DataStore {
   // If you want to have some UI controls use
   // different subsets of the data in the index
   // you should register one entry per use case.
-  get talks(): TalkCoreCapabilities {
-    if (!this.talksCore) {
-      this.talksCore = super.registerCore({
+  get talks(): CoreCapabilities {
+    if (!this.core) {
+      this.core = super.registerCore({
         url: 'http://40.87.64.225:8983/solr/',
         core: 'talks',
         primaryKey: 'id',
@@ -36,8 +36,8 @@ class TalkSearchDataStore extends DataStore {
       });
     }
 
-    return this.talksCore;
+    return this.core;
   }
 }
 
-export { TalkSearchDataStore };
+export { AppDataStore };

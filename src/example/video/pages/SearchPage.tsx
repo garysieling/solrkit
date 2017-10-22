@@ -4,22 +4,22 @@ import { ResultsList } from '../../../component/ResultsList';
 import { SearchBox } from '../../../component/SearchBox';
 import { Pagination } from '../../../component/Pagination';
 import { databind } from '../../../context/DataBinding';
-import { suggestions } from './talks/suggestions';
+import { suggestions } from './data/suggestions';
 import { PaginationData } from '../../../context/DataStore';
 import { CheckFacet } from '../../../component/facet/CheckFacet';
 import { RadioFacet } from '../../../component/facet/RadioFacet';
-import { TalkSearchDataStore } from './talks/TalkSearchDataStore';
+import { AppDataStore } from './data/AppDataStore';
 import { ToggleFacet } from '../../../component/facet/ToggleFacet';
 import { DropdownFacet } from '../../../component/facet/DropdownFacet';
 import { TagFacet } from '../../../component/facet/TagFacet';
 import { SingleNumber } from '../../../component/statistics/SingleNumber';
 import { Link } from 'react-router-dom';
-import { Talk } from './talks/Talk';
+import { Document } from './data/Document';
 
 interface SearchPageProps {
 }
 
-const dataStore: TalkSearchDataStore = new TalkSearchDataStore();
+const dataStore = new AppDataStore();
 
 class SearchPageApp extends React.Component<SearchPageProps, {}> {
   static dataStore = dataStore;
@@ -35,7 +35,7 @@ class SearchPageApp extends React.Component<SearchPageProps, {}> {
 
     this.left = 
       databind(
-        dataStore.talks.registerFacet('features_ss'),
+        dataStore.talks.registerFacet(['features_ss']),
         dataStore.talks,
         (data: [string, number, boolean][]) => (
           <div>
@@ -74,19 +74,19 @@ class SearchPageApp extends React.Component<SearchPageProps, {}> {
       );
 
     const databindTalksQuery = 
-      (fn: ((talks: Talk[], pagination: PaginationData) => JSX.Element)) => 
+      (fn: ((talks: Document[], pagination: PaginationData) => JSX.Element)) => 
         databind(
           dataStore.talks.onQuery,
           dataStore.talks,
           fn);
 
     this.right = databindTalksQuery(
-      (talks: Talk[], pagination: PaginationData) => {
+      (talks: Document[], pagination: PaginationData) => {
         return (
           <ResultsList 
             docs={talks} 
             render={
-              (talk: Talk) => 
+              (talk: Document) => 
                 <Link to={'/view/' + talk.id}>
                   {talk.title_s}
                 </Link>
@@ -97,7 +97,7 @@ class SearchPageApp extends React.Component<SearchPageProps, {}> {
     );
 
     this.header = databindTalksQuery(
-      (talks: Talk[], pagination: PaginationData) => (
+      (talks: Document[], pagination: PaginationData) => (
         <div className="ui grid">
           <div className="three wide column">
             <SingleNumber horizontal={true} value={pagination.numFound} label="Talks" />
@@ -114,7 +114,7 @@ class SearchPageApp extends React.Component<SearchPageProps, {}> {
     );
     
     this.footer = databindTalksQuery(
-      (talks: Talk[], pagination: PaginationData) => (
+      (talks: Document[], pagination: PaginationData) => (
         <Pagination
           numRows={pagination.numFound}
           pageSize={pagination.pageSize}
