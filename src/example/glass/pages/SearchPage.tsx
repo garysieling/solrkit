@@ -3,7 +3,7 @@ import { ResultsLayout } from '../../../layout/ResultsLayout';
 import { ResultsList } from '../../../component/ResultsList';
 import { SearchBox } from '../../../component/SearchBox';
 import { Pagination } from '../../../component/Pagination';
-import { databind } from '../../../context/DataBinding';
+import { Bound, databind } from '../../../context/DataBinding';
 import { PaginationData } from '../../../context/DataStore';
 import { CheckFacet } from '../../../component/facet/CheckFacet';
 import { AppDataStore } from './data/AppDataStore';
@@ -11,12 +11,9 @@ import { SingleNumber } from '../../../component/statistics/SingleNumber';
 import { Link } from 'react-router-dom';
 import { Document } from './data/Document';
 
-interface SearchPageProps {
-}
-
 const dataStore = new AppDataStore();
 
-class SearchPageApp extends React.Component<SearchPageProps, {}> {
+class SearchPageApp extends React.Component<{}, {}> {
   static dataStore = dataStore;
 
   private left: () => JSX.Element;
@@ -29,50 +26,39 @@ class SearchPageApp extends React.Component<SearchPageProps, {}> {
     super();
 
     this.left = () => (
-        <div>{
-        databind(
-          dataStore.windows.registerFacet(['place']),
-          dataStore.windows,
-          (data: [string, number, boolean][]) => (
-            <div>            
+      <div>
+        <Bound
+          dataStore={dataStore.windows}
+          event={dataStore.windows.registerFacet(['place'])}
+          render={
+            (data: [string, number, boolean][]) => (
               <CheckFacet 
-                title="place" 
+                title="Place" 
                 values={data}
                 facet="place"
-                render={(label: string, value: number) => label + ': ' + value.toLocaleString()}
+                render={(label: string, value: number) => 
+                  label + ': ' + value.toLocaleString()}
               />
+            )
+          }
+        />
 
+        <Bound
+          dataStore={dataStore.windows}
+          event={dataStore.windows.registerFacet(['face_count'])}
+          render={
+            (data: [string, number, boolean][]) => (
               <CheckFacet 
                 title="Faces" 
                 values={data}
                 facet="face_count"
-                render={(label: string, value: number) => label + ': ' + value.toLocaleString()}
+                render={(label: string, value: number) => 
+                  label + ': ' + value.toLocaleString()}
               />
-  
-              <CheckFacet 
-                title="height" 
-                values={data}
-                facet="height"
-                render={(label: string, value: number) => label + ': ' + value.toLocaleString()}
-              />
-
-              <CheckFacet 
-                title="width" 
-                values={data}
-                facet="width"
-                render={(label: string, value: number) => label + ': ' + value.toLocaleString()}
-              />
-
-              <CheckFacet 
-                title="aspect" 
-                values={data}
-                facet="aspect"
-                render={(label: string, value: number) => label + ': ' + value.toLocaleString()}
-              />
-            </div>
-          )
-        )
-      }</div>
+            )
+          }
+        />
+      </div>
     );
 
     const databindWindowsQuery = 
@@ -83,14 +69,22 @@ class SearchPageApp extends React.Component<SearchPageProps, {}> {
           fn);
 
     this.right = databindWindowsQuery(
-      (Windows: Document[], pagination: PaginationData) => {
+      (windows: Document[], pagination: PaginationData) => {
         return (
           <ResultsList 
-            docs={Windows} 
+            docs={windows} 
             render={
               (window: Document) => 
-                <Link to={'/view/' + window.id}>
-                  {window.file}
+                <Link to={'/window/' + window.id}>
+                  <img 
+                    style={{ 
+                      height: '250px', 
+                      width: Math.round(250.0 * window.width / window.height) + 'px',
+                      float: 'left', 
+                      padding: '5px' 
+                    }}
+                    src={window.url} 
+                  />
                 </Link>
             }
           />
@@ -137,3 +131,32 @@ class SearchPageApp extends React.Component<SearchPageProps, {}> {
 }
 
 export { SearchPageApp };
+/*
+     <CheckFacet 
+                title="Faces" 
+                values={data}
+                facet="face_count"
+                render={(label: string, value: number) => label + ': ' + value.toLocaleString()}
+              />
+  
+              <CheckFacet 
+                title="height" 
+                values={data}
+                facet="height"
+                render={(label: string, value: number) => label + ': ' + value.toLocaleString()}
+              />
+
+              <CheckFacet 
+                title="width" 
+                values={data}
+                facet="width"
+                render={(label: string, value: number) => label + ': ' + value.toLocaleString()}
+              />
+
+              <CheckFacet 
+                title="aspect" 
+                values={data}
+                facet="aspect"
+                render={(label: string, value: number) => label + ': ' + value.toLocaleString()}
+              />
+            </div>*/

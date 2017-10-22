@@ -7,14 +7,14 @@ type RenderLambda<T> =
   (v: T | T[], p?: PaginationData) => JSX.Element;
 
 function databind<T>(
-    fn: Function,
+    event: Function,
     ds: SolrCore<object>,
     render: RenderLambda<T>
 ) {
   return () => {
     return (
-      <DataBound
-        fn={fn}
+      <Bound
+        event={event}
         dataStore={ds}
         render={render}
       />
@@ -23,7 +23,7 @@ function databind<T>(
 }
 
 interface DataBoundProps<T> {
-  fn: Function;
+  event: Function;
   dataStore: SolrGet<T> & SolrMoreLikeThis<T> & SolrTransitions;
   render: RenderLambda<T>;
 }
@@ -33,7 +33,7 @@ interface DataBoundState<T> {
   paging?: PaginationData;
 }
 
-class DataBound<T> extends React.Component<DataBoundProps<T>, DataBoundState<T>> {
+class Bound extends React.Component<DataBoundProps<object>, DataBoundState<object>> {
   static childContextTypes = {
     transition: PropTypes.func,
     searchState: PropTypes.object
@@ -43,7 +43,7 @@ class DataBound<T> extends React.Component<DataBoundProps<T>, DataBoundState<T>>
     router: PropTypes.object
   };
 
-  constructor(props: DataBoundProps<T>) {
+  constructor(props: DataBoundProps<object>) {
     super(props);
 
     this.state = {
@@ -52,9 +52,9 @@ class DataBound<T> extends React.Component<DataBoundProps<T>, DataBoundState<T>>
     };
 
     // This needs to happen early
-    props.fn.call(
+    props.event.call(
       props.dataStore,
-      (data: T | T[], paging: PaginationData) => {
+      (data: object | object[], paging: PaginationData) => {
         this.setState( {
           data: data,
           paging: paging
@@ -75,10 +75,8 @@ class DataBound<T> extends React.Component<DataBoundProps<T>, DataBoundState<T>>
       newParams.facets = Object.assign({}, currentParams.facets, args.facets);      
     }
 
-    console.log(newParams);
-
     // TODO - should handle different classes of route
-    const page: number = (newParams.start || 0) / 10 + 1;
+    const page: number = (newParams.start || 0) / this.props.dataStore.getCoreConfig().pageSize + 1;
 
     let facets = '';
     if (newParams.facets) {
@@ -115,4 +113,14 @@ class DataBound<T> extends React.Component<DataBoundProps<T>, DataBoundState<T>>
   }
 }
 
-export { databind };
+class DataBind extends React.Component<{}, {}> {
+  render() {
+    return (
+      <div>
+        {this.props.children}
+      </div>
+    );
+  }
+}
+
+export { DataBind, Bound, databind };

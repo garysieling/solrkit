@@ -33,7 +33,8 @@ class AppDataStore extends DataStore {
         // since there is no apparent way to sync
         // this with Typescript
         fields: ['id', 'url', 'place', 'height', 'width', 'aspect', 'faces', 'face_count'],
-        defaultSearchFields: ['id']
+        defaultSearchFields: ['id'],
+        pageSize: 50
       });
     }
 

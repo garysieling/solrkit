@@ -36,7 +36,7 @@ function fixParams(params: PageParams): SearchParams {
   return {
     type: 'QUERY',
     query: params.query,
-    start: (parseInt(params.page || '1', 10) - 1) * 10
+    start: (parseInt(params.page || '1', 50) - 1) * 50
   };
 }
 

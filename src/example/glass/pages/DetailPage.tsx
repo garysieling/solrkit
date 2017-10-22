@@ -9,18 +9,10 @@ import { Link } from 'react-router-dom';
 
 class DocumentDetails extends React.Component<Document, {}> {
   render() {
-    const url = this.props.url;
-    
     return (
       <div>
-        <iframe 
-          id="player" 
-          width="100%"
-          height="390"
-          src={url} 
-        />
         <h2>
-          {this.props.file}
+          {this.props.url}
         </h2>
       </div>
     );

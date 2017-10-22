@@ -209,7 +209,6 @@ class SolrQueryBuilder<T> {
       (p: UrlFragment) => {
         if (p !== null) {
           if (p[0] === UrlParams.FQ) {
-            console.log('found facet', p);
             const facet = p[1][0];
             const values = p[1][1];
 
@@ -262,6 +261,7 @@ interface SolrMoreLikeThis<T> {
 }
 
 interface SolrTransitions {
+  getCoreConfig: () => SolrConfig;
   getNamespace: () => string;
   getCurrentParameters: () => SearchParams;
   stateTransition: (v: SearchParams) => void;
@@ -279,6 +279,7 @@ interface SolrConfig {
   primaryKey: string;
   defaultSearchFields: string[];
   fields: string[];
+  pageSize: number;
 }
 
 class SolrCore<T> implements SolrTransitions {
@@ -320,6 +321,10 @@ class SolrCore<T> implements SolrTransitions {
     if (_.keys(this.mltCache).length > 100) {
       this.mltCache = {};
     }
+  }
+
+  getCoreConfig() {
+    return this.solrConfig;
   }
 
   onQuery(op: QueryEvent<T>) {
@@ -484,7 +489,7 @@ class SolrCore<T> implements SolrTransitions {
         this.solrConfig.defaultSearchFields,
         query.query
       ).fl(this.solrConfig.fields).rows(
-        query.rows || 10
+        query.rows || this.solrConfig.pageSize
       );
 
     _.map(
@@ -598,7 +603,7 @@ class SolrCore<T> implements SolrTransitions {
     if (newState.type === 'QUERY') {
       this.doQuery(
         {
-          rows: 10,
+          rows: this.solrConfig.pageSize,
           query: newState.query || '*'
         }, 
         (qb: SolrQueryBuilder<{}>) => {
