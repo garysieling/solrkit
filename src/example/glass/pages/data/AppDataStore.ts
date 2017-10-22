@@ -34,7 +34,8 @@ class AppDataStore extends DataStore {
         // this with Typescript
         fields: ['id', 'url', 'place', 'height', 'width', 'aspect', 'faces', 'face_count'],
         defaultSearchFields: ['id'],
-        pageSize: 50
+        pageSize: 50,
+        prefix: 'glass'
       });
     }
 

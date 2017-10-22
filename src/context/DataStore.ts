@@ -280,6 +280,7 @@ interface SolrConfig {
   defaultSearchFields: string[];
   fields: string[];
   pageSize: number;
+  prefix: string;
 }
 
 class SolrCore<T> implements SolrTransitions {

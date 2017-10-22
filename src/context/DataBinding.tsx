@@ -87,7 +87,7 @@ class Bound extends React.Component<DataBoundProps<object>, DataBoundState<objec
     }
     
     this.context.router.history.push(
-      '/search/' + newParams.query + '/' + 
+      '/' + this.props.dataStore.getCoreConfig().prefix + '/' + newParams.query + '/' + 
       page + facets
     );
 

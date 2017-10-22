@@ -8,7 +8,6 @@ import { PaginationData } from '../../../context/DataStore';
 import { CheckFacet } from '../../../component/facet/CheckFacet';
 import { AppDataStore } from './data/AppDataStore';
 import { SingleNumber } from '../../../component/statistics/SingleNumber';
-import { Link } from 'react-router-dom';
 import { Document } from './data/Document';
 
 const dataStore = new AppDataStore();
@@ -75,7 +74,7 @@ class SearchPageApp extends React.Component<{}, {}> {
             docs={windows} 
             render={
               (window: Document) => 
-                <Link to={'/window/' + window.id}>
+                <a href={window.url}>
                   <img 
                     style={{ 
                       height: '250px', 
@@ -85,7 +84,7 @@ class SearchPageApp extends React.Component<{}, {}> {
                     }}
                     src={window.url} 
                   />
-                </Link>
+                </a>
             }
           />
         );
