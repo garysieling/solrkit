@@ -34,6 +34,7 @@ class SearchPageApp extends React.Component<{}, {}> {
               <CheckFacet 
                 title="Place" 
                 values={data}
+                search={true}
                 facet="place"
                 render={(label: string, value: number) => 
                   label + ': ' + value.toLocaleString()}

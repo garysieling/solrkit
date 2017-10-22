@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { get, includes, take } from 'lodash';
+import { get, includes, take, filter } from 'lodash';
 
 import {
   FacetRenderer,
@@ -9,9 +9,10 @@ import {
 
 interface CheckFacetState {
   showMoreLink: boolean;
+  typeahead: string;
 }
 
-class CheckFacet extends React.Component<FacetProps, CheckFacetState> {
+class CheckFacet extends React.Component<FacetProps & { search?: boolean }, CheckFacetState> {
   static contextTypes = {
     searchState: React.PropTypes.object,
     transition: React.PropTypes.func
@@ -21,10 +22,12 @@ class CheckFacet extends React.Component<FacetProps, CheckFacetState> {
     super();
 
     this.state = {
-      showMoreLink: true
+      showMoreLink: true,
+      typeahead: ''
     };
 
     this.onShowMore = this.onShowMore.bind(this);
+    this.onChangeTypeahead = this.onChangeTypeahead.bind(this);
   }
 
   onClick(value: string) {
@@ -54,16 +57,38 @@ class CheckFacet extends React.Component<FacetProps, CheckFacetState> {
     this.setState({showMoreLink: false});
   }
 
+  onChangeTypeahead(event: React.SyntheticEvent<HTMLInputElement>) {
+    this.setState({typeahead: event.currentTarget.value});
+  }
+
   render() {
     const title = this.props.title;
     const render: FacetRenderer = this.props.render || defaultRenderer;
 
-    const noMore = !this.state.showMoreLink || this.props.values.length < 8;
-    const values =
-      (noMore) ? (
-        this.props.values
+    const searchBox = this.props.search ? (
+      <form className="ui mini form">
+        <div className="field">
+          <input type="text" placeholder="Filter" onChange={this.onChangeTypeahead} />
+        </div>
+      </form>
+    ) : null;
+
+    const valueList =
+      this.props.search && this.state.typeahead.length > 0 ? (
+        filter(
+          this.props.values,
+          (v) => v[0].startsWith(this.state.typeahead)
+        )
       ) : (
-        take(this.props.values, 5)
+        this.props.values
+      );
+
+    const noMore = !this.state.showMoreLink || valueList.length < 8;
+    const displayValues =
+      (noMore) ? (
+        valueList
+      ) : (
+        take(valueList, 5)
       );
 
     const moreLink =
@@ -81,8 +106,9 @@ class CheckFacet extends React.Component<FacetProps, CheckFacetState> {
     return (
       <div className="ui" style={{marginBottom: '1em'}}>
         {title ? (<h4>{title}</h4>) : null}
+        {searchBox}
         {
-          values.map(
+          displayValues.map(
             ([value, count, checked], i) => (
               <div style={{display: 'block'}} >
                 <div className="ui checkbox">
