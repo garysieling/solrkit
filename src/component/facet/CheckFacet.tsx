@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { get, includes } from 'lodash';
+import { get, includes, take } from 'lodash';
 
 import {
   FacetRenderer,
@@ -7,11 +7,25 @@ import {
   FacetProps
 } from './FacetTypes';
 
-class CheckFacet extends React.Component<FacetProps, {}> {
+interface CheckFacetState {
+  showMoreLink: boolean;
+}
+
+class CheckFacet extends React.Component<FacetProps, CheckFacetState> {
   static contextTypes = {
     searchState: React.PropTypes.object,
     transition: React.PropTypes.func
   };
+
+  constructor() {
+    super();
+
+    this.state = {
+      showMoreLink: true
+    };
+
+    this.onShowMore = this.onShowMore.bind(this);
+  }
 
   onClick(value: string) {
     return () => {
@@ -36,25 +50,60 @@ class CheckFacet extends React.Component<FacetProps, {}> {
     };
   }
 
+  onShowMore() {
+    this.setState({showMoreLink: false});
+  }
+
   render() {
     const title = this.props.title;
     const render: FacetRenderer = this.props.render || defaultRenderer;
+
+    const noMore = !this.state.showMoreLink || this.props.values.length < 8;
+    const values =
+      (noMore) ? (
+        this.props.values
+      ) : (
+        take(this.props.values, 5)
+      );
+
+    const moreLink =
+      noMore ? (
+        null
+      ) : (
+        <div 
+          style={{display: 'block', cursor: 'pointer'}}
+          onClick={this.onShowMore}
+        >
+          Show More
+        </div>
+      );
 
     return (
       <div className="ui" style={{marginBottom: '1em'}}>
         {title ? (<h4>{title}</h4>) : null}
         {
-          this.props.values.map(
+          values.map(
             ([value, count, checked], i) => (
               <div style={{display: 'block'}} >
                 <div className="ui checkbox">
-                  <input onClick={this.onClick(value)} checked={checked} type="checkbox" name={i + ''} />
-                  <label onClick={this.onClick(value)}>{render(value, count)}</label>
+                  <input 
+                    onClick={this.onClick(value)} 
+                    checked={checked} 
+                    type="checkbox" 
+                    name={i + ''} 
+                  />
+                  <label 
+                    onClick={this.onClick(value)}
+                    style={{cursor: 'pointer'}}
+                  >
+                    {render(value, count)}
+                  </label>
                 </div>
               </div>
             )
           )
         }
+        {moreLink}
       </div>
     );
   }
