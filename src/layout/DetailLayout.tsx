@@ -27,6 +27,12 @@ class DetailLayout extends React.Component<DetailLayoutProps, {}> {
         this.props.rightComponent()
       ) : null;
 
+    const leftSize = (leftComponent && rightComponent) ? 
+      'ten' : 'sixteen';
+
+    const rightSize = (leftComponent && rightComponent) ? 
+      'six' : 'zero';
+
     return (
       <div className="ui segments">
         <div className="ui segment">
@@ -34,12 +40,12 @@ class DetailLayout extends React.Component<DetailLayoutProps, {}> {
         </div>
         <div className="main ui segment">
           <div className="ui grid">
-            <div className="ten wide column">
+            <div className={leftSize + ' wide column'}>
               <div className="container">
                 {leftComponent}
               </div>
             </div>
-            <div className="six wide column">
+            <div className={rightSize + ' wide column'}>
               <div className="container">
                 {rightComponent}
               </div>
