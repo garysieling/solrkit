@@ -28,8 +28,20 @@ class DocumentDetails extends React.Component<Document, {}> {
       
     return (
       <div>
-        <img src={this.props.url} />
-        {rects}
+        <div style={{ float: 'left' }}>
+          <img src={this.props.url} />
+          {rects}
+        </div>
+        <div style={{ float: 'left', paddingLeft: '20px' }}>
+          <b>URL:</b> {this.props.url}<br />
+          <b>Width:</b> {this.props.width}<br />
+          <b>Height:</b> {this.props.height}<br />
+          <b>Aspect:</b> {this.props.aspect / 100.0}<br />
+          <b>Faces:</b> {this.props.face_count}<br />
+          <b>Tags:</b> {this.props.resnet50_tags}<br />
+          <b>Job:</b> {this.props.place}<br />
+
+        </div>
       </div>
     );
   }

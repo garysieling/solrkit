@@ -67,7 +67,7 @@ class CheckFacet extends React.Component<FacetProps & { search?: boolean }, Chec
 
     const searchBox = this.props.search ? (
       <form className="ui mini form">
-        <div className="field">
+        <div className="field" style={{ paddingBottom: '3px', width: '70%' }}>
           <input type="text" placeholder="Filter" onChange={this.onChangeTypeahead} />
         </div>
       </form>

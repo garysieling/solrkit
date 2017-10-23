@@ -52,6 +52,7 @@ class SearchPageApp extends React.Component<{}, {}> {
               <CheckFacet 
                 title="Tags" 
                 values={data}
+                search={true}
                 facet="resnet50_tags"
                 render={(label: string, value: number) => 
                   label + ': ' + value.toLocaleString()}

@@ -9,6 +9,7 @@ interface Document {
   aspect: number;
   faces: string;
   face_count: number;
+  resnet50_tags: string[];
 }
 
 export { Document };
