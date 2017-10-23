@@ -90,10 +90,7 @@ class SearchPageApp extends React.Component<{}, {}> {
         return (
           <ResultsList 
             docs={windows} 
-            widthColumn={'width'}
-            heightColumn={'height'}
-            perRow={7}
-            evenHeight={true}
+            height={250}
             render={
               (window: Document) => 
                 <Link 

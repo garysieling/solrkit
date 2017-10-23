@@ -281,6 +281,7 @@ interface SolrConfig {
   fields: string[];
   pageSize: number;
   prefix: string;
+  fq?: [string, string];
 }
 
 class SolrCore<T> implements SolrTransitions {
@@ -492,6 +493,10 @@ class SolrCore<T> implements SolrTransitions {
       ).fl(this.solrConfig.fields).rows(
         query.rows || this.solrConfig.pageSize
       );
+
+    if (this.solrConfig.fq) {
+      qb = qb.fq(this.solrConfig.fq[0], [this.solrConfig.fq[1]]);
+    }
 
     _.map(
       this.events.facet,
