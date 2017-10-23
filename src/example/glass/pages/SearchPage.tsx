@@ -94,7 +94,7 @@ class SearchPageApp extends React.Component<{}, {}> {
             render={
               (window: Document) => 
                 <Link 
-                  to={'/window/' + window.id}
+                  to={'/window/' + window.id.replace(/\//g, '_')}
                   style={{height: '100%'}}
                 >
                   <img 

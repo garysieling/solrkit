@@ -7,11 +7,29 @@ import { Document } from './data/Document';
 
 class DocumentDetails extends React.Component<Document, {}> {
   render() {
+    // [[214, 269, 250, 233], [262, 305, 298, 269]]
+    const rects = 
+      JSON.parse(this.props.faces).map(
+        ([top, right, bottom, left]) => (
+          <div 
+            style={{
+              position: 'absolute',
+              top: (top + 14) + 'px',
+              left: (left + 14) + 'px',
+              width: (right - left) + 'px',
+              height: (bottom - top) + 'px',
+              borderWidth: '4px',
+              borderColor: 'red',
+              borderStyle: 'solid'
+            }}
+          />
+        )
+      );
+      
     return (
       <div>
-        <h2>
-          {this.props.url}
-        </h2>
+        <img src={this.props.url} />
+        {rects}
       </div>
     );
   }
@@ -34,11 +52,13 @@ class DetailPageApp extends React.Component<DetailAppProps, {}> {
     this.left = databind(
       dataStore.windows.onGet,
       dataStore.windows,
-      (talk: Document) => (<DocumentDetails {...talk} />)
+      (talk: Document) => (
+        <DocumentDetails {...talk} />
+      )
     );
     
     this.header = databind(
-      dataStore.windows.onMoreLikeThis,
+      dataStore.windows.onGet,
       dataStore.windows,
       (talk: Document) => (
         <SearchBox 
@@ -50,8 +70,7 @@ class DetailPageApp extends React.Component<DetailAppProps, {}> {
   }
 
   init() {
-    dataStore.windows.doGet(this.props.id);
-    dataStore.windows.doMoreLikeThis(this.props.id);
+    dataStore.windows.doGet(this.props.id.replace(/_/g, '/'));
   }
 
   componentWillReceiveProps() {
