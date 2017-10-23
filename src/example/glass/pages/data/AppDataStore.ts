@@ -1,4 +1,4 @@
-import { DataStore, SolrCore, SolrGet, SolrMoreLikeThis, SolrQuery } from '../../../../context/DataStore';
+import { DataStore, SolrCore, SolrGet, SolrQuery } from '../../../../context/DataStore';
 import { Document } from './Document';
 
 // Ideally you want to write code like this:
@@ -9,7 +9,7 @@ import { Document } from './Document';
 //  Which would suggest that...
 //    We need a different type T for each core
 //    get needs to be a property?
-type CoreCapabilities = SolrCore<Document> & SolrGet<Document> & SolrMoreLikeThis<Document> & SolrQuery<Document>;
+type CoreCapabilities = SolrCore<Document> & SolrGet<Document> & SolrQuery<Document>;
 class AppDataStore extends DataStore {
   private core: CoreCapabilities;
 

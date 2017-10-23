@@ -1,11 +1,9 @@
 import * as React from 'react';
 import { DetailLayout } from '../../../layout/DetailLayout';
-import { MoreLikeThis } from '../../../component/MoreLikeThis';
 import { SearchBox } from '../../../component/SearchBox';
 import { AppDataStore } from './data/AppDataStore';
 import { databind } from '../../../context/DataBinding';
 import { Document } from './data/Document';
-import { Link } from 'react-router-dom';
 
 class DocumentDetails extends React.Component<Document, {}> {
   render() {
@@ -38,38 +36,7 @@ class DetailPageApp extends React.Component<DetailAppProps, {}> {
       dataStore.windows,
       (talk: Document) => (<DocumentDetails {...talk} />)
     );
-
-    this.right = databind(
-      dataStore.windows.onMoreLikeThis,
-      dataStore.windows,
-      (windows: Document[]) => (
-        <MoreLikeThis 
-          title="More Like This:"
-          docs={windows} 
-          render={
-            (window: Document) => (
-                <table style={{ width: '100%' }}>
-                  <tr>
-                    <td style={{ width: '50%' }}>
-                      <Link to={'/view/' + window.id}>
-                        <img 
-                          style={{ width: '100%' }}
-                          src={window.url} 
-                        />
-                      </Link>
-                    </td>
-                    <td>
-                      <Link to={'/view/' + window.id}>
-                        <b>{window.file}</b>
-                      </Link>
-                    </td>
-                  </tr>
-                </table>
-              )
-            }
-        />)
-    );
-
+    
     this.header = databind(
       dataStore.windows.onMoreLikeThis,
       dataStore.windows,

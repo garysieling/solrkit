@@ -9,6 +9,7 @@ import { CheckFacet } from '../../../component/facet/CheckFacet';
 import { AppDataStore } from './data/AppDataStore';
 import { SingleNumber } from '../../../component/statistics/SingleNumber';
 import { Document } from './data/Document';
+import { Link } from 'react-router-dom';
 
 const dataStore = new AppDataStore();
 
@@ -45,6 +46,22 @@ class SearchPageApp extends React.Component<{}, {}> {
 
         <Bound
           dataStore={dataStore.windows}
+          event={dataStore.windows.registerFacet(['resnet50_tags'])}
+          render={
+            (data: [string, number, boolean][]) => (
+              <CheckFacet 
+                title="Tags" 
+                values={data}
+                facet="resnet50_tags"
+                render={(label: string, value: number) => 
+                  label + ': ' + value.toLocaleString()}
+              />
+            )
+          }
+        />
+        
+        <Bound
+          dataStore={dataStore.windows}
           event={dataStore.windows.registerFacet(['face_count'])}
           render={
             (data: [string, number, boolean][]) => (
@@ -73,19 +90,21 @@ class SearchPageApp extends React.Component<{}, {}> {
         return (
           <ResultsList 
             docs={windows} 
+            widthColumn={'width'}
+            heightColumn={'height'}
+            perRow={7}
+            evenHeight={true}
             render={
               (window: Document) => 
-                <a href={window.url}>
+                <Link 
+                  to={'/window/' + window.id}
+                  style={{height: '100%'}}
+                >
                   <img 
-                    style={{ 
-                      height: '250px', 
-                      width: Math.round(250.0 * window.width / window.height) + 'px',
-                      float: 'left', 
-                      padding: '5px' 
-                    }}
+                    style={{height: '100%'}}
                     src={window.url} 
                   />
-                </a>
+                </Link>
             }
           />
         );
