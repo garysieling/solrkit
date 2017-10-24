@@ -8,7 +8,11 @@ import * as fetchJsonp from 'fetch-jsonp';
 import * as _ from 'lodash';
 
 function escape(value: QueryParam): string {
-  return value + '';
+  if (value === '*') {
+    return value;
+  }
+  
+  return '"' + value.toString().replace(/ /g, '%20') + '"';
 }
 
 // Note that the stored versions of these end up namespaced and/or aliased
@@ -107,7 +111,7 @@ class SolrQueryBuilder<T> {
         new QueryBeingBuilt(
           'q=' +
             searchFields.map(
-              (field) => escape(field) + ':' + escape(value)
+              (field) => field + ':' + escape(value)
             ).join('%20OR%20'),
           [UrlParams.QUERY, value]
         )
@@ -120,7 +124,7 @@ class SolrQueryBuilder<T> {
     return new SolrQueryBuilder<T>(
       () => {
         return new QueryBeingBuilt(
-          'fq=' + escape(field) + ':' + values.map(escape).join('%20OR%20'),
+          'fq=' + field + ':' + values.map(escape).join('%20OR%20'),
           [UrlParams.FQ, [field, values]]
         );
       },
@@ -132,7 +136,7 @@ class SolrQueryBuilder<T> {
     return new SolrQueryBuilder<T>(
       () => 
         new QueryBeingBuilt(
-          'fl=' + fields.map(escape).join(','),
+          'fl=' + fields.join(','),
           null
         ),
       this
