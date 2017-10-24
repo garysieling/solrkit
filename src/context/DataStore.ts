@@ -124,7 +124,9 @@ class SolrQueryBuilder<T> {
     return new SolrQueryBuilder<T>(
       () => {
         return new QueryBeingBuilt(
-          'fq=' + field + ':' + values.map(escape).join('%20OR%20'),
+          'fq=' + 
+            '{!tag=' + field + '_q}' +
+            values.map(escape).map((v) => field + ':' + v).join('%20OR%20'),
           [UrlParams.FQ, [field, values]]
         );
       },

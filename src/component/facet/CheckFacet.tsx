@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { get, includes, take, filter } from 'lodash';
+import { get, includes, take, filter, orderBy } from 'lodash';
 
 import {
   Popup
@@ -47,7 +47,6 @@ class CheckFacet extends React.Component<FacetProps & { search?: boolean }, Chec
 
       const thisFacet = {};
       thisFacet[this.props.facet] = selections;
-
       this.context.transition(
         {
           start: 0,
@@ -120,7 +119,7 @@ class CheckFacet extends React.Component<FacetProps & { search?: boolean }, Chec
           : null}
         {searchBox}
         {
-          displayValues.map(
+          orderBy(displayValues, [3, 2], ['desc', 'desc']).map(
             ([value, count, checked], i) => (
               <div style={{display: 'block'}} >
                 <div className="ui checkbox">

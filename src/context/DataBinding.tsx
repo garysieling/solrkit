@@ -82,7 +82,9 @@ class Bound extends React.Component<DataBoundProps<object>, DataBoundState<objec
     if (newParams.facets) {
       facets = '?' + _.map(
         newParams.facets,
-        (k, v) => v + '=' + k
+        (k, v) => v + '=' + (
+          _.isArray(k) ? k.join(',') : k
+        )
       ).join('&');
     }
     
