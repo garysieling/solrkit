@@ -105,6 +105,13 @@ class SolrQueryBuilder<T> {
     );
   }
 
+  export() {
+    return new SolrQueryBuilder<T>(
+      () => new QueryBeingBuilt('wt=csv', null),
+      this
+    );
+  }
+
   q(searchFields: string[], value: QueryParam) {
     return new SolrQueryBuilder<T>(
       () => 
@@ -257,6 +264,7 @@ interface SolrGet<T> {
 
 interface SolrQuery<T> {
   doQuery: (q: GenericSolrQuery) => void;
+  doExport: (q: GenericSolrQuery) => void;
   onQuery: (cb: QueryEvent<T>) => void;
   registerFacet: (facet: string[]) => (cb: FacetEvent) => void;
 }
@@ -578,6 +586,37 @@ class SolrCore<T> implements SolrTransitions {
         );
       }
     );    
+  }
+
+  doExport()  {
+    const query = this.getCurrentParameters();
+
+    let qb = 
+      new SolrQueryBuilder(
+        () => new QueryBeingBuilt('', null),
+      ).select().q(
+        this.solrConfig.defaultSearchFields,
+        query.query || '*'
+      ).fl(this.solrConfig.fields)
+       .rows(
+        2147483647
+      );
+
+    if (this.solrConfig.fq) {
+      qb = qb.fq(this.solrConfig.fq[0], [this.solrConfig.fq[1]]);
+    }
+
+    _.map(
+      this.events.facet,
+      (v, k) => {
+        qb = qb.requestFacet(k);
+      }
+    );
+      
+    qb = qb.export();
+
+    const url = this.solrConfig.url + this.solrConfig.core + '/' + qb.buildSolrUrl();
+    window.open(url, '_blank');
   }
 
   next(op: (event: SolrQueryBuilder<T>) => SolrQueryBuilder<T>) {

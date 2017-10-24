@@ -2,6 +2,7 @@ import * as React from 'react';
 import { ResultsLayout } from '../../../layout/ResultsLayout';
 import { ResultsList } from '../../../component/ResultsList';
 import { SearchBox } from '../../../component/SearchBox';
+import { ExcelExport } from '../../../component/ExcelExport';
 import { Pagination } from '../../../component/Pagination';
 import { Bound, databind } from '../../../context/DataBinding';
 import { PaginationData } from '../../../context/DataStore';
@@ -113,6 +114,12 @@ class SearchPageApp extends React.Component<{}, {}> {
           }
         />
 
+        <div>
+          <h4>Options</h4>
+          
+          <ExcelExport core={dataStore.windows} />Export to Excel
+        </div>
+
       </div>
     );
 
@@ -158,7 +165,7 @@ class SearchPageApp extends React.Component<{}, {}> {
           <div className="three wide column">
             <SingleNumber horizontal={true} value={pagination.numFound} label="Windows" />
           </div>
-          <div className="thirteen wide column">
+          <div className="twelve wide column">
             <SearchBox 
               placeholder="Search..."
               loading={false}
@@ -191,32 +198,3 @@ class SearchPageApp extends React.Component<{}, {}> {
 }
 
 export { SearchPageApp };
-/*
-     <CheckFacet 
-                title="Faces" 
-                values={data}
-                facet="face_count"
-                render={(label: string, value: number) => label + ': ' + value.toLocaleString()}
-              />
-  
-              <CheckFacet 
-                title="height" 
-                values={data}
-                facet="height"
-                render={(label: string, value: number) => label + ': ' + value.toLocaleString()}
-              />
-
-              <CheckFacet 
-                title="width" 
-                values={data}
-                facet="width"
-                render={(label: string, value: number) => label + ': ' + value.toLocaleString()}
-              />
-
-              <CheckFacet 
-                title="aspect" 
-                values={data}
-                facet="aspect"
-                render={(label: string, value: number) => label + ': ' + value.toLocaleString()}
-              />
-            </div>*/
