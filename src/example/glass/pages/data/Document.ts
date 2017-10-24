@@ -10,6 +10,11 @@ interface Document {
   faces: string;
   face_count: number;
   resnet50_tags: string[];
+  gv_labels: string[];
+  gv_inscription: string[];
+  gv_partial_matching_images: string[];
+  gv_pages_matching_images: string[];
+  gv_full_matching_images: string[];
 }
 
 export { Document };

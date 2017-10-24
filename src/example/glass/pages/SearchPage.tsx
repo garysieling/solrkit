@@ -10,8 +10,26 @@ import { AppDataStore } from './data/AppDataStore';
 import { SingleNumber } from '../../../component/statistics/SingleNumber';
 import { Document } from './data/Document';
 import { Link } from 'react-router-dom';
+import { Popup } from 'semantic-ui-react';
 
 const dataStore = new AppDataStore();
+
+function popup(
+  condition: boolean,
+  component: JSX.Element,
+  tooltip: string
+) {
+  if (condition) {
+    return (
+      <Popup
+        trigger={component}
+        content={tooltip}
+      />
+    );
+  } else {
+    return component;
+  }
+}
 
 class SearchPageApp extends React.Component<{}, {}> {
   static dataStore = dataStore;
@@ -46,11 +64,29 @@ class SearchPageApp extends React.Component<{}, {}> {
 
         <Bound
           dataStore={dataStore.windows}
+          event={dataStore.windows.registerFacet(['gv_labels'])}
+          render={
+            (data: [string, number, boolean][]) => (
+              <CheckFacet 
+                title="Labels" 
+                help="Google Vision API"
+                values={data}
+                facet="gv_labels"
+                render={(label: string, value: number) => 
+                  label + ': ' + value.toLocaleString()}
+              />
+            )
+          }
+        />
+
+        <Bound
+          dataStore={dataStore.windows}
           event={dataStore.windows.registerFacet(['resnet50_tags'])}
           render={
             (data: [string, number, boolean][]) => (
               <CheckFacet 
                 title="Tags" 
+                help="ResNet 50"
                 values={data}
                 search={true}
                 facet="resnet50_tags"
@@ -76,6 +112,7 @@ class SearchPageApp extends React.Component<{}, {}> {
             )
           }
         />
+
       </div>
     );
 
@@ -94,15 +131,21 @@ class SearchPageApp extends React.Component<{}, {}> {
             height={250}
             render={
               (window: Document) => 
-                <Link 
-                  to={'/window/' + window.id.replace(/\//g, '_')}
-                  style={{height: '100%'}}
-                >
-                  <img 
+                popup(
+                  !!window.gv_inscription 
+                    && (window.gv_inscription.length > 0)
+                    && (window.gv_inscription[0] !== ''),
+                  <Link 
+                    to={'/window/' + window.id.replace(/\//g, '_')}
                     style={{height: '100%'}}
-                    src={window.url} 
-                  />
-                </Link>
+                  >
+                    <img 
+                      style={{height: '100%'}}
+                      src={window.url} 
+                    />
+                  </Link>,
+                  window.gv_inscription[0]
+                )
             }
           />
         );

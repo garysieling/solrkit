@@ -5,6 +5,20 @@ import { AppDataStore } from './data/AppDataStore';
 import { databind } from '../../../context/DataBinding';
 import { Document } from './data/Document';
 
+function hrefs(links) {
+  return links.map(
+    (link) => (
+      <p>
+        <a 
+          href={link}
+        >
+          {link}
+        </a>
+      </p>
+    )
+  );
+}
+
 class DocumentDetails extends React.Component<Document, {}> {
   render() {
     // [[214, 269, 250, 233], [262, 305, 298, 269]]
@@ -29,7 +43,10 @@ class DocumentDetails extends React.Component<Document, {}> {
     return (
       <div>
         <div style={{ float: 'left' }}>
-          <img src={this.props.url} />
+          <img 
+            style={{ maxWidth: '800px' }}
+            src={this.props.url} 
+          />
           {rects}
         </div>
         <div style={{ float: 'left', paddingLeft: '20px' }}>
@@ -38,9 +55,18 @@ class DocumentDetails extends React.Component<Document, {}> {
           <b>Height:</b> {this.props.height}<br />
           <b>Aspect:</b> {this.props.aspect / 100.0}<br />
           <b>Faces:</b> {this.props.face_count}<br />
-          <b>Tags:</b> {this.props.resnet50_tags}<br />
+          <b>Tags (ResNet 50):</b> {(this.props.resnet50_tags || []).join(', ')}<br />
+          <b>Tags (Google Vision):</b> {(this.props.gv_labels || []).join(', ')}<br />
           <b>Job:</b> {this.props.place}<br />
-
+          
+          <b>Inscription (Google Vision):</b> {(this.props.gv_inscription || []).join(', ')}<br />
+          
+          <b>Full Matching Images (Google Vision):</b> 
+            {hrefs(this.props.gv_full_matching_images || [])}<br />
+          <b>Partial Matching Images (Google Vision):</b> 
+            {hrefs(this.props.gv_partial_matching_images || [])}<br />
+          <b>Pages matching Images (Google Vision):</b> 
+            {hrefs(this.props.gv_pages_matching_images || [])}<br />
         </div>
       </div>
     );

@@ -1,6 +1,8 @@
 import * as React from 'react';
 import * as _ from 'lodash';
 
+import { Popup } from 'semantic-ui-react';
+
 import {
   FacetRenderer,
   defaultRenderer,
@@ -31,11 +33,19 @@ class RadioFacet extends React.Component<FacetProps, {}> {
 
   render() {
     const title = this.props.title;
+    const help = this.props.help;
     const render: FacetRenderer = this.props.render || defaultRenderer;
 
     return (
       <div className="ui" style={{marginBottom: '1em'}}>
-        {title ? (<h4>{title}</h4>) : null}
+        {title ? (
+          help ? (
+            <Popup 
+              trigger={<h4>{title}</h4>}
+              content={help}
+            />) :
+          <h4>{title}</h4>)
+          : null}
         {
           _.sortBy(this.props.values, (v) => v[0]).map(
             (value, i) => (

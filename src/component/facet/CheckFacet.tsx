@@ -2,6 +2,10 @@ import * as React from 'react';
 import { get, includes, take, filter } from 'lodash';
 
 import {
+  Popup
+} from 'semantic-ui-react';
+
+import {
   FacetRenderer,
   defaultRenderer,
   FacetProps
@@ -63,6 +67,7 @@ class CheckFacet extends React.Component<FacetProps & { search?: boolean }, Chec
 
   render() {
     const title = this.props.title;
+    const help = this.props.help;
     const render: FacetRenderer = this.props.render || defaultRenderer;
 
     const searchBox = this.props.search ? (
@@ -105,7 +110,14 @@ class CheckFacet extends React.Component<FacetProps & { search?: boolean }, Chec
 
     return (
       <div className="ui" style={{marginBottom: '1em'}}>
-        {title ? (<h4>{title}</h4>) : null}
+        {title ? (
+          help ? (
+            <Popup 
+              trigger={<h4>{title}</h4>}
+              content={help}
+            />) :
+          <h4>{title}</h4>)
+          : null}
         {searchBox}
         {
           displayValues.map(
