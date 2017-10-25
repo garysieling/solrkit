@@ -262,6 +262,10 @@ interface SolrGet<T> {
   onGet: (cb: GetEvent<T>) => void;
 }
 
+interface SolrUpdate {
+  doUpdate: (id: string | number, attr: string, value: string) => void;
+}
+
 interface SolrQuery<T> {
   doQuery: (q: GenericSolrQuery) => void;
   doExport: (q: GenericSolrQuery) => void;
@@ -588,6 +592,38 @@ class SolrCore<T> implements SolrTransitions {
     );    
   }
 
+  doUpdate(id: string | number, attr: string, value: string) {
+    const self = this;
+
+    const op = {
+      id: id,
+    };
+
+    op[attr] = { set: value };
+    
+    const url = this.solrConfig.url + this.solrConfig.core + '/' + 'update?commit=true';
+    
+    const http = new XMLHttpRequest();
+    const params = JSON.stringify(op);
+
+    http.open('POST', url, true);
+
+    http.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+    
+    delete this.getCache[id];
+    
+    http.onreadystatechange = function() {
+      if (http.readyState === 4) {
+        // trigger UI re-render - don't care if success or failure
+        // because we might have succeeded but got a CORS error
+        self.doGet(id);
+      }
+    };
+    
+    http.send(params);
+
+  }
+
   doExport()  {
     const query = this.getCurrentParameters();
 
@@ -728,9 +764,11 @@ export {
   DataStore,
   SolrCore, 
   SolrGet, 
+  SolrUpdate,
   SolrMoreLikeThis, 
   SolrQuery,
   PaginationData,
   SolrTransitions,
-  SearchParams
+  SearchParams,
+  
 };

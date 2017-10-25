@@ -4,8 +4,10 @@ import { SearchBox } from '../../../component/SearchBox';
 import { AppDataStore } from './data/AppDataStore';
 import { databind } from '../../../context/DataBinding';
 import { Document } from './data/Document';
+import { Dropdown } from 'semantic-ui-react';
+import { get } from 'lodash';
 
-function hrefs(links) {
+function hrefs(links: string[]) {
   return links.map(
     (link) => (
       <p>
@@ -19,7 +21,41 @@ function hrefs(links) {
   );
 }
 
+const train1options = [
+  { key: 'Transom', text: 'Transom' },
+  { key: 'Rose', text: 'Rose' },
+  { key: 'Arched', text: 'Arched' }
+];
+
+const train2options = [
+  { key: 'Tiffany', text: 'Tiffany' },
+  { key: 'Meyer', text: 'Zettler' },
+  { key: 'Boos', text: 'Boos' },
+  { key: 'D\'Ascenzo', text: 'D\'Ascenzo' },
+  { key: 'Ballano', text: 'Ballano' }
+];
+
 class DocumentDetails extends React.Component<Document, {}> {
+  constructor() {
+    super();
+
+    this.setValue = this.setValue.bind(this);
+  }
+
+  setValue(attr: string) {
+    const self = this;
+
+    return function(event: React.SyntheticEvent<{}>) {
+      dataStore.windows.doUpdate(
+        self.props.id,
+        attr,
+        get(event, 'currentTarget.textContent', '')
+      );
+
+      event.stopPropagation();
+    };
+  }
+
   render() {
     // [[214, 269, 250, 233], [262, 305, 298, 269]]
     const rects = 
@@ -67,6 +103,46 @@ class DocumentDetails extends React.Component<Document, {}> {
             {hrefs(this.props.gv_partial_matching_images || [])}<br />
           <b>Pages matching Images (Google Vision):</b> 
             {hrefs(this.props.gv_pages_matching_images || [])}<br />
+
+          <b>Train 1: </b>
+          <Dropdown 
+            placeholder="Window Type" 
+            search={true}
+            selection={true} 
+            options={train1options} 
+            onChange={this.setValue('train_1')}
+          />
+          <br />
+          <b>Prediction 1: </b>{this.props.prediction_1} {this.props.confidence_1}%
+          <br />
+
+          {this.props.train_1}
+          <b>Train 2: </b>{this.props.train_2}
+          <Dropdown 
+            placeholder="Style" 
+            search={true}
+            selection={true} 
+            onChange={this.setValue('train_2')}
+            options={train2options} 
+          />
+          <br />
+          <b>Prediction 2: </b>{this.props.prediction_2} {this.props.confidence_2}%
+          <br />          
+
+          <b>Train 3: </b>{this.props.train_3}
+          <br />
+          <b>Prediction 3: </b>{this.props.prediction_3} {this.props.confidence_3}%
+          <br />
+
+          <b>Train 4: </b>{this.props.train_4}
+          <br />
+          <b>Prediction 4: </b>{this.props.prediction_4} {this.props.confidence_4}%
+          <br />
+
+          <b>Train 5: </b>{this.props.train_5}
+          <br />          
+          <b>Prediction 5: </b>{this.props.prediction_5} {this.props.confidence_5}%
+          <br />
         </div>
       </div>
     );

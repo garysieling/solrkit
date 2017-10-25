@@ -1,4 +1,4 @@
-import { DataStore, SolrCore, SolrGet, SolrQuery } from '../../../../context/DataStore';
+import { DataStore, SolrCore, SolrGet, SolrUpdate, SolrQuery } from '../../../../context/DataStore';
 import { Document } from './Document';
 
 // Ideally you want to write code like this:
@@ -9,7 +9,7 @@ import { Document } from './Document';
 //  Which would suggest that...
 //    We need a different type T for each core
 //    get needs to be a property?
-type CoreCapabilities = SolrCore<Document> & SolrGet<Document> & SolrQuery<Document>;
+type CoreCapabilities = SolrCore<Document> & SolrGet<Document> & SolrUpdate & SolrQuery<Document>;
 class AppDataStore extends DataStore {
   private core: CoreCapabilities;
 
@@ -27,7 +27,7 @@ class AppDataStore extends DataStore {
     if (!this.core) {
       this.core = super.registerCore({
         url: 'http://40.87.64.225:8983/solr/',
-        core: 'glass',
+        core: 'glass2',
         primaryKey: 'id',
         // Unfortunately these have to be repeated 
         // since there is no apparent way to sync
@@ -37,14 +37,17 @@ class AppDataStore extends DataStore {
           'face_count', 'resnet50_tags', 'gv_labels',
           'gv_inscription', 'gv_partial_matching_images',
           'gv_pages_matching_images',
-          'gv_full_matching_images'
+          'gv_full_matching_images',
+          'train_1', 'train_2', 'train_3', 'train_4', 'train_5',
+          'confidence_1', 'confidence_2', 'confidence_3', 'confidence_4', 'confidence_5',
+          'prediction_1', 'prediction_2', 'prediction_3', 'prediction_4', 'prediction_5',
         ],
         fq: ['url', '*'],
         defaultSearchFields: [
           'id', 
           'gv_inscription', 
           'resnet50_tags', 
-          'resnet50_tags'
+          'gv_labels'
         ],
         pageSize: 50,
         prefix: 'glass'
