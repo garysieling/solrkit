@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "outDir": "build/dist",
+    "outDir": "build",
     "module": "esnext",
     "target": "es5",
     "lib": ["es6", "dom"],
@@ -33,6 +33,7 @@
     "build",
     "scripts",
     "acceptance-tests",
+    "docs",
     "webpack",
     "jest",
     "src/setupTests.ts"

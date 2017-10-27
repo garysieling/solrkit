@@ -4,10 +4,7 @@ import * as React from 'react';
 import { Routes as VideoRoutes } from './example/video/index';
 import { Routes as GlassRoutes } from './example/glass/index';
 
-import registerServiceWorker from './registerServiceWorker';
 import { Switch, BrowserRouter } from 'react-router-dom';
-
-registerServiceWorker();
 
 export function main() {
   ReactDOM.render(

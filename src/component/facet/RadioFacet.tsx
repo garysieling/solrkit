@@ -6,7 +6,8 @@ import { Popup } from 'semantic-ui-react';
 import {
   FacetRenderer,
   defaultRenderer,
-  FacetProps
+  FacetProps,
+  FacetValue
 } from './FacetTypes';
 
 class RadioFacet extends React.Component<FacetProps, {}> {
@@ -15,7 +16,7 @@ class RadioFacet extends React.Component<FacetProps, {}> {
     transition: React.PropTypes.func
   };
 
-  onClick(value: [string, number, boolean]) {
+  onClick(value: FacetValue) {
     return () => {
       let selections: string[] = [value[0]];
       

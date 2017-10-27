@@ -12,6 +12,7 @@ import { SingleNumber } from '../../../component/statistics/SingleNumber';
 import { Document } from './data/Document';
 import { Link } from 'react-router-dom';
 import { Popup } from 'semantic-ui-react';
+import { FacetValue } from '../../../component/facet/FacetTypes';
 
 const dataStore = new AppDataStore();
 
@@ -50,7 +51,7 @@ class SearchPageApp extends React.Component<{}, {}> {
           dataStore={dataStore.windows}
           event={dataStore.windows.registerFacet(['place'])}
           render={
-            (data: [string, number, boolean][]) => (
+            (data: FacetValue[]) => (
               <CheckFacet 
                 title="Place" 
                 values={data}
@@ -67,7 +68,7 @@ class SearchPageApp extends React.Component<{}, {}> {
           dataStore={dataStore.windows}
           event={dataStore.windows.registerFacet(['gv_labels'])}
           render={
-            (data: [string, number, boolean][]) => (
+            (data: FacetValue[]) => (
               <CheckFacet 
                 title="Labels" 
                 help="Google Vision API"
@@ -84,7 +85,7 @@ class SearchPageApp extends React.Component<{}, {}> {
           dataStore={dataStore.windows}
           event={dataStore.windows.registerFacet(['resnet50_tags'])}
           render={
-            (data: [string, number, boolean][]) => (
+            (data: FacetValue[]) => (
               <CheckFacet 
                 title="Tags" 
                 help="ResNet 50"
@@ -102,7 +103,7 @@ class SearchPageApp extends React.Component<{}, {}> {
           dataStore={dataStore.windows}
           event={dataStore.windows.registerFacet(['face_count'])}
           render={
-            (data: [string, number, boolean][]) => (
+            (data: FacetValue[]) => (
               <CheckFacet 
                 title="Faces" 
                 values={data}

@@ -2,7 +2,6 @@ import * as React from 'react';
 import { PropTypes } from 'react';
 import { Menu } from 'semantic-ui-react';
 import * as _ from 'lodash';
-import 'semantic-ui-css/semantic.min.css';
 
 interface PaginationProps {
   numRows: number;

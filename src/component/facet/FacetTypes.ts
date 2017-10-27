@@ -1,5 +1,10 @@
 
-type FacetValue = [string, number, boolean];
+interface FacetValue {
+  value: string;
+  count: number;
+  checked: boolean;
+}
+
 type FacetRenderer = (v: string, count: number) => string;
 
 function defaultRenderer(value: string, count: number): string {

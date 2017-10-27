@@ -8,7 +8,8 @@ import {
 import {
   FacetRenderer,
   defaultRenderer,
-  FacetProps
+  FacetProps,
+  FacetValue
 } from './FacetTypes';
 
 interface CheckFacetState {
@@ -119,25 +120,31 @@ class CheckFacet extends React.Component<FacetProps & { search?: boolean }, Chec
           : null}
         {searchBox}
         {
-          orderBy(displayValues, [3, 2], ['desc', 'desc']).map(
-            ([value, count, checked], i) => (
-              <div style={{display: 'block'}} >
-                <div className="ui checkbox">
-                  <input 
-                    onClick={this.onClick(value)} 
-                    checked={checked} 
-                    type="checkbox" 
-                    name={i + ''} 
-                  />
-                  <label 
-                    onClick={this.onClick(value)}
-                    style={{cursor: 'pointer'}}
-                  >
-                    {render(value, count)}
-                  </label>
+          orderBy(displayValues, ['checked', 'count'], ['desc', 'desc']).map(
+            (thisFacet: FacetValue, i) => {
+              let { value, count, checked } = thisFacet;
+              
+              return (
+                <div key="facet" style={{display: 'block'}} >
+                  <div key="cb" className="ui checkbox">
+                    <input 
+                      key="input"
+                      onClick={this.onClick(value)} 
+                      checked={checked} 
+                      type="checkbox" 
+                      name={i + ''} 
+                    />
+                    <label 
+                      key="label"
+                      onClick={this.onClick(value)}
+                      style={{cursor: 'pointer'}}
+                    >
+                      {render(value, count)}
+                    </label>
+                  </div>
                 </div>
-              </div>
-            )
+              )
+            }
           )
         }
         {moreLink}

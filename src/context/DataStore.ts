@@ -7,6 +7,8 @@ import {
 import * as fetchJsonp from 'fetch-jsonp';
 import * as _ from 'lodash';
 
+import { FacetValue } from '../component/facet/FacetTypes';
+
 function escape(value: QueryParam): string {
   if (value === '*') {
     return value;
@@ -252,7 +254,7 @@ interface PaginationData {
 }
 
 type QueryEvent<T> = (object: T[], paging: PaginationData) => void;
-type FacetEvent = (object: [string, number, boolean][]) => void;
+type FacetEvent = (object: FacetValue[]) => void;
 type ErrorEvent = (error: object) => void;
 type GetEvent<T> = (object: T) => void;
 type MoreLikeThisEvent<T> = (object: T[]) => void;
@@ -571,7 +573,16 @@ class SolrCore<T> implements SolrTransitions {
 
                       events.map(
                         (event) => {
-                          event(_.zipWith(facetLabels, facetLabelCount, facetSelections));
+                          event(
+                            _.zipWith(facetLabels, facetLabelCount, facetSelections).map(
+                              (facetData: [string, number, boolean]) => {
+                                return {
+                                  value: facetData[0],
+                                  count: facetData[1],
+                                  checked: facetData[2]
+                                };
+                              }
+                            ));
                         }
                       );
                     }

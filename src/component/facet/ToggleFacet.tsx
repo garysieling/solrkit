@@ -4,7 +4,8 @@ import * as _ from 'lodash';
 import {
   FacetRenderer,
   defaultRenderer,
-  FacetProps
+  FacetProps,
+  FacetValue
 } from './FacetTypes';
 
 class ToggleFacet extends React.Component<FacetProps, {}> {
@@ -13,13 +14,13 @@ class ToggleFacet extends React.Component<FacetProps, {}> {
     transition: React.PropTypes.func
   };
   
-  onClick(value: [string, number, boolean]) {
+  onClick(value: FacetValue) {
     return () => {
       let selections: string[] = [];
-      if (value[2]) {
+      if (value.checked) {
         selections = [];
       } else {
-        selections.push(value[0]);
+        selections.push(value.value);
       }
 
       const thisFacet = {};

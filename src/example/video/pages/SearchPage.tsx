@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { FacetValue } from '../../../component/facet/FacetTypes';
 import { ResultsLayout } from '../../../layout/ResultsLayout';
 import { ResultsList } from '../../../component/ResultsList';
 import { SearchBox } from '../../../component/SearchBox';
@@ -37,7 +38,7 @@ class SearchPageApp extends React.Component<SearchPageProps, {}> {
       databind(
         dataStore.talks.registerFacet(['features_ss']),
         dataStore.talks,
-        (data: [string, number, boolean][]) => (
+        (data: FacetValue[]) => (
           <div>
             <CheckFacet 
               title="Features" 
