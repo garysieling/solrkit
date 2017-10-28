@@ -1,10 +1,18 @@
-import * as DataBinding from './context/DataBinding';
-import * as DataStore from './context/DataStore';
-import { databind } from './context/DataBinding';
+import { PaginationData, SolrCore } from './context/DataStore';
+
+export { PaginationData, SolrCore };
+
+import { DataStore } from './context/DataStore';
+import { 
+  DataBind,
+  Bound, 
+  databind 
+} from './context/DataBinding';
 
 const context = {
-  DataBinding,
-  DataStore,
+  DataStore,  
+  DataBind,
+  Bound, 
   databind
 };
 

@@ -1,6 +1,6 @@
 {
   "name": "solrkit",
-  "version": "0.0.17",
+  "version": "0.0.18",
   "dependencies": {
     "react-lite": "^0.15.19",
     "react-dom": "^15.6.1",
