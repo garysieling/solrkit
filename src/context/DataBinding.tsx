@@ -65,14 +65,14 @@ class Bound extends React.Component<DataBoundProps<object>, DataBoundState<objec
 
   transition(args: SearchParams) {
     const currentParams = this.props.dataStore.getCurrentParameters();
-    const newParams: SearchParams = Object.assign(
+    const newParams: SearchParams = _.extend(
       {},
       currentParams,
       args      
     );
 
     if (args.facets) {
-      newParams.facets = Object.assign({}, currentParams.facets, args.facets);      
+      newParams.facets = _.extend({}, currentParams.facets, args.facets);      
     }
 
     // TODO - should handle different classes of route

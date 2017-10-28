@@ -752,7 +752,7 @@ class DataStore {
     // Check if this exists - Solr URL + core should be enough
     let key = config.url;
     
-    if (!key.endsWith('/')) {
+    if (!_.endsWith(key, '/')) {
       key += '/';
     }
 
