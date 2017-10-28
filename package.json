@@ -1,8 +1,8 @@
 {
   "name": "solrkit",
-  "version": "0.0.9",
+  "version": "0.0.13",
   "dependencies": {
-    "react": "^15.6.1",
+    "react-lite": "^0.15.19",
     "react-dom": "^15.6.1",
     "react-router": "^4.2.0",
     "react-router-dom": "^4.2.2",
@@ -62,7 +62,7 @@
     "build": "tsc",
     "test": "node scripts/test.js --env=jsdom"
   },
-  "main": "build/src/module.js",
+  "main": "build/module.js",
   "jest": {
     "mapCoverage": true,
     "collectCoverageFrom": [
@@ -85,9 +85,6 @@
     "transformIgnorePatterns": [
       "[/\\\\]node_modules[/\\\\].+\\.(js|jsx|ts|tsx)$"
     ],
-    "moduleNameMapper": {
-      "^react-native$": "react-native-web"
-    },
     "moduleFileExtensions": [
       "web.ts",
       "ts",
