@@ -9,6 +9,6 @@ npm install solrkit
 API Documentation:
 https://garysieling.gitbooks.io/solrkit/
 
-Demo:
+Demo: https://www.findlectures.com/view/180828
 
 See also SearchKit for Elasticsearch
