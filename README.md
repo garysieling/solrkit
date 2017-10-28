@@ -7,6 +7,9 @@ Available components:
 - Pagination
 - Chart facet
 
+API Documentation:
+https://garysieling.gitbooks.io/solrkit/
+
 Demo:
 
 See also SearchKit for Elasticsearch
