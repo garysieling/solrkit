@@ -1,7 +1,5 @@
 import * as DataBinding from './context/DataBinding';
-import { 
-  DataStore 
-} from './context/DataStore';
+import * as DataStore from './context/DataStore';
 import { databind } from './context/DataBinding';
 
 const context = {

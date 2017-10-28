@@ -154,5 +154,6 @@ class CheckFacet extends React.Component<FacetProps & { search?: boolean }, Chec
 }
 
 export {
+  CheckFacetState,
   CheckFacet
 };

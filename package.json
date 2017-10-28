@@ -1,6 +1,6 @@
 {
   "name": "solrkit",
-  "version": "0.0.14",
+  "version": "0.0.17",
   "dependencies": {
     "react-lite": "^0.15.19",
     "react-dom": "^15.6.1",
@@ -57,6 +57,9 @@
     "webpack": "3.5.1",
     "webpack-dev-server": "2.7.1",
     "webpack-manifest-plugin": "1.2.1"
+  },
+  "bugs": {
+    "url": "https://github.com/garysieling/solrkit/issues"
   },
   "scripts": {
     "build": "tsc",

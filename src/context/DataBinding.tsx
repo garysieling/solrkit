@@ -125,4 +125,11 @@ class DataBind extends React.Component<{}, {}> {
   }
 }
 
-export { DataBind, Bound, databind };
+export { 
+  RenderLambda,
+  DataBoundProps,
+  DataBoundState,
+  DataBind,
+  Bound, 
+  databind 
+};

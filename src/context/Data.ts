@@ -1,4 +1,4 @@
-interface ResponseHeader {
+export interface ResponseHeader {
   status: number;
   QTime: number;
   params: {
@@ -6,7 +6,7 @@ interface ResponseHeader {
   };
 }
 
-interface Response<T> {
+export interface Response<T> {
   numFound: number;
   start: number;
   docs: T[];

@@ -770,16 +770,27 @@ type SingleComponent<T> =
   (data: T) => object | null | undefined;
 
 export { 
+  ErrorEvent,
+  UrlParams,
+  QueryParam, 
+  NamespacedUrlParam,
+  UrlFragment,
+  PaginationData,
+  SearchParams,  
+  QueryBeingBuilt,
   SolrQueryBuilder,
   SingleComponent,
-  DataStore,
-  SolrCore, 
+  MoreLikeThisEvent,  
+  GetEvent,
+  GenericSolrQuery,
+  QueryEvent,
+  FacetEvent,
+  SolrConfig,  
   SolrGet, 
   SolrUpdate,
   SolrMoreLikeThis, 
   SolrQuery,
-  PaginationData,
-  SolrTransitions,
-  SearchParams,
-  
+  SolrTransitions,  
+  SolrCore,  
+  DataStore  
 };

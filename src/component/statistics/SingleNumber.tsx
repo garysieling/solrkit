@@ -24,4 +24,7 @@ const SingleNumber = (props: SingleNumberProps) => (
   </Statistic>
 );
 
-export { SingleNumber };
+export { 
+  SingleNumberProps,
+  SingleNumber 
+};

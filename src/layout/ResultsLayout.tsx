@@ -77,4 +77,7 @@ class ResultsLayout extends React.Component<ResultsLayoutProps, {}> {
   }
 }
 
-export { ResultsLayout };
+export { 
+  ResultsLayoutProps,
+  ResultsLayout
+};

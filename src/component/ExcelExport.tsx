@@ -33,5 +33,6 @@ class ExcelExport extends React.Component<ExcelExportProps, {}> {
 }
 
 export {
+  ExcelExportProps,
   ExcelExport
 };

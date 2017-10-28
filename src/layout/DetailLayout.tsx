@@ -57,4 +57,7 @@ class DetailLayout extends React.Component<DetailLayoutProps, {}> {
   }
 }
 
-export { DetailLayout };
+export { 
+  DetailLayoutProps,
+  DetailLayout 
+};

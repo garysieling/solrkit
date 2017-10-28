@@ -40,6 +40,6 @@ class ResultsList<T> extends React.Component<ResultsListProps<T>> {
 }
 
 export {
-  ResultsList, 
-  ResultsListProps
+  ResultsListProps,  
+  ResultsList
 };

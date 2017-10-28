@@ -29,6 +29,6 @@ class MoreLikeThis<T> extends React.Component<MoreLikeThisProps<T>> {
 }
 
 export {
-  MoreLikeThis, 
-  MoreLikeThisProps
+  MoreLikeThisProps,  
+  MoreLikeThis
 };

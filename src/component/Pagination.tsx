@@ -12,21 +12,6 @@ interface PaginationState {
   activePage: number;
 }
 
-// TODO split into it's own file
-const PaginationProperties = [
-  {
-    name: 'data',
-    display: 'Data',
-    type: 'object[]'
-  },
-  {
-    name: 'pageSize',
-    display: 'Page Size',
-    type: 'number',
-    default: 10
-  }
-];
-
 class Pagination extends React.Component<PaginationProps, PaginationState> {
   static contextTypes = {
     searchState: PropTypes.object,
@@ -101,6 +86,7 @@ class Pagination extends React.Component<PaginationProps, PaginationState> {
 }
 
 export {
-  Pagination,
-  PaginationProperties
+  PaginationProps,
+  PaginationState,
+  Pagination  
 };

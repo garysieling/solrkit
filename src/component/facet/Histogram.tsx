@@ -27,17 +27,6 @@ interface HistogramProps {
   facetHandler?: (a: [number | string, number | string]) => void;
 }
 
-// TODO move into own file
-const HistogramProperties = [
-  {
-    name: 'data',
-    display: 'Data',
-    type: 'object[]'
-  }
-  // TODO option for LOG
-  // TODO documenation extractor
-];
-
 class Histogram extends React.Component<HistogramProps, {}> {
   svg: any;
   x: any;
@@ -251,4 +240,7 @@ debugger;
   }
 }
 
-export { Histogram, HistogramProperties };
+export { 
+  HistogramProps,
+  Histogram 
+};
