@@ -9,7 +9,8 @@ type RenderLambda<T> =
 function databind<T>(
     event: Function,
     ds: SolrCore<object>,
-    render: RenderLambda<T>
+    render: RenderLambda<T>,
+    transition?: (sp: SearchParams) => Boolean
 ) {
   return () => {
     return (
@@ -17,6 +18,7 @@ function databind<T>(
         event={event}
         dataStore={ds}
         render={render}
+        transition={transition}
       />
     );
   };
@@ -26,6 +28,7 @@ interface DataBoundProps<T> {
   event: Function;
   dataStore: SolrGet<T> & SolrMoreLikeThis<T> & SolrTransitions;
   render: RenderLambda<T>;
+  transition?: (params: SearchParams) => Boolean;
 }
 
 interface DataBoundState<T> {
@@ -64,6 +67,12 @@ class Bound extends React.Component<DataBoundProps<object>, DataBoundState<objec
   }
 
   transition(args: SearchParams) {
+    if (this.props.transition) {
+      if (this.props.transition(args)) {
+        return;
+      }
+    }
+
     const currentParams = this.props.dataStore.getCurrentParameters();
     const newParams: SearchParams = _.extend(
       {},

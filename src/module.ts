@@ -1,6 +1,6 @@
-import { PaginationData, SolrCore } from './context/DataStore';
+import { PaginationData, SolrCore, SearchParams } from './context/DataStore';
 
-export { PaginationData, SolrCore };
+export { PaginationData, SolrCore, SearchParams };
 
 import { DataStore } from './context/DataStore';
 import { 
