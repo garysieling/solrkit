@@ -61,7 +61,7 @@ class SearchBox extends React.Component<SearchBoxProps, SearchBoxState> {
   onSelectTypeahead(e: React.MouseEvent<HTMLDivElement>, data: SearchResultData) {
     this.setState(
       {
-        query: data.value + '',
+        query: data.result.title,
         shouldBeOpen: false,
         searchEditedByUser: true
       }
