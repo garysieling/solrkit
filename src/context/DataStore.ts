@@ -828,8 +828,13 @@ class AutoConfiguredDataStore extends DataStore {
     return this.fields;
   }
 
-  autoconfigure<T extends object>(config: SolrConfig, complete: () => void): void {
+  autoconfigure<T extends object>(
+    config: SolrConfig, 
+    complete: () => void,
+    useFacet: (facet: string) => boolean
+  ): void {
     const callback = 'cb_autoconfigure_' + config.core;
+    useFacet = useFacet || ((facet: string) => true);
     
     let qb = 
       new SolrQueryBuilder(
@@ -853,7 +858,7 @@ class AutoConfiguredDataStore extends DataStore {
                   return fieldDef.docs > 0 && fieldDef.schema.match(/I.S............../);
                 }
               ).map(
-                ([fieldName, fieldDe]) => fieldName
+                ([fieldName, fieldDef]) => fieldName
               );
 
             const defaultSearchFields = 
@@ -862,7 +867,7 @@ class AutoConfiguredDataStore extends DataStore {
                   return fieldDef.docs > 0 && fieldDef.schema.match(/I................/);
                 }
               ).map(
-                ([fieldName, fieldDe]) => fieldName
+                ([fieldName, fieldDef]) => fieldName
               );
 
             const coreConfig = _.extend(
@@ -879,8 +884,9 @@ class AutoConfiguredDataStore extends DataStore {
 
             this.core = new SolrCore<T>(coreConfig);
             this.fields = fields;
-            this.facets = fields;
+            this.facets = fields.filter(useFacet);
 
+            this.core.registerFacet(this.facets)(_.identity);
             complete();
           }
         );

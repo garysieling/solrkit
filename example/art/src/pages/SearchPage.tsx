@@ -17,6 +17,17 @@ import {
 import { AppDataStore } from './data/AppDataStore';
 import { Link } from 'react-router-dom';
 
+function title(facet: string) {
+  return facet.substring(0, 1).toUpperCase() +
+    facet
+      .split('_')[0]
+      .replace('AsString', '')
+      .substring(1)
+      .replace(
+        /([A-Z])/g, ' $1'
+      );
+}
+
 class SearchPageApp extends React.Component<{}, {loaded: boolean}> {
   private left: () => JSX.Element;
   private right: () => JSX.Element;
@@ -37,24 +48,30 @@ class SearchPageApp extends React.Component<{}, {loaded: boolean}> {
 
     dataStore.init(
       () => {    
-        this.left = () => (
-          <div>
+        const core = dataStore.getCore();
+        const facets = dataStore.getFacets().map(
+          (facet, idx) => (
             <Bound
-              dataStore={dataStore.getCore()}
-              event={dataStore.getCore().registerFacet(['place'])}
+              key={idx}
+              dataStore={core}
+              event={core.registerFacet([facet])}
               render={
                 (data: [string, number, boolean][]) => (
                   <CheckFacet 
-                    title="Place" 
+                    title={title(facet)}
                     values={data}
                     search={true}
-                    facet="place"
-                    render={(label: string, value: number) => 
-                      label + ': ' + value.toLocaleString()}
+                    facet={facet}
                   />
                 )
               }
             />
+          )
+        );
+
+        this.left = () => (
+          <div>
+            {facets}
 
             <div>
               <h4>Options</h4>
