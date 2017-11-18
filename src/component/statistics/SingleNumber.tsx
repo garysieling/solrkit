@@ -9,20 +9,26 @@ interface SingleNumberProps {
   size?: 'mini' | 'tiny' | 'small' | 'large' | 'huge';
 }
 
-const SingleNumber = (props: SingleNumberProps) => (
-  <Statistic 
-    horizontal={props.horizontal || false} 
-    color={props.color}
-    size={props.size || 'tiny'}
-  >
-    <Statistic.Value>{
-      props.value.toLocaleString(
-        undefined, { minimumFractionDigits: 0 }
-      )
-    }</Statistic.Value>
-    <Statistic.Label>{props.label}</Statistic.Label>
-  </Statistic>
-);
+class SingleNumber extends React.Component<SingleNumberProps> {
+  render() {
+    const props = this.props;
+    
+    return (
+      <Statistic 
+        horizontal={props.horizontal || false} 
+        color={props.color}
+        size={props.size || 'tiny'}
+      >
+        <Statistic.Value>{
+          props.value.toLocaleString(
+            undefined, { minimumFractionDigits: 0 }
+          )
+        }</Statistic.Value>
+        <Statistic.Label>{props.label}</Statistic.Label>
+      </Statistic>
+    );
+  }
+}
 
 export { 
   SingleNumberProps,

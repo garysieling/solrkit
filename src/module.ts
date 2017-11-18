@@ -27,7 +27,13 @@ const components = {
   MoreLikeThis,
   Pagination,
   ResultsList,
-  SearchBox
+  SearchBox  
+};
+
+import { SingleNumber } from './component/statistics/SingleNumber';
+
+const statistics = {
+  SingleNumber
 };
 
 import { CheckFacet } from './component/facet/CheckFacet';
@@ -52,4 +58,4 @@ const layout = {
   ResultsLayout
 };
 
-export { context, components, facets, layout };
+export { context, components, facets, layout, statistics };

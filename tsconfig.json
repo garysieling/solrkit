@@ -21,6 +21,9 @@
       "@component/*": [
         "./src/component/*"
       ],
+      "@statistics/*": [
+        "./src/component/statistics/*"
+      ],
       "@context/*": [
         "./src/context/*"
       ],
@@ -35,6 +38,7 @@
     "scripts",
     "acceptance-tests",
     "docs",
+    "example",
     "webpack",
     "jest",
     "src/setupTests.ts"
