@@ -11,7 +11,7 @@ import {
 } from './FacetTypes';
 
 class RadioFacet extends React.Component<FacetProps, {}> {
-    static contextTypes = {
+  static contextTypes = {
     searchState: React.PropTypes.object,
     transition: React.PropTypes.func
   };

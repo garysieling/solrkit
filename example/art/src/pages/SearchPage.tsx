@@ -11,7 +11,8 @@ import {
   SearchBox,
   CheckFacet,
   ResultsLayout,
-  PaginationData
+  PaginationData,
+  SelectedFilters
 } from 'solrkit';
 
 import { AppDataStore } from './data/AppDataStore';
@@ -92,22 +93,27 @@ class SearchPageApp extends React.Component<{}, {loaded: boolean}> {
         this.right = databindQuery(
           (docs: Document[], pagination: PaginationData) => {
             return (
-              <ResultsList 
-                docs={docs}
-                height={250} 
-                render={
-                  (doc: object) => 
-                    <Link
-                      to={'/piece/' + _.get(doc, 'id')}
-                      style={{height: '100%'}}
-                    >
-                      <img 
+              <div>
+                <div className="divided twelve wide columm">
+                  <SelectedFilters title={title} />
+                </div>
+                <ResultsList 
+                  docs={docs}
+                  height={250} 
+                  render={
+                    (doc: object) => 
+                      <Link
+                        to={'/piece/' + _.get(doc, 'id')}
                         style={{height: '100%'}}
-                        src={_.get(doc, 'image_s', '')} 
-                      />
-                    </Link>
-                }
-              />
+                      >
+                        <img 
+                          style={{height: '100%'}}
+                          src={_.get(doc, 'image_s', '')} 
+                        />
+                      </Link>
+                  }
+                />
+              </div>
             );
           }
         );
@@ -124,6 +130,7 @@ class SearchPageApp extends React.Component<{}, {loaded: boolean}> {
                   loading={false}
                 />
               </div>
+              <div className="ui horizontal divider" />
             </div>
           )
         );

@@ -20,6 +20,7 @@ import { DropdownFacet } from './component/facet/DropdownFacet';
 import { RadioFacet } from './component/facet/RadioFacet';
 import { TagFacet } from './component/facet/TagFacet';
 import { ToggleFacet } from './component/facet/ToggleFacet';
+import { SelectedFilters } from './component/facet/SelectedFilters';
 
 import { DetailLayout } from './layout/DetailLayout';
 import { ResultsLayout } from './layout/ResultsLayout';
@@ -41,6 +42,7 @@ export {
   TagFacet,
   ToggleFacet,
   SingleNumber,
+  SelectedFilters,
   
   DetailLayout,
   ResultsLayout,

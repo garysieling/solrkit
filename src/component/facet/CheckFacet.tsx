@@ -70,14 +70,6 @@ class CheckFacet extends React.Component<FacetProps & { search?: boolean }, Chec
     const help = this.props.help;
     const renderValue: FacetRenderer = this.props.render || defaultRenderer;
 
-    const searchBox = this.props.search ? (
-      <form className="ui mini form">
-        <div className="field" style={{ paddingBottom: '3px', width: '70%' }}>
-          <input type="text" placeholder="Filter" onChange={this.onChangeTypeahead} />
-        </div>
-      </form>
-    ) : null;
-
     const valueList =
       this.props.search && this.state.typeahead.length > 0 ? (
         filter(
@@ -107,6 +99,14 @@ class CheckFacet extends React.Component<FacetProps & { search?: boolean }, Chec
           Show More
         </div>
       );
+
+    const searchBox = this.props.search && !noMore ? (
+        <form className="ui mini form">
+          <div className="field" style={{ paddingBottom: '3px', width: '70%' }}>
+            <input type="text" placeholder="Filter" onChange={this.onChangeTypeahead} />
+          </div>
+        </form>
+      ) : null;
 
     return (
       <div className="ui" style={{marginBottom: '1em'}}>
