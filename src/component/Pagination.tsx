@@ -62,13 +62,13 @@ class Pagination extends React.Component<PaginationProps, PaginationState> {
 
     const menuItems = (
       pages.map(
-        (idx: number) => 
+        (idx: number, row: number) => 
           idx === -1 ? 
           (
-            <Menu.Item key={idx} disabled={true}>...</Menu.Item>
+            <Menu.Item key={row} disabled={true}>...</Menu.Item>
           ) : (
             <Menu.Item
-              key={idx}
+              key={row}
               name={idx + ''} 
               active={activePage === idx} 
               onClick={this.handlePaging(idx)} 

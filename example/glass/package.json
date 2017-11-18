@@ -1,5 +1,5 @@
 {
-  "name": "solrkit",
+  "name": "solrkit-example-glass",
   "version": "0.0.1",
   "private": true,
   "dependencies": {
@@ -25,8 +25,7 @@
     "react-scripts-ts": "2.7.0",
     "seamless-immutable": "^7.1.2",
     "semantic-ui-css": "^2.2.12",
-    "semantic-ui-react": "^0.74.1",
-    "solrkit": "^0.0.23"
+    "semantic-ui-react": "^0.74.1"
   },
   "scripts": {
     "start": "set PORT=3000 && react-scripts-ts start",

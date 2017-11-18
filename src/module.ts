@@ -1,6 +1,6 @@
 import { PaginationData, SolrCore, SearchParams } from './context/DataStore';
 
-import { DataStore } from './context/DataStore';
+import { DataStore, AutoConfiguredDataStore } from './context/DataStore';
 import { 
   DataBind,
   Bound, 
@@ -48,5 +48,7 @@ export {
   DataStore,  
   DataBind,
   Bound, 
-  databind
+  databind,
+
+  AutoConfiguredDataStore
 };

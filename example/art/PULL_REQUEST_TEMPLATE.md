@@ -1,3 +1,0 @@
-Fixes:
-
-Test instructions:

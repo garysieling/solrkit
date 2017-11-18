@@ -195,6 +195,16 @@ class SolrQueryBuilder<T> {
     );
   }
 
+  schema() {
+    return new SolrQueryBuilder<T>(
+      () => 
+        new QueryBeingBuilt(
+          'admin/luke?',
+          null
+        )
+    );
+  }
+
   construct(): [string, Array<UrlFragment>] {
     let start: [string, Array<UrlFragment>] = ['', []];
     if (this.previous) {
@@ -285,6 +295,42 @@ interface SolrTransitions {
   getNamespace: () => string;
   getCurrentParameters: () => SearchParams;
   stateTransition: (v: SearchParams) => void;
+}
+
+type SolrSchemaFieldDefinition = {
+  type: string;
+  schema: string;
+  dynamicBase: string;
+  docs: number;
+};
+
+type SolrSchemaDefinition = {
+  responseHeader: { status: number; QTime: number };
+  index: {
+    numDocs: number;
+    maxDoc: number,
+    deletedDocs: number,
+    indexHeapUsageBytes: number;
+    version: number;
+    segmentCount: number;
+    current: boolean;
+    hasDeletions: boolean;
+    directory: string;
+    segmentsFile: string;
+    segmentsFileSizeInBytes: number;
+    userData: {
+      commitTimeMSec: string;
+      commitCommandVer: string;
+    };
+
+    lastModified: string;
+  },
+  fields: { [key: string]: SolrSchemaFieldDefinition};
+  info: object;
+};
+
+interface SolrSchema {
+  getSchema: () => SolrSchemaDefinition;
 }
 
 // TODO - this needs a lot more definition to be useful
@@ -499,7 +545,7 @@ class SolrCore<T> implements SolrTransitions {
       );
     }
   } 
-
+  
   doQuery(query: GenericSolrQuery, cb?: (qb: SolrQueryBuilder<{}>) => SolrQueryBuilder<{}>)  {
     const self = this;
     const callback = 'cb_' + this.requestId++;
@@ -632,7 +678,6 @@ class SolrCore<T> implements SolrTransitions {
     };
     
     http.send(params);
-
   }
 
   doExport()  {
@@ -746,7 +791,7 @@ class DataStore {
       this.cores,
       (v: SolrCore<object>, k) => v.clearEvents()
     );
-  }
+  }  
 
   registerCore<T extends object>(config: SolrConfig): SolrCore<T> {
     // Check if this exists - Solr URL + core should be enough
@@ -764,6 +809,84 @@ class DataStore {
 
     return (this.cores[key] as SolrCore<T>);
   }  
+}
+
+class AutoConfiguredDataStore extends DataStore {
+  private core: SolrCore<object> & SolrGet<object> & SolrQuery<object>;
+  private facets: string[];
+  private fields: string[];
+
+  getCore() {
+    return this.core;
+  }
+
+  getFacets() {
+    return this.facets;
+  }
+
+  getFields() {
+    return this.fields;
+  }
+
+  autoconfigure<T extends object>(config: SolrConfig, complete: () => void): void {
+    const callback = 'cb_autoconfigure_' + config.core;
+    
+    let qb = 
+      new SolrQueryBuilder(
+        () => new QueryBeingBuilt('', null),
+      ).schema().jsonp(
+        callback
+      );
+
+    const url = config.url + config.core + '/' + qb.buildSolrUrl();
+
+    fetchJsonp(url, {
+      jsonpCallbackFunction: callback
+    }).then(
+      (data) => {
+        data.json().then( 
+          (responseData: SolrSchemaDefinition) => {
+            // TODO cache aggressively
+            const fields = 
+              _.toPairs(responseData.fields).filter(
+                ([fieldName, fieldDef]) => {
+                  return fieldDef.docs > 0 && fieldDef.schema.match(/I.S............../);
+                }
+              ).map(
+                ([fieldName, fieldDe]) => fieldName
+              );
+
+            const defaultSearchFields = 
+              _.toPairs(responseData.fields).filter(
+                ([fieldName, fieldDef]) => {
+                  return fieldDef.docs > 0 && fieldDef.schema.match(/I................/);
+                }
+              ).map(
+                ([fieldName, fieldDe]) => fieldName
+              );
+
+            const coreConfig = _.extend(
+              {}, 
+              {
+                primaryKey: 'id',
+                fields: fields,
+                defaultSearchFields: defaultSearchFields,
+                pageSize: 50,
+                prefix: config.core
+              },
+              config
+            );
+
+            this.core = new SolrCore<T>(coreConfig);
+            this.fields = fields;
+            this.facets = fields;
+
+            complete();
+          }
+        );
+      }
+    );
+  } 
 }
 
 type SingleComponent<T> =
@@ -792,5 +915,9 @@ export {
   SolrQuery,
   SolrTransitions,  
   SolrCore,  
-  DataStore  
+  SolrSchemaFieldDefinition,
+  SolrSchemaDefinition,
+  SolrSchema,
+  DataStore,
+  AutoConfiguredDataStore
 };
