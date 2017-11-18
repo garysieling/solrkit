@@ -1,14 +1,6 @@
 import { DataStore, SolrCore, SolrGet, SolrUpdate, SolrQuery } from 'solrkit';
 import { Document } from './Document';
 
-import { 
-  context
-} from 'solrkit';
-
-let { 
-  DataStore
-} = context;
-
 // Ideally you want to write code like this:
 // 
 //  DataStore.books.get = (talk: Talk) => <Detail {...talk} />
@@ -35,7 +27,7 @@ class AppDataStore extends DataStore {
     if (!this.core) {
       this.core = super.registerCore({
         url: 'http://40.87.64.225:8983/solr/',
-        core: 'glass2',
+        core: 'glass',
         primaryKey: 'id',
         // Unfortunately these have to be repeated 
         // since there is no apparent way to sync

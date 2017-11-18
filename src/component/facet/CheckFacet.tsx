@@ -68,7 +68,7 @@ class CheckFacet extends React.Component<FacetProps & { search?: boolean }, Chec
   render() {
     const title = this.props.title;
     const help = this.props.help;
-    const render: FacetRenderer = this.props.render || defaultRenderer;
+    const renderValue: FacetRenderer = this.props.render || defaultRenderer;
 
     const searchBox = this.props.search ? (
       <form className="ui mini form">
@@ -139,7 +139,7 @@ class CheckFacet extends React.Component<FacetProps & { search?: boolean }, Chec
                       onClick={this.onClick(value)}
                       style={{cursor: 'pointer'}}
                     >
-                      {render(value, count)}
+                      {renderValue(value, count)}
                     </label>
                   </div>
                 </div>

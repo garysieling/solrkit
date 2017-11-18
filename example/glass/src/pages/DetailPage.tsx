@@ -1,20 +1,10 @@
 import * as React from 'react';
 
 import { 
-  context, components, layout
-} from 'solrkit';
-
-let { 
-  databind
-} = context;
-
-let { 
-  SearchBox
-} = components;
-
-let { 
+  databind,
+  SearchBox,
   DetailLayout
-} = layout;
+} from 'solrkit';
 
 import { AppDataStore } from './data/AppDataStore';
 import { Document } from './data/Document';

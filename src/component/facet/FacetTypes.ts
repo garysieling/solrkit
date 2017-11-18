@@ -7,8 +7,8 @@ interface FacetValue {
 
 type FacetRenderer = (v: string, count: number) => string;
 
-function defaultRenderer(value: string, count: number): string {
-  return value;
+function defaultRenderer(label: string, value: number): string {
+  return label;
 }
 
 interface FacetProps {

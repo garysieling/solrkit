@@ -1,7 +1,5 @@
 import { PaginationData, SolrCore, SearchParams } from './context/DataStore';
 
-export { PaginationData, SolrCore, SearchParams };
-
 import { DataStore } from './context/DataStore';
 import { 
   DataBind,
@@ -9,32 +7,13 @@ import {
   databind 
 } from './context/DataBinding';
 
-const context = {
-  DataStore,  
-  DataBind,
-  Bound, 
-  databind
-};
-
 import { ExcelExport } from './component/ExcelExport';
 import { MoreLikeThis } from './component/MoreLikeThis';
 import { Pagination } from './component/Pagination';
 import { ResultsList } from './component/ResultsList';
 import { SearchBox } from './component/SearchBox';
 
-const components = {
-  ExcelExport,
-  MoreLikeThis,
-  Pagination,
-  ResultsList,
-  SearchBox  
-};
-
 import { SingleNumber } from './component/statistics/SingleNumber';
-
-const statistics = {
-  SingleNumber
-};
 
 import { CheckFacet } from './component/facet/CheckFacet';
 import { DropdownFacet } from './component/facet/DropdownFacet';
@@ -42,20 +21,32 @@ import { RadioFacet } from './component/facet/RadioFacet';
 import { TagFacet } from './component/facet/TagFacet';
 import { ToggleFacet } from './component/facet/ToggleFacet';
 
-const facets = {
+import { DetailLayout } from './layout/DetailLayout';
+import { ResultsLayout } from './layout/ResultsLayout';
+
+export { 
+  PaginationData,
+  SolrCore,
+  SearchParams,
+
+  ExcelExport,
+  MoreLikeThis,
+  Pagination,
+  ResultsList,
+  SearchBox,
+
   CheckFacet,
   DropdownFacet,
   RadioFacet,
   TagFacet,
-  ToggleFacet
-};
-
-import { DetailLayout } from './layout/DetailLayout';
-import { ResultsLayout } from './layout/ResultsLayout';
-
-const layout = {
+  ToggleFacet,
+  SingleNumber,
+  
   DetailLayout,
-  ResultsLayout
-};
+  ResultsLayout,
 
-export { context, components, facets, layout, statistics };
+  DataStore,  
+  DataBind,
+  Bound, 
+  databind
+};

@@ -1,33 +1,17 @@
 import * as React from 'react';
 
 import { 
-  context, components, facets, layout, statistics,
-  PaginationData
-} from 'solrkit';
-
-let {
-  SingleNumber
-} = statistics;
-
-let { 
+  SingleNumber,
   Bound, 
-  databind
-} = context;
-
-let { 
+  databind,
   ExcelExport,
   Pagination,
   ResultsList,
-  SearchBox
-} = components;
-
-let { 
-  CheckFacet
-} = facets;
-
-let { 
-  ResultsLayout
-} = layout;
+  SearchBox,
+  CheckFacet,
+  ResultsLayout,
+  PaginationData
+} from 'solrkit';
 
 import { AppDataStore } from './data/AppDataStore';
 import { Document } from './data/Document';

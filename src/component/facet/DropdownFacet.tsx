@@ -34,11 +34,11 @@ class DropdownFacet extends React.Component<FacetProps, {}> {
 
     const options: DropdownItemProps[] =
       _.sortBy(this.props.values, (v) => v[0]).map(
-        (value, i) => {
+        ({value, count, checked}, i) => {
           return { 
             key: i,
-            text: render(value[0], value[1]), 
-            value: value[0]
+            text: render(value, count), 
+            value: value
           };
         }
       );
