@@ -125,7 +125,7 @@ class CheckFacet extends React.Component<FacetProps & { search?: boolean }, Chec
               let { value, count, checked } = thisFacet;
               
               return (
-                <div key="facet" style={{display: 'block'}} >
+                <div key={i} style={{display: 'block'}} >
                   <div key="cb" className="ui checkbox">
                     <input 
                       key="input"
