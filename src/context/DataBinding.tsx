@@ -1,4 +1,12 @@
-import { PaginationData, SearchParams, SolrCore, SolrMoreLikeThis, SolrGet, SolrTransitions } from './DataStore';
+import { 
+  PaginationData, 
+  SearchParams, 
+  SolrCore, 
+  SolrMoreLikeThis, 
+  SolrGet, 
+  SolrQuery, 
+  SolrTransitions 
+} from './DataStore';
 import * as React from 'react';
 import { PropTypes } from 'react';
 import * as _ from 'lodash';
@@ -26,7 +34,7 @@ function databind<T>(
 
 interface DataBoundProps<T> {
   event: Function;
-  dataStore: SolrGet<T> & SolrMoreLikeThis<T> & SolrTransitions;
+  dataStore: SolrGet<T> & SolrMoreLikeThis<T> & SolrQuery<T> & SolrTransitions;
   render: RenderLambda<T>;
   transition?: (params: SearchParams) => Boolean;
 }
@@ -55,7 +63,9 @@ class Bound extends React.Component<DataBoundProps<object>, DataBoundState<objec
     };
 
     // This needs to happen early
-    props.event.call(
+    // If this isn't bound to a specific event (e.g. a facet) just notify
+    // the control when there are new search results.
+    (props.event || props.dataStore.onQuery).call(
       props.dataStore,
       (data: object | object[], paging: PaginationData) => {
         this.setState( {
@@ -65,7 +75,6 @@ class Bound extends React.Component<DataBoundProps<object>, DataBoundState<objec
       }
     );
   }
-
 
   transition(args: SearchParams) {
     if (this.props.transition) {

@@ -18,6 +18,7 @@ import { SingleNumber } from './component/statistics/SingleNumber';
 import { CheckFacet } from './component/facet/CheckFacet';
 import { HistogramFacet } from './component/facet/HistogramFacet';
 import { CountryFacet } from './component/facet/CountryFacet';
+import { ColorPickerFacet } from './component/facet/ColorPickerFacet';
 import { DropdownFacet } from './component/facet/DropdownFacet';
 import { RadioFacet } from './component/facet/RadioFacet';
 import { TagFacet } from './component/facet/TagFacet';
@@ -47,6 +48,7 @@ export {
   SelectedFilters,
   HistogramFacet,
   CountryFacet,
+  ColorPickerFacet,
   
   DetailLayout,
   ResultsLayout,

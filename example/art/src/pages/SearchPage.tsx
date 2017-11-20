@@ -15,7 +15,8 @@ import {
   PaginationData,
   SelectedFilters,
   HistogramFacet,
-  CountryFacet
+  CountryFacet,
+  ColorPickerFacet
 } from 'solrkit';
 
 import { AppDataStore } from './data/AppDataStore';
@@ -57,43 +58,58 @@ class SearchPageApp extends React.Component<{}, {loaded: boolean, lightboxOpen: 
     dataStore.init(
       () => {    
         const core = dataStore.getCore();
-        const facets = dataStore.getFacets().map(
-          (facet, idx) => (
-            <Bound
-              key={idx}
-              dataStore={core}
-              event={core.registerFacet([facet])}
-              render={
-                (data: [string, number, boolean][]) => {
-                  if (facet === 'location_s') {
-                    return <CountryFacet 
-                      title={title(facet)}
-                      values={data}
-                      facet={facet}
-                    />;
-                  }
 
-                  if (facet === 'yearAsString_s') {
-                    return (
-                      <HistogramFacet 
+        const facets = [(
+          <Bound
+            key={'colors'}
+            dataStore={core}
+            render={
+              (data: [string, number, boolean][]) => {
+                return <ColorPickerFacet 
+                  title={'Colors'}
+                />;
+              }
+            }
+          />
+        )].concat(
+          dataStore.getFacets().map(
+            (facet, idx) => (
+              <Bound
+                key={idx}
+                dataStore={core}
+                event={core.registerFacet([facet])}
+                render={
+                  (data: [string, number, boolean][]) => {
+                    if (facet === 'location_s') {
+                      return <CountryFacet 
                         title={title(facet)}
                         values={data}
+                        facet={facet}
+                      />;
+                    }
+
+                    if (facet === 'yearAsString_s') {
+                      return (
+                        <HistogramFacet 
+                          title={title(facet)}
+                          values={data}
+                          facet={facet}
+                        />
+                      );
+                    }
+
+                    return (
+                      <CheckFacet 
+                        title={title(facet)}
+                        values={data}
+                        search={true}
                         facet={facet}
                       />
                     );
                   }
-
-                  return (
-                    <CheckFacet 
-                      title={title(facet)}
-                      values={data}
-                      search={true}
-                      facet={facet}
-                    />
-                  );
                 }
-              }
-            />
+              />
+            )
           )
         );
 

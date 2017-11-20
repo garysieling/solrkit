@@ -18,6 +18,7 @@ class AppDataStore extends AutoConfiguredDataStore {
       (facet: string) => {
         return !_.includes(
           [
+            'colors_ss',
             'birthDay_s',
             'deathDay_s',
             'deathDayAsString_s',
