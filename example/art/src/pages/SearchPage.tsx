@@ -12,7 +12,8 @@ import {
   CheckFacet,
   ResultsLayout,
   PaginationData,
-  SelectedFilters
+  SelectedFilters,
+  HistogramFacet
 } from 'solrkit';
 
 import { AppDataStore } from './data/AppDataStore';
@@ -35,6 +36,7 @@ class SearchPageApp extends React.Component<{}, {loaded: boolean}> {
   private header: () => JSX.Element;
   private footer: () => JSX.Element;
   private rightRail: () => JSX.Element;
+  private dataStore: AppDataStore;
 
   constructor() {
     super();
@@ -46,6 +48,7 @@ class SearchPageApp extends React.Component<{}, {loaded: boolean}> {
 
   componentWillMount() {
     const dataStore = new AppDataStore();
+    this.dataStore = this.dataStore;
 
     dataStore.init(
       () => {    
@@ -57,14 +60,26 @@ class SearchPageApp extends React.Component<{}, {loaded: boolean}> {
               dataStore={core}
               event={core.registerFacet([facet])}
               render={
-                (data: [string, number, boolean][]) => (
-                  <CheckFacet 
-                    title={title(facet)}
-                    values={data}
-                    search={true}
-                    facet={facet}
-                  />
-                )
+                (data: [string, number, boolean][]) => {
+                  if (facet === 'yearAsString_s') {
+                    return (
+                      <HistogramFacet 
+                        title={title(facet)}
+                        values={data}
+                        facet={facet}
+                      />
+                    );
+                  }
+
+                  return (
+                    <CheckFacet 
+                      title={title(facet)}
+                      values={data}
+                      search={true}
+                      facet={facet}
+                    />
+                  );
+                }
               }
             />
           )

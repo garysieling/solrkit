@@ -66,6 +66,7 @@ class Bound extends React.Component<DataBoundProps<object>, DataBoundState<objec
     );
   }
 
+
   transition(args: SearchParams) {
     if (this.props.transition) {
       if (this.props.transition(args)) {

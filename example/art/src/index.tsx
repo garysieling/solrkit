@@ -57,10 +57,6 @@ class SearchApp extends React.Component<SearchAppProps, {}> {
   componentDidMount() {
     this.init();
   }
-  
-  componentWillUnmount() {
-    // this.props.app.dataStore.clearEvents();
-  }
 
   render() {
     return <SearchPageApp />;
