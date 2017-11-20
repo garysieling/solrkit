@@ -14,7 +14,8 @@ import {
   ResultsLayout,
   PaginationData,
   SelectedFilters,
-  HistogramFacet
+  HistogramFacet,
+  CountryFacet
 } from 'solrkit';
 
 import { AppDataStore } from './data/AppDataStore';
@@ -64,6 +65,14 @@ class SearchPageApp extends React.Component<{}, {loaded: boolean, lightboxOpen: 
               event={core.registerFacet([facet])}
               render={
                 (data: [string, number, boolean][]) => {
+                  if (facet === 'location_s') {
+                    return <CountryFacet 
+                      title={title(facet)}
+                      values={data}
+                      facet={facet}
+                    />;
+                  }
+
                   if (facet === 'yearAsString_s') {
                     return (
                       <HistogramFacet 
