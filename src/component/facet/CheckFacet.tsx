@@ -79,6 +79,10 @@ class CheckFacet extends React.Component<FacetProps & { search?: boolean }, Chec
       ) : (
         this.props.values
       );
+      
+    if (valueList.length === 0) {
+      return null;
+    }
 
     const noMore = !this.state.showMoreLink || valueList.length < 8;
     const displayValues =
