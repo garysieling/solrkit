@@ -1,5 +1,6 @@
 import * as React from 'react';
 import * as _ from 'lodash';
+import Lightbox from 'react-image-lightbox';
 
 import { 
   SingleNumber,
@@ -17,7 +18,6 @@ import {
 } from 'solrkit';
 
 import { AppDataStore } from './data/AppDataStore';
-import { Link } from 'react-router-dom';
 
 function title(facet: string) {
   return facet.substring(0, 1).toUpperCase() +
@@ -30,7 +30,7 @@ function title(facet: string) {
       );
 }
 
-class SearchPageApp extends React.Component<{}, {loaded: boolean}> {
+class SearchPageApp extends React.Component<{}, {loaded: boolean, lightboxOpen: boolean, photoIndex: number}> {
   private left: () => JSX.Element;
   private right: () => JSX.Element;
   private header: () => JSX.Element;
@@ -42,11 +42,14 @@ class SearchPageApp extends React.Component<{}, {loaded: boolean}> {
     super();
 
     this.state = {
-      loaded: false
+      loaded: false,
+      lightboxOpen: false,
+      photoIndex: 0
     };
   }
 
   componentWillMount() {
+    const self = this;
     const dataStore = new AppDataStore();
     this.dataStore = this.dataStore;
 
@@ -116,16 +119,29 @@ class SearchPageApp extends React.Component<{}, {loaded: boolean}> {
                   docs={docs}
                   height={250} 
                   render={
-                    (doc: object) => 
-                      <Link
-                        to={'/piece/' + _.get(doc, 'id')}
-                        style={{height: '100%'}}
-                      >
+                    (doc: object, index: number) => 
+                      <div style={{height: '100%'}}>
+                        {self.state.lightboxOpen &&
+                          <Lightbox
+                              mainSrc={_.get(docs[self.state.photoIndex], 'image_s')}
+                              nextSrc={_.get(docs[(self.state.photoIndex + 1) % docs.length], 'image_s')}
+                              prevSrc={_.get(docs[(self.state.photoIndex + docs.length - 1) % docs.length], 'image_s')}
+
+                              onCloseRequest={() => self.setState({ lightboxOpen: false })}
+                              onMovePrevRequest={() => this.setState({
+                                  photoIndex: (self.state.photoIndex + docs.length - 1) % docs.length,
+                              })}
+                              onMoveNextRequest={() => this.setState({
+                                  photoIndex: (self.state.photoIndex + 1) % docs.length,
+                              })}
+                          />
+                        }
                         <img 
                           style={{height: '100%'}}
                           src={_.get(doc, 'image_s', '')} 
+                          onClick={() => this.setState({ lightboxOpen: true, photoIndex: index })}
                         />
-                      </Link>
+                      </div>
                   }
                 />
               </div>

@@ -30,7 +30,7 @@ class ResultsList<T> extends React.Component<ResultsListProps<T>> {
                 key={i}
                 style={style}
               >
-                {render(doc)}
+                {render(doc, i)}
               </div>
           )
         }

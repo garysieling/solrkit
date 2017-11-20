@@ -896,7 +896,7 @@ class AutoConfiguredDataStore extends DataStore {
 }
 
 type SingleComponent<T> =
-  (data: T) => object | null | undefined;
+  (data: T, index?: number) => object | null | undefined;
 
 export { 
   ErrorEvent,
