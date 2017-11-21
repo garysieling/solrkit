@@ -71,6 +71,20 @@ class SearchPageApp extends React.Component<{}, {loaded: boolean, lightboxOpen: 
               }
             }
           />
+        ), (
+          <Bound
+            key={'location'}
+            dataStore={core}
+            render={
+              (data: [string, number, boolean][]) => {
+                return <CountryFacet 
+                    title="Location"
+                    values={data}
+                    facet="location_s"
+                />;
+              }
+            }
+          />
         )].concat(
           dataStore.getFacets().map(
             (facet, idx) => (

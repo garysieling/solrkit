@@ -18,6 +18,7 @@ class AppDataStore extends AutoConfiguredDataStore {
       (facet: string) => {
         return !_.includes(
           [
+            'location_s',
             'colors_s',
             'birthDay_s',
             'deathDay_s',
@@ -43,7 +44,7 @@ class AppDataStore extends AutoConfiguredDataStore {
           ], 
           facet
         );
-      }
+      }        
     );
   }
 
