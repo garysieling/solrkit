@@ -209,7 +209,7 @@ class ColorPickerFacet extends React.Component<FacetProps, ColorPickerFacetState
   }
 
   pickColor(elt: any) {
-    this.setState({
+    const newColors = {
       colors: [
         tinycolor.fromRatio(
           {
@@ -226,7 +226,28 @@ class ColorPickerFacet extends React.Component<FacetProps, ColorPickerFacetState
           }
         )
       ]
-    });
+    };
+
+    const searchTerms = 
+      newColors.colors.map(
+        (color) => {
+          const cm = color.toRgb();
+          return (
+            Math.round(cm.r / 32.0) * 8 * 8 +
+            Math.round(cm.g / 32.0) * 8 +
+            Math.round(cm.b / 32.0)
+          );
+        }
+      );
+
+    this.context.transition(
+      {
+        start: 0,
+        boost: searchTerms.join(' ')
+      }
+    );
+
+    this.setState(newColors);
   }
 
   onClick(value: string) {

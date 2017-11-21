@@ -29,6 +29,7 @@ enum UrlParams {
 interface SearchParams {
   type?: 'QUERY' | 'MLT' | 'DETAILS';
   query?: string;
+  boost?: string;
   start?: number;
   facets?: { [ key: string ]: string[] };
 }
@@ -118,13 +119,25 @@ class SolrQueryBuilder<T> {
     return new SolrQueryBuilder<T>(
       () => 
         new QueryBeingBuilt(
-          'q=' +
+          'defType=edismax&q=' +
             searchFields.map(
               (field) => field + ':' + escape(value)
             ).join('%20OR%20'),
           [UrlParams.QUERY, value]
         )
       ,
+      this
+    );
+  }
+
+  bq(query: string) {
+    return new SolrQueryBuilder<T>(
+      () => {
+        return new QueryBeingBuilt(
+          'bq=' + query,
+          null
+        );
+      },
       this
     );
   }
@@ -336,6 +349,7 @@ interface SolrSchema {
 // TODO - this needs a lot more definition to be useful
 interface GenericSolrQuery {
   query: string;
+  boost?: string;
   rows?: number;
 }
 
@@ -564,6 +578,10 @@ class SolrCore<T> implements SolrTransitions {
       qb = qb.fq(this.solrConfig.fq[0], [this.solrConfig.fq[1]]);
     }
 
+    if (query.boost) {
+      qb = qb.bq(query.boost);
+    }
+
     _.map(
       this.events.facet,
       (v, k) => {
@@ -747,7 +765,8 @@ class SolrCore<T> implements SolrTransitions {
       this.doQuery(
         {
           rows: this.solrConfig.pageSize,
-          query: newState.query || '*'
+          query: newState.query || '*',
+          boost: newState.boost
         }, 
         (qb: SolrQueryBuilder<{}>) => {
           let response = qb.start(
