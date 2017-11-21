@@ -2,6 +2,7 @@ import * as React from 'react';
 import { get, includes } from 'lodash';
 import { Dropdown } from 'semantic-ui-react';
 import * as d3 from 'd3';
+import * as tinycolor from 'tinycolor2';
 
 import 'd3-scale';
 import 'd3-svg';
@@ -28,6 +29,7 @@ const types = ['Analogous', 'Complementary', 'Triad', 'Tetrad', 'Monochromatic']
 
 interface ColorPickerFacetState {
   mode: string;
+  colors: string[];
 } 
 
 const Modes = {
@@ -108,7 +110,8 @@ class ColorPickerFacet extends React.Component<FacetProps, ColorPickerFacetState
     super();
 
     this.state = {
-      mode: Modes.ANALOGOUS
+      mode: Modes.ANALOGOUS,
+      colors: []
     };
 
     this.dispatch = d3.dispatch(
@@ -124,6 +127,106 @@ class ColorPickerFacet extends React.Component<FacetProps, ColorPickerFacetState
       // The mode was changed
       'modeChanged'
     );
+
+    this.pickColor = this.pickColor.bind(this);
+  }
+  
+  render() {
+    const title = this.props.title;
+    const help = this.props.help;
+
+    return (
+      <div className="ui" style={{marginBottom: '1em'}}>
+        {title ? (
+          help ? (
+            <Popup 
+              trigger={<h4>{title}</h4>}
+              content={help}
+            />) :
+          <h4>{title}</h4>)
+          : null}
+        {
+          <div>
+            <Dropdown 
+              options={types} 
+              selection={true} 
+              closeOnBlur={true} 
+              simple={true} 
+              item={true} 
+              value={'Analogous'}
+              onChange={( e, {value} ) => this.onClick(value + '')} 
+            />
+            {
+              this.state.colors.map(
+                (color: string) => (
+                  <div style={{width: 10, height: 10, float: 'left', backgroundColor: color}} />
+                )
+              )
+            }
+            <svg 
+              ref={(svg) => this.container = svg} 
+              className="colorwheel" 
+              width="160" 
+              height="160" 
+              viewBox="-30 -30 420 420"
+              onClick={this.pickColor}
+            >
+              <image width="350" height="350" href="http://benknight.github.io/kuler-d3/wheel.png" />
+              <g>
+                  <line className="colorwheel-marker-trail" x1="175" y1="175" stroke="steelblue" strokeOpacity="0.75" strokeWidth="3" strokeDasharray="10, 6" x2="350" y2="175" visibility="visible" />
+                  <line className="colorwheel-marker-trail" x1="175" y1="175" stroke="steelblue" strokeOpacity="0.75" strokeWidth="3" strokeDasharray="10, 6" x2="125.55000305175781" y2="221.22500610351562" visibility="visible" />
+                  <line className="colorwheel-marker-trail" x1="175" y1="175" stroke="steelblue" strokeOpacity="0.75" strokeWidth="3" strokeDasharray="10, 6" x2="47.15779716907171" y2="55.49530898188226" visibility="visible" />
+                  <line className="colorwheel-marker-trail" x1="175" y1="175" stroke="steelblue" strokeOpacity="0.75" strokeWidth="3" strokeDasharray="10, 6" x2="186.54407515803408" y2="3.9569560828419696" visibility="visible" />
+                  <line className="colorwheel-marker-trail" x1="175" y1="175" stroke="steelblue" strokeOpacity="0.75" strokeWidth="3" strokeDasharray="10, 6" x2="186.78432942473347" y2="349.6027765529785" visibility="visible" />
+              </g>
+              <g>
+                  <g className="colorwheel-marker root" visibility="visible" transform="translate(350,175)">
+                    <circle r="20" stroke="steelblue" strokeWidth="2" strokeOpacity="0.9" cursor="move" fill="#ff0000" />
+                    <text x="28" y="5" fill="steelblue" fontSize="13px" />
+                  </g>
+                  <g className="colorwheel-marker" visibility="visible" transform="translate(125.55000305175781,221.22500610351562)">
+                    <circle r="20" stroke="steelblue" strokeWidth="2" strokeOpacity="0.9" cursor="move" fill="#9cf6ff" />
+                    <text x="28" y="5" fill="steelblue" fontSize="13px" />
+                  </g>
+                  <g className="colorwheel-marker" visibility="visible" transform="translate(47.15779716907171,55.49530898188226)">
+                    <circle r="20" stroke="steelblue" strokeWidth="2" strokeOpacity="0.9" cursor="move" fill="#a6ff00" />
+                    <text x="28" y="5" fill="steelblue" fontSize="13px" />
+                  </g>
+                  <g className="colorwheel-marker" visibility="visible" transform="translate(186.54407515803408,3.9569560828419696)">
+                    <circle r="20" stroke="steelblue" strokeWidth="2" strokeOpacity="0.9" cursor="move" fill="#ffc305" />
+                    <text x="28" y="5" fill="steelblue" fontSize="13px" />
+                  </g>
+                  <g className="colorwheel-marker" visibility="visible" transform="translate(186.78432942473347,349.6027765529785)">
+                    <circle r="20" stroke="steelblue" strokeWidth="2" strokeOpacity="0.9" cursor="move" fill="#0005ff" />
+                    <text x="28" y="5" fill="steelblue" fontSize="13px" />
+                  </g>
+              </g>
+            </svg>
+          </div>  
+        }
+      </div>
+    );
+  }
+
+  pickColor(elt: any) {
+    this.setState({
+      colors: [
+        tinycolor.fromRatio(
+          {
+            r: Math.random(),
+            g: Math.random(),
+            b: Math.random()
+          }
+        ),
+        tinycolor.fromRatio(
+          {
+            r: Math.random(),
+            g: Math.random(),
+            b: Math.random()
+          }
+        )
+      ]
+    });
   }
 
   onClick(value: string) {
@@ -148,27 +251,27 @@ class ColorPickerFacet extends React.Component<FacetProps, ColorPickerFacetState
     };
   }
 
-  cx(className: string) {
+  private cx(className: string) {
     return this.options.baseClassName + '-' + className;
   }
 
-  selector(className: string) {
+  private selector(className: string) {
     return '.' + this.cx(className);
   }
 
-  getVisibleMarkers() {
+  private getVisibleMarkers() {
     return this.container.selectAll(this.selector('marker') + '[visibility=visible]');
   }
 
-  cartesianToSVG(x: number, y: number) {
+  private cartesianToSVG(x: number, y: number) {
     return {'x': x + this.options.radius, 'y': this.options.radius - y};
   }
 
-  svgToCartesian(x: number, y: number) {
+  private svgToCartesian(x: number, y: number) {
     return {'x': x - this.options.radius, 'y': this.options.radius - y};
   }
 
-  pointOnCircle(x: number, y: number) {
+  private pointOnCircle(x: number, y: number) {
     const p = this.svgToCartesian(x, y);
     if (Math.sqrt(p.x * p.x + p.y * p.y) <= this.options.radius) {
       return {'x': x, 'y': y};
@@ -180,7 +283,7 @@ class ColorPickerFacet extends React.Component<FacetProps, ColorPickerFacetState
     }
   }  
 
-  getHSFromSVGPosition(x: number, y: number) {
+  private getHSFromSVGPosition(x: number, y: number) {
     const p = this.svgToCartesian(x, y);
     const theta = Math.atan2(p.y, p.x);
     const artisticHue = (theta * (180 / Math.PI) + 360) % 360;
@@ -190,15 +293,15 @@ class ColorPickerFacet extends React.Component<FacetProps, ColorPickerFacetState
     return {h: scientificHue, s: s};
   }
 
-  getRootMarker() {
+  private getRootMarker() {
     return this.container.select(this.selector('marker') + '[visibility=visible]');
   }
 
-  getMarkers() {
+  private getMarkers() {
     return this.container.selectAll(this.selector('marker'));
   }
 
-  setHarmony() {
+  private setHarmony() {
     const self = this;
     const root = this.getRootMarker();
     const offsetFactor = 0.08;
@@ -259,7 +362,7 @@ class ColorPickerFacet extends React.Component<FacetProps, ColorPickerFacetState
     }
   }
 
-  updateHarmony(target: any, theta: number) {
+  private updateHarmony(target: any, theta: number) {
     const self = this;
 
     // Find out how far the dragging marker is from the root marker.
@@ -340,75 +443,6 @@ class ColorPickerFacet extends React.Component<FacetProps, ColorPickerFacetState
         }
         self.dispatch.updateEnd();
       });
-  }
-
-  render() {
-    const title = this.props.title;
-    const help = this.props.help;
-
-    return (
-      <div className="ui" style={{marginBottom: '1em'}}>
-        {title ? (
-          help ? (
-            <Popup 
-              trigger={<h4>{title}</h4>}
-              content={help}
-            />) :
-          <h4>{title}</h4>)
-          : null}
-        {
-          <div>
-            <Dropdown 
-              options={types} 
-              selection={true} 
-              closeOnBlur={true} 
-              simple={true} 
-              item={true} 
-              value={'Analogous'}
-              onChange={( e, {value} ) => this.onClick(value + '')} 
-            />
-            <svg 
-              ref={(svg) => this.container = svg} 
-              className="colorwheel" 
-              width="160" 
-              height="160" 
-              viewBox="-30 -30 420 420"
-            >
-              <image width="350" height="350" href="http://benknight.github.io/kuler-d3/wheel.png" />
-              <g>
-                  <line className="colorwheel-marker-trail" x1="175" y1="175" stroke="steelblue" stroke-opacity="0.75" stroke-width="3" stroke-dasharray="10, 6" x2="350" y2="175" visibility="visible" />
-                  <line className="colorwheel-marker-trail" x1="175" y1="175" stroke="steelblue" stroke-opacity="0.75" stroke-width="3" stroke-dasharray="10, 6" x2="125.55000305175781" y2="221.22500610351562" visibility="visible" />
-                  <line className="colorwheel-marker-trail" x1="175" y1="175" stroke="steelblue" stroke-opacity="0.75" stroke-width="3" stroke-dasharray="10, 6" x2="47.15779716907171" y2="55.49530898188226" visibility="visible" />
-                  <line className="colorwheel-marker-trail" x1="175" y1="175" stroke="steelblue" stroke-opacity="0.75" stroke-width="3" stroke-dasharray="10, 6" x2="186.54407515803408" y2="3.9569560828419696" visibility="visible" />
-                  <line className="colorwheel-marker-trail" x1="175" y1="175" stroke="steelblue" stroke-opacity="0.75" stroke-width="3" stroke-dasharray="10, 6" x2="186.78432942473347" y2="349.6027765529785" visibility="visible" />
-              </g>
-              <g>
-                  <g className="colorwheel-marker root" visibility="visible" transform="translate(350,175)">
-                    <circle r="20" stroke="steelblue" stroke-width="2" stroke-opacity="0.9" cursor="move" fill="#ff0000" />
-                    <text x="28" y="5" fill="steelblue" font-size="13px" />
-                  </g>
-                  <g className="colorwheel-marker" visibility="visible" transform="translate(125.55000305175781,221.22500610351562)">
-                    <circle r="20" stroke="steelblue" stroke-width="2" stroke-opacity="0.9" cursor="move" fill="#9cf6ff" />
-                    <text x="28" y="5" fill="steelblue" font-size="13px" />
-                  </g>
-                  <g className="colorwheel-marker" visibility="visible" transform="translate(47.15779716907171,55.49530898188226)">
-                    <circle r="20" stroke="steelblue" stroke-width="2" stroke-opacity="0.9" cursor="move" fill="#a6ff00" />
-                    <text x="28" y="5" fill="steelblue" font-size="13px" />
-                  </g>
-                  <g className="colorwheel-marker" visibility="visible" transform="translate(186.54407515803408,3.9569560828419696)">
-                    <circle r="20" stroke="steelblue" stroke-width="2" stroke-opacity="0.9" cursor="move" fill="#ffc305" />
-                    <text x="28" y="5" fill="steelblue" font-size="13px" />
-                  </g>
-                  <g className="colorwheel-marker" visibility="visible" transform="translate(186.78432942473347,349.6027765529785)">
-                    <circle r="20" stroke="steelblue" stroke-width="2" stroke-opacity="0.9" cursor="move" fill="#0005ff" />
-                    <text x="28" y="5" fill="steelblue" font-size="13px" />
-                  </g>
-              </g>
-            </svg>
-          </div>  
-        }
-      </div>
-    );
   }
 }
 
