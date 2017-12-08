@@ -24,6 +24,54 @@ interface SearchPageProps {
 
 const dataStore = new AppDataStore();
 
+function embedUrl(url: String) {
+  return (
+    'https://www.youtube.com/embed/' + 
+    url.replace(/.*v=/, '') +
+    '?modestbranding=true&autoplay=1'
+  );
+}
+
+function thumbnailUrl(url: string) {
+  return (
+    'http://img.youtube.com/vi/' + 
+    url.replace(/.*v=/, '') +
+    '/mqdefault.jpg'
+  );
+}
+
+class VideoThumbnail extends React.Component<{url_s: string}, {on: boolean}> {
+  private img: HTMLImageElement | null;
+
+  constructor() {
+    super();
+
+    this.state = { on : false };
+    this.open = this.open.bind(this);
+  }
+
+  open() {
+    this.setState( { on: true });
+  }
+
+  render() {
+    return this.state.on ? (
+        <iframe 
+          id="player" 
+          height={this.img ? this.img.getBoundingClientRect().height : '100%'}
+          width={this.img ? this.img.getBoundingClientRect().width : '100%'}
+          src={embedUrl(this.props.url_s)} 
+        />
+      ) : (
+        <img         
+          ref={(img) => this.img = img}
+          onClick={this.open} 
+          src={thumbnailUrl(this.props.url_s)} 
+        />
+      );
+  }
+}
+
 class SearchPageApp extends React.Component<SearchPageProps, {}> {
   static dataStore = dataStore;
 
@@ -87,12 +135,18 @@ class SearchPageApp extends React.Component<SearchPageProps, {}> {
       (talks: Document[], pagination: PaginationData) => {
         return (
           <ResultsList 
+            columnWidth="four"
             docs={talks} 
             render={
               (talk: Document) => 
-                <Link to={'/view/' + talk.id}>
-                  {talk.title_s}
-                </Link>
+                <div>
+                  <VideoThumbnail url_s={talk.url_s} />
+                  <Link to={'/view/' + talk.id}>
+                    <h2>
+                      {talk.title_s}
+                    </h2>
+                  </Link>
+                </div>
             }
           />
         );

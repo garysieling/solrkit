@@ -6,6 +6,10 @@ interface ResultsListProps<T> {
   render: SingleComponent<T>;
 
   height?: number;
+  columnWidth?: 'one' | 'two' | 'three' | 'four' | 
+    'five' | 'six' | 'seven' | 'eight' | 'nine' | 
+    'ten' | 'eleven' | 'twelve' | 'thirteen' | 
+    'fourteen' | 'fifteen' | 'sixteen';
 }
 
 class ResultsList<T> extends React.Component<ResultsListProps<T>> {
@@ -21,12 +25,16 @@ class ResultsList<T> extends React.Component<ResultsListProps<T>> {
       };
     }
 
+    // sixteen means one column
+    const thisColumnClass = (this.props.columnWidth || 'sixteen') + ' wide column';
+
     return (
-      <div>
+      <div className="ui grid">
         {
           (docs || []).map(
             (doc, i) => 
               <div
+                className={thisColumnClass}
                 key={i}
                 style={style}
               >

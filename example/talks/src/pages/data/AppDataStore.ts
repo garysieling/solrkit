@@ -34,7 +34,8 @@ class AppDataStore extends DataStore {
         // this with Typescript
         fields: ['title_s', 'url_s', 'id'],
         defaultSearchFields: ['title_s', 'auto_transcript_txt_en'],
-        pageSize: 10,
+        pageSize: 16,
+        fq: ['embeddable_b', 'true'],
         prefix: 'talk'
       });
     }
