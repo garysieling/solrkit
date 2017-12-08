@@ -64,6 +64,7 @@ class VideoThumbnail extends React.Component<{url_s: string}, {on: boolean}> {
         />
       ) : (
         <img         
+          width="95%"
           ref={(img) => this.img = img}
           onClick={this.open} 
           src={thumbnailUrl(this.props.url_s)} 
