@@ -44,7 +44,7 @@ const Modes = {
 
 // Simple range mapping function
 // For example, mapRange(5, 0, 10, 0, 100) = 50
-function mapRange(value: number, fromLower: number, fromUpper: number, toLower: number, toUpper: number) {
+/*function mapRange(value: number, fromLower: number, fromUpper: number, toLower: number, toUpper: number) {
   return (toLower + (value - fromLower) * ((toUpper - toLower) / (fromUpper - fromLower)));
 }
 
@@ -70,15 +70,15 @@ function scientificToArtisticSmooth(hue: number) {
     hue < 240 ? mapRange(hue, 180, 240, 218, 275) :
     hue < 300 ? mapRange(hue, 240, 300, 275, 330) :
                 mapRange(hue, 300, 360, 330, 360));
-}
-
+}*/
+/*
 function markerDistance(i: number) {
   return Math.ceil(i / 2) * Math.pow(-1, i + 1);
 }
 
 function stepFn(base: number) {
   return function (x: number) { return Math.floor(x / base); };
-}
+}*/
 
 class ColorPickerFacet extends React.Component<FacetProps, ColorPickerFacetState> {
   static contextTypes = {
@@ -135,6 +135,8 @@ class ColorPickerFacet extends React.Component<FacetProps, ColorPickerFacetState
     const title = this.props.title;
     const help = this.props.help;
 
+    // <image width="350" height="350" href="http://benknight.github.io/kuler-d3/wheel.png" />
+
     return (
       <div className="ui" style={{marginBottom: '1em'}}>
         {title ? (
@@ -171,7 +173,6 @@ class ColorPickerFacet extends React.Component<FacetProps, ColorPickerFacetState
               viewBox="-30 -30 420 420"
               onClick={this.pickColor}
             >
-              <image width="350" height="350" href="http://benknight.github.io/kuler-d3/wheel.png" />
               <g>
                   <line className="colorwheel-marker-trail" x1="175" y1="175" stroke="steelblue" strokeOpacity="0.75" strokeWidth="3" strokeDasharray="10, 6" x2="350" y2="175" visibility="visible" />
                   <line className="colorwheel-marker-trail" x1="175" y1="175" stroke="steelblue" strokeOpacity="0.75" strokeWidth="3" strokeDasharray="10, 6" x2="125.55000305175781" y2="221.22500610351562" visibility="visible" />
@@ -272,7 +273,7 @@ class ColorPickerFacet extends React.Component<FacetProps, ColorPickerFacetState
     };
   }
 
-  private cx(className: string) {
+ /* private cx(className: string) {
     return this.options.baseClassName + '-' + className;
   }
 
@@ -464,7 +465,7 @@ class ColorPickerFacet extends React.Component<FacetProps, ColorPickerFacetState
         }
         self.dispatch.updateEnd();
       });
-  }
+  }*/
 }
 
 export {
