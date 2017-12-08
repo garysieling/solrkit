@@ -91,6 +91,30 @@ function main() {
             key="query"
             path="/talks/:query/:page" 
             render={({match}) => <SearchApp params={match.params} app={SearchPageApp} />}
+          />          
+          <Route 
+            exact={false} 
+            key="topic1"
+            path="/topic/:query" 
+            render={({match}) => <SearchApp params={match.params} app={SearchPageApp} />}
+          />
+          <Route 
+            exact={true} 
+            key="topic2"
+            path="/topic/:query/:page" 
+            render={({match}) => <SearchApp params={match.params} app={SearchPageApp} />}
+          />
+          <Route 
+            exact={true} 
+            key="speaker1"
+            path="/speaker/:query" 
+            render={({match}) => <SearchApp params={match.params} app={SearchPageApp} />}
+          />
+          <Route 
+            exact={true} 
+            key="speaker2"
+            path="/speaker/:query/:page" 
+            render={({match}) => <SearchApp params={match.params} app={SearchPageApp} />}
           />
           <Route 
             path="/view/:id" 
