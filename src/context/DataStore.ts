@@ -29,7 +29,8 @@ enum UrlParams {
   QUERY = 'query',
   FQ = 'fq',
   START = 'start',
-  TYPE = 'type'
+  TYPE = 'type',
+  HL = 'highlight'
 }
 
 interface SearchParams {
@@ -168,6 +169,54 @@ class SolrQueryBuilder<T> {
       },
       this
     );
+  }
+
+  highlight(query: HighlightQuery) {
+    if (query.fields.length > 0) {
+      return new SolrQueryBuilder<T>(
+        () => {
+          let params: string[] = [
+            'method',
+            'fields',
+            'query',
+            'qparser',
+            'requireFieldMatch',
+            'usePhraseHighlighter',
+            'highlightMultiTerm',
+            'snippets',
+            'fragsize',
+            'encoder',
+            'maxAnalyzedChars'].map(
+              (key: string) => query[key] ? (
+                'hl.' + key + '=' + query[key]
+              ) : null
+            ).filter( 
+              (key) => !!key
+            );
+
+          if (query.pre) {
+            params.push('hl.tag.pre=' + query.pre);
+          }
+
+          if (query.post) {
+            params.push('hl.tag.post=' + query.pre);
+          }
+
+          return new QueryBeingBuilt(
+            'hl=true&' + 
+            'hl.fl=' + query.fields.join(',') + (
+              params.length > 0 ? ( '&' + params.join('&') ) : ''
+            ),
+            // Not saving these, because I'm assuming these will be
+            // configured as part of the search engine, rather than
+            // changed by user behavior
+            null
+          );
+        }
+      );
+    } else {
+      return null;
+    }
   }
 
   fl(fields: QueryParam[]) {
@@ -312,6 +361,11 @@ interface SolrQuery<T> {
   registerFacet: (facet: string[]) => (cb: FacetEvent) => void;
 }
 
+interface SolrHighlight<T> {
+  onHighlight: () => void;
+
+}
+
 interface SolrMoreLikeThis<T> {
   doMoreLikeThis: (id: string | number) => void;
   onMoreLikeThis: (cb: MoreLikeThisEvent<T>) => void;
@@ -365,6 +419,25 @@ interface GenericSolrQuery {
   query: string;
   boost?: string;
   rows?: number;
+}
+
+/**
+ * See: https://lucene.apache.org/solr/guide/6_6/highlighting.html
+ */
+interface HighlightQuery {
+  method?: 'unified' | 'original' | 'fastVector' | 'postings';
+  fields: string[];
+  query?: string; 
+  qparser?: string;
+  requireFieldMatch?: boolean;
+  usePhraseHighlighter?: boolean;
+  highlightMultiTerm?: boolean;
+  snippets?: number;
+  fragsize?: number;
+  pre?: string;
+  post?: string;
+  encoder?: string;
+  maxAnalyzedChars?: number;  
 }
 
 interface SolrConfig {
@@ -943,7 +1016,8 @@ type SingleComponent<T> =
 export { 
   ErrorEvent,
   UrlParams,
-  QueryParam, 
+  QueryParam,
+  HighlightQuery, 
   NamespacedUrlParam,
   UrlFragment,
   PaginationData,
