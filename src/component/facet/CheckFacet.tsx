@@ -15,6 +15,7 @@ import {
 interface CheckFacetState {
   showMoreLink: boolean;
   typeahead: string;
+  minValues: number;
 }
 
 class CheckFacet extends React.Component<FacetProps & { search?: boolean }, CheckFacetState> {
@@ -84,12 +85,14 @@ class CheckFacet extends React.Component<FacetProps & { search?: boolean }, Chec
       return null;
     }
 
-    const noMore = !this.state.showMoreLink || valueList.length < 8;
+    const minValues = this.props.minValues || 5;
+    const noMore = !this.state.showMoreLink || valueList.length < (minValues + 3);
+    
     const displayValues =
       (noMore) ? (
         valueList
       ) : (
-        take(valueList, 5)
+        take(valueList, minValues)
       );
 
     const moreLink =
