@@ -35,8 +35,8 @@ class AppDataStore extends DataStore {
         fields: ['title_s', 'url_s', 'id'],
         defaultSearchFields: ['title_s', 'auto_transcript_txt_en'],
         pageSize: 16,
-        fq: ['embeddable_b', 'true'],
-        prefix: 'talk'
+        prefix: 'talks',
+        qt: 'tvrh'
       });
     }
 

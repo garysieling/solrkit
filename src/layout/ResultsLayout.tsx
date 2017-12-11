@@ -47,12 +47,17 @@ class ResultsLayout extends React.Component<ResultsLayoutProps, {}> {
       rightRailComponent ? 
         'ten wide column' :
         'twelve wide column';
-
-    return (
-      <div className="ui segments">
+        
+    const header = 
+      this.props.headerComponent ? (
         <div className="ui segment">
           {headerComponent}
         </div>
+      ) : null;
+
+    return (
+      <div className="ui segments" style={{height: '100%'}}>
+        {header}
         <div className="main ui segment">
           <div className="ui grid">
             <div className="three wide column">

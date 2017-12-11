@@ -3,6 +3,7 @@ import * as ReactDOM from 'react-dom';
 
 import { Route, BrowserRouter } from 'react-router-dom';
 import { SearchPageApp } from './pages/SearchPage';
+import { MapPage } from './pages/MapPage';
 import { DetailPageApp } from './pages/DetailPage';
 
 import * as _ from 'lodash';
@@ -43,133 +44,6 @@ function fixParams(params: PageParams): SearchParams {
   };
 }
 
-interface PlacesApi {
-  maps: {
-    LatLng: any;
-    Map: any;
-
-    event: {
-      addListener: any;
-    }
-
-    places: {
-      PlacesService: any;
-
-      PlacesServiceStatus: {
-        OK: string;
-      }
-    }
-  };
-}
-
-class MapApp extends React.Component<{}, {display: string[]}> {
-  private map: any;
-  private center: any;
-
-  constructor() {
-    super();
-
-    this.search = this.search.bind(this);
-    this.callback = this.callback.bind(this);
-
-    this.state = {
-      display: []
-    };
-  }
-
-  callback(results: string[], status: string) {
-    const self = this;
-    const google: PlacesApi = _.get(window, 'google');
-    
-    if (status === google.maps.places.PlacesServiceStatus.OK) {
-      const display = _.sortedUniq(
-        results.map(
-          (result) => 
-            _.get(result, 'name', '')
-            .replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/ig, ' ')
-            .replace(/\b(Inc|St|Av)\b/ig, ' ')
-            .replace(/\b(Charter School|Public School|Junior High School|Station|High School of .*)\b/ig, ' ')
-            .replace(/\b(Preparatory School|Library|City Hall|Academy Preschool|Transportation Center)\b/ig, ' ')
-            .replace(/\b(School|Institute|Post Office|College|Hospital|University|High School)\b/ig, ' ')
-            .replace(/\b(United States Postal Service|Mail Parcel Service|Mail Center|Historical Society)\b/ig, '')
-            .replace(/\b(at|and|the|of|Foundation|Services|Academy)\b/ig, '  ')
-            .replace(/[ ]+/ig, ' ')            
-            .split(' ')
-            .filter(
-              (token) => 
-                !token.match(/^[0-9]/) && // numbered streets
-                token.length > 1 && // N/S/W/E
-                token.toUpperCase() !== token // removes train station tokens
-             ).join(
-              ' '
-            )
-        ).concat(this.state.display)
-      ).filter(
-        (name) => name.indexOf(' ') > 0
-      );
-
-      self.setState( {
-        display
-      });
-    }
-  }
-
-  componentDidMount() {
-    var google: PlacesApi = _.get(window, 'google');
-    
-    const self = this;
-    this.map = _.get(window, 'map');
-    
-    google.maps.event.addListener(self.map, 'idle', function() {
-      self.center = self.map.getCenter(); 
-    });
-  }
-
-  search() {    
-    const self = this;
-    var google: PlacesApi = _.get(window, 'google');
-    var map = _.get(window, 'map');    
-   
-    [
-      'school', 
-      // 'courthouse', these don't have special names
-      'airport', 
-      'library',
-      'subway_station',
-      'local_government_office',
-      'train_station',
-      'transit_station',
-      'city_hall', 
-      'neighborhood'
-      // 'post_office'
-    ].map(
-      (type) => {
-        const request = {
-          location: map['getCenter'](),
-          radius: '5000',
-          type: type
-        };
-      
-        const service = new google.maps.places.PlacesService(self.map);
-        service.nearbySearch(request, this.callback);
-      }
-    )
-
-  }
-
-  render() {
-    return (
-      <div>
-        <h1>Scroll to a region</h1>
-        <button onClick={this.search}>Search</button>
-        {
-          this.state.display.join(' ')
-        }
-      </div>
-    );
-  }
-}
-
 class SearchApp extends React.Component<SearchAppProps, {}> {
   constructor() {
     super();
@@ -197,7 +71,7 @@ class SearchApp extends React.Component<SearchAppProps, {}> {
   render() {
     if (this.props.mode === 'map') {
       return (
-        <MapApp />
+        <MapPage />
       );
     } else {
       return <SearchPageApp />;
@@ -213,7 +87,7 @@ const defaultParams = {
 function main() {
   ReactDOM.render((
       <BrowserRouter>
-        <div>
+        <div style={{height: '100%'}}>
           <Route 
             key="main"
             exact={true} 

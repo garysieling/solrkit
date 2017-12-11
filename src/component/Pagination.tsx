@@ -34,6 +34,10 @@ class Pagination extends React.Component<PaginationProps, PaginationState> {
     const numRows = self.props.numRows || 0;
     let activePage = 1 + self.context.searchState.start / pageSize;
        
+    if (numRows < pageSize) {
+      return null;
+    }
+
     const maxPage = Math.ceil(numRows / pageSize);
     if (maxPage < activePage) {
       activePage = maxPage;

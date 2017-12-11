@@ -124,12 +124,8 @@ class Bound extends React.Component<DataBoundProps<object>, DataBoundState<objec
 
   render() {
     // TODO these need to be named or something
-    if (!this.state.data) {
-      return null;
-    }
-
     return (
-      this.props.render(this.state.data || [], this.state.paging)
+      this.props.render(this.state.data || [], this.state.paging || { numFound: 0, start: 0, pageSize: 10 })
     );
   }
 }

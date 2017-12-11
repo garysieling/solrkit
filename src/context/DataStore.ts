@@ -14,7 +14,13 @@ function escape(value: QueryParam): string {
     return value;
   }
   
-  return '"' + value.toString().replace(/ /g, '%20') + '"';
+  return (
+    (value.toString().indexOf(' ') > 0) ? (
+      '"' + value.toString().replace(/ /g, '%20') + '"'
+    ) : (
+      value.toString()
+    )
+  );
 }
 
 // Note that the stored versions of these end up namespaced and/or aliased
@@ -113,7 +119,15 @@ class SolrQueryBuilder<T> {
       () => new QueryBeingBuilt('wt=csv', null),
       this
     );
-  }
+  }  
+
+  qt(qt: string) {
+    return new SolrQueryBuilder<T>(
+      // TODO: tv.all here is probably wrong
+      () => new QueryBeingBuilt('tv.all=true&qt=' + qt, null),
+      this
+    );
+  }  
 
   q(searchFields: string[], value: QueryParam) {
     return new SolrQueryBuilder<T>(
@@ -362,6 +376,7 @@ interface SolrConfig {
   pageSize: number;
   prefix: string;
   fq?: [string, string];
+  qt?: string;
 }
 
 class SolrCore<T> implements SolrTransitions {
@@ -567,10 +582,18 @@ class SolrCore<T> implements SolrTransitions {
     let qb = 
       new SolrQueryBuilder(
         () => new QueryBeingBuilt('', null),
-      ).select().q(
-        this.solrConfig.defaultSearchFields,
-        query.query
-      ).fl(this.solrConfig.fields).rows(
+      );
+      
+    qb = qb.select().q(
+      this.solrConfig.defaultSearchFields,
+      query.query
+    );
+    
+    if (this.solrConfig.qt) {
+      qb = qb.qt(this.solrConfig.qt);
+    }
+
+    qb = qb.fl(this.solrConfig.fields).rows(
         query.rows || this.solrConfig.pageSize
       );
 

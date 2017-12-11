@@ -28,9 +28,7 @@
     <noscript>
       You need to enable JavaScript to run this app.
     </noscript>
-    <div id="root" style="width:100%; height:50%"></div>
-    
-    <div id="map" style="width:100%; height:50%"></div>
+    <div id="root" style="height: 100%"></div>
     <!--
       This HTML file is a template.
       If you open it directly in the browser, you will see an empty page.
@@ -41,19 +39,6 @@
       To begin the development, run `npm start` or `yarn start`.
       To create a production bundle, use `npm run build` or `yarn build`.
     -->
-    <script>
-      function initMap() {
-        var start = {lat: 39.9779964, lng: -75.1486154};
-        window.map = new google.maps.Map(document.getElementById('map'), {
-          zoom: 15,
-          center: start
-        });
-        var marker = new google.maps.Marker({
-          position: start,
-          map: map
-        });
-      }
-    </script>
-    <script async defer type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCiwuskMh-6YpkwDN8OojheDKnMC-LV9AI&libraries=places&callback=initMap"></script>
+    <script async defer type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCiwuskMh-6YpkwDN8OojheDKnMC-LV9AI&libraries=places"></script>
   </body>
 </html>

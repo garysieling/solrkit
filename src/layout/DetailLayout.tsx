@@ -33,11 +33,16 @@ class DetailLayout extends React.Component<DetailLayoutProps, {}> {
     const rightSize = (leftComponent && rightComponent) ? 
       'six' : 'zero';
 
-    return (
-      <div className="ui segments">
+    const header = 
+      this.props.headerComponent ? (
         <div className="ui segment">
           {headerComponent}
         </div>
+      ) : null;
+
+    return (
+      <div className="ui segments" style={{height: '100%'}}>
+        {header}
         <div className="main ui segment">
           <div className="ui grid">
             <div className={leftSize + ' wide column'}>
