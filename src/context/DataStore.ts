@@ -189,9 +189,9 @@ class SolrQueryBuilder<T> {
             'maxAnalyzedChars'].map(
               (key: string) => query[key] ? (
                 'hl.' + key + '=' + query[key]
-              ) : null
+              ) : ''
             ).filter( 
-              (key) => !!key
+              (key) => key !== ''
             );
 
           if (query.pre) {
@@ -362,8 +362,7 @@ interface SolrQuery<T> {
 }
 
 interface SolrHighlight<T> {
-  onHighlight: () => void;
-
+  onHighlight: (cb: QueryEvent<T>) => void;
 }
 
 interface SolrMoreLikeThis<T> {
@@ -1035,6 +1034,7 @@ export {
   SolrUpdate,
   SolrMoreLikeThis, 
   SolrQuery,
+  SolrHighlight,
   SolrTransitions,  
   SolrCore,  
   SolrSchemaFieldDefinition,

@@ -15,10 +15,9 @@ import {
 interface CheckFacetState {
   showMoreLink: boolean;
   typeahead: string;
-  minValues: number;
 }
 
-class CheckFacet extends React.Component<FacetProps & { search?: boolean }, CheckFacetState> {
+class CheckFacet extends React.Component<FacetProps & { search?: boolean; minValues?: number; }, CheckFacetState> {
   static contextTypes = {
     searchState: React.PropTypes.object,
     transition: React.PropTypes.func

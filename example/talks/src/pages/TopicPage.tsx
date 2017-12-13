@@ -10,14 +10,14 @@ import {
   ResultsLayout,  
   SearchBox,
   CheckFacet,
-  RadioFacet,
-  DropdownFacet,
-  TagFacet,
-  ToggleFacet,
   ResultsList,
   Pagination,
-  PaginationData
+  PaginationData,
+  Bound
 } from 'solrkit';
+
+interface SearchPageProps {
+}
 
 const dataStore = new AppDataStore();
 
@@ -36,25 +36,6 @@ function thumbnailUrl(url: string) {
     '/mqdefault.jpg'
   );
 }
-
-/*function/ namespace(params: SearchParams, core: SolrCore<{}>, ns: string): [SolrCore<{}>, SearchParams] {
-  const result: [SolrCore<{}>, SearchParams] = [core, {
-    // TODO NAMESPACING
-    type: 'QUERY',
-    query: params.query,
-    start: params.start
-  }];
-
-  return result;
-}
-
-function fixParams(params: PageParams): SearchParams {
-  return {
-    type: 'QUERY',
-    query: params.query,
-    start: (parseInt(params.page || '1', 10) - 1) * 10
-  };
-}*/
 
 class VideoThumbnail extends React.Component<{url_s: string}, {on: boolean}> {
   private img: HTMLImageElement | null;
@@ -89,7 +70,7 @@ class VideoThumbnail extends React.Component<{url_s: string}, {on: boolean}> {
   }
 }
 
-class SearchPageApp extends React.Component<{}, {}> {
+class TopicPage extends React.Component<SearchPageProps, {}> {
   static dataStore = dataStore;
 
   private left: () => JSX.Element;
@@ -101,45 +82,43 @@ class SearchPageApp extends React.Component<{}, {}> {
   constructor() {
     super();
 
-    this.left = 
-      databind(
-        dataStore.talks.registerFacet(['features_ss']),
-        dataStore.talks,
-        (data: [string, number, boolean][]) => (
-          <div>
-            <CheckFacet 
-              title="Features" 
-              values={data}
-              facet="features_ss"
-              render={(label: string, value: number) => label + ': ' + value.toLocaleString()}
-            />
+    this.left = () => (
+      <div>
+        <Bound
+          dataStore={dataStore.talks}
+          event={dataStore.talks.registerFacet(['collection_l1_ss'])}
+          render={
+            (data: [string, number, boolean][]) => (
+              <CheckFacet 
+                title="Collection" 
+                values={data}
+                search={true}
+                facet="collection_l1_ss"
+                render={(label: string, value: number) => 
+                  label + ': ' + value.toLocaleString()}
+              />
+            )
+          }
+        />
 
-            <DropdownFacet 
-              title="Features" 
-              facet="features_ss"
-              values={data}
-            />
-
-            <RadioFacet 
-              title="Features" 
-              facet="features_ss"
-              values={data}
-            />
-
-            <ToggleFacet
-              title="Features" 
-              facet="features_ss"
-              values={data}
-            />
-
-            <TagFacet 
-              title="Features" 
-              facet="features_ss"
-              values={data}
-            />
-          </div>
-        )
-      );
+        <Bound
+          dataStore={dataStore.talks}
+          event={dataStore.talks.registerFacet(['category_l1_ss'])}
+          render={
+            (data: [string, number, boolean][]) => (
+              <CheckFacet 
+                title="Topic" 
+                values={data}
+                search={true}
+                facet="category_l1_ss"
+                render={(label: string, value: number) => 
+                  label + ': ' + value.toLocaleString()}
+              />
+            )
+          }
+        />
+      </div>
+  );
 
     const databindTalksQuery = 
       (fn: ((talks: Document[], pagination: PaginationData) => JSX.Element)) => 
@@ -159,9 +138,9 @@ class SearchPageApp extends React.Component<{}, {}> {
                 <div>
                   <VideoThumbnail url_s={talk.url_s} />
                   <Link to={'/view/' + talk.id}>
-                    <h2>
+                    <h5>
                       {talk.title_s}
-                    </h2>
+                    </h5>
                   </Link>
                 </div>
             }
@@ -196,24 +175,8 @@ class SearchPageApp extends React.Component<{}, {}> {
     );
   }
 
-  setState() {
-    //
-  }
-
   componentDidMount() {
-    // TODO I think this is the point where namespacing would start
-    dataStore.talks.doQuery('');
-    /* _.map(
-      this.props.dataStore.cores,
-      (core, i) => namespace(fixParams(this.props.params), core, 'talks')
-    ).map(
-      (thisCore: [SolrCore<object>, SearchParams]) => 
-        thisCore[0].stateTransition(thisCore[1])
-    );*/
-  }
-  
-  componentWillUnmount() {
-    // dataStore.clearEvents();
+    dataStore.talks.stateTransition({type: 'QUERY', query: '*'});
   }
 
   render() { 
@@ -229,4 +192,4 @@ class SearchPageApp extends React.Component<{}, {}> {
   }
 }
 
-export { SearchPageApp };
+export { TopicPage };
