@@ -89,7 +89,7 @@ class VideoThumbnail extends React.Component<{url_s: string}, {on: boolean}> {
   }
 }
 
-class SearchPageApp extends React.Component<{}, {}> {
+class SearchPageApp extends React.Component<{query: string}, {}> {
   static dataStore = dataStore;
 
   private left: () => JSX.Element;
@@ -202,7 +202,7 @@ class SearchPageApp extends React.Component<{}, {}> {
 
   componentDidMount() {
     // TODO I think this is the point where namespacing would start
-    dataStore.talks.doQuery('');
+    dataStore.talks.doQuery(this.props.query || '*');
     /* _.map(
       this.props.dataStore.cores,
       (core, i) => namespace(fixParams(this.props.params), core, 'talks')

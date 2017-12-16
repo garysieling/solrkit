@@ -17,6 +17,7 @@ import {
 } from 'solrkit';
 
 interface SearchPageProps {
+  query: string;
 }
 
 const dataStore = new AppDataStore();
@@ -103,6 +104,38 @@ class TopicPage extends React.Component<SearchPageProps, {}> {
 
         <Bound
           dataStore={dataStore.talks}
+          event={dataStore.talks.registerFacet(['speakerName_ss'])}
+          render={
+            (data: [string, number, boolean][]) => (
+              <CheckFacet 
+                title="Speaker" 
+                values={data}
+                search={true}
+                facet="speakerName_ss"
+                render={(label: string, value: number) => label}
+              />
+            )
+          }
+        />
+
+        <Bound
+          dataStore={dataStore.talks}
+          event={dataStore.talks.registerFacet(['entities_ss'])}
+          render={
+            (data: [string, number, boolean][]) => (
+              <CheckFacet 
+                title="Tag" 
+                values={data}
+                search={true}
+                facet="entities_ss"
+                render={(label: string, value: number) => label}
+              />
+            )
+          }
+        />
+
+        <Bound
+          dataStore={dataStore.talks}
           event={dataStore.talks.registerFacet(['category_l1_ss'])}
           render={
             (data: [string, number, boolean][]) => (
@@ -176,7 +209,7 @@ class TopicPage extends React.Component<SearchPageProps, {}> {
   }
 
   componentDidMount() {
-    dataStore.talks.stateTransition({type: 'QUERY', query: '*'});
+    dataStore.talks.stateTransition({type: 'QUERY', query: this.props.query || '*'});
   }
 
   render() { 
