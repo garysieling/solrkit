@@ -41,6 +41,11 @@ class DropdownFacet extends React.Component<FacetProps, {}> {
             value: value
           };
         }
+      ).filter(
+        !this.props.initialValues ? _.stubTrue : (
+          (row: DropdownItemProps) => 
+            _.includes(this.props.initialValues, row.value)
+        )
       );
 
     let initialValue =

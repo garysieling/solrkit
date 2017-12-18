@@ -17,6 +17,7 @@ interface FacetProps {
   values: FacetValue[];
   render?: FacetRenderer;
   help?: string;
+  initialValues: string[];
 }
 
 export {

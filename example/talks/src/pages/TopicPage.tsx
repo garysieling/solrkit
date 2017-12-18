@@ -112,6 +112,12 @@ class TopicPage extends React.Component<SearchPageProps, {}> {
                 title="Speaker" 
                 values={data}
                 search={true}
+                initialValues={[
+                  'Christena Cleveland',
+                  'James Cone',
+                  'Paulo Freire',
+                  'James Baldwin'
+                ]}
                 facet="speakerName_ss"
                 render={(label: string, value: number) => label}
               />

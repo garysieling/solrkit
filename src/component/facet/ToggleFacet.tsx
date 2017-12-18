@@ -43,7 +43,12 @@ class ToggleFacet extends React.Component<FacetProps, {}> {
       <div className="ui" style={{marginBottom: '1em'}}>
         {title ? (<h4>{title}</h4>) : null}
         {
-          _.sortBy(this.props.values, (v) => v[0]).map(
+          _.sortBy(this.props.values, (v) => v[0]).filter(
+            !this.props.initialValues ? _.stubTrue : (
+              (row: FacetValue) => 
+                _.includes(this.props.initialValues, row.value)
+            )
+          ).map(
             ({ value, count, checked }, i) => (              
               <div key={i}>
                 <div className="ui toggle checkbox">

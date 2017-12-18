@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { get, includes, take, filter, orderBy } from 'lodash';
+import { get, includes, take, filter, orderBy, stubTrue } from 'lodash';
 
 import {
   Popup
@@ -70,7 +70,7 @@ class CheckFacet extends React.Component<FacetProps & { search?: boolean; minVal
     const help = this.props.help;
     const renderValue: FacetRenderer = this.props.render || defaultRenderer;
 
-    const valueList =
+    const valueList: FacetValue[] = (
       this.props.search && this.state.typeahead.length > 0 ? (
         filter(
           this.props.values,
@@ -78,7 +78,13 @@ class CheckFacet extends React.Component<FacetProps & { search?: boolean; minVal
         )
       ) : (
         this.props.values
-      );
+      )
+    ).filter(
+      !this.props.initialValues ? stubTrue : (
+        (row: FacetValue) => 
+          includes(this.props.initialValues, row.value)
+      )
+    );
       
     if (valueList.length === 0) {
       return null;
@@ -149,7 +155,7 @@ class CheckFacet extends React.Component<FacetProps & { search?: boolean; minVal
                     </label>
                   </div>
                 </div>
-              )
+              );
             }
           )
         }

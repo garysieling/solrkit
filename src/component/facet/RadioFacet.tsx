@@ -48,7 +48,12 @@ class RadioFacet extends React.Component<FacetProps, {}> {
           <h4>{title}</h4>)
           : null}
         {
-          _.sortBy(this.props.values, (v) => v[0]).map(
+          _.sortBy(this.props.values, (v) => v[0]).filter(
+            !this.props.initialValues ? _.stubTrue : (
+              (row: FacetValue) => 
+                _.includes(this.props.initialValues, row.value)
+            )
+          ).map(
             ({ value, count, checked }, i) => (              
               <div style={{display: 'block'}} className="ui radio checkbox">
                 <input 
