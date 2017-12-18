@@ -56,7 +56,7 @@ function main() {
               <SearchApp params={match.params} app={() => <SearchPageApp query={match.params.query}/>} />}
           />    
           <Route 
-            exact={false} 
+            exact={true} 
             key="map"
             path="/map" 
             render={({match}) => 
@@ -64,7 +64,7 @@ function main() {
             mode="map"
           />
           <Route 
-            exact={false} 
+            exact={true} 
             key="topic1"
             path="/topic/:query" 
             render={
@@ -82,7 +82,7 @@ function main() {
               ({match}) => 
                 <SearchApp 
                   params={match.params} 
-                  app={() => <TopicPage query={match.params.query}/>} 
+                  app={() => <TopicPage query={match.params.query} page={match.params.page} />} 
                 />}
           />
           <Route 

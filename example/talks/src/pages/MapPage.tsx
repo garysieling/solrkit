@@ -12,7 +12,7 @@ import {
   PaginationData
 } from 'solrkit';
 
-const dataStore = new AppDataStore();
+const dataStore = new AppDataStore('map');
 
 function embedUrl(url: String) {
   return (

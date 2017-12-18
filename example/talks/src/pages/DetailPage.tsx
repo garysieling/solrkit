@@ -49,7 +49,7 @@ interface DetailAppProps {
   id: string;
 }
 
-const dataStore = new AppDataStore();
+const dataStore = new AppDataStore('talks');
 
 class DetailPageApp extends React.Component<DetailAppProps, {}> {
   private left: () => JSX.Element;

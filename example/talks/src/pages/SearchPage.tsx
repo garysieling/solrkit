@@ -19,7 +19,7 @@ import {
   PaginationData
 } from 'solrkit';
 
-const dataStore = new AppDataStore();
+const dataStore = new AppDataStore('talks');
 
 function embedUrl(url: String) {
   return (

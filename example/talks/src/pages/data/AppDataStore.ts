@@ -12,9 +12,12 @@ import { Document } from './Document';
 type CoreCapabilities = SolrCore<Document> & SolrGet<Document> & SolrMoreLikeThis<Document> & SolrQuery<Document>;
 class AppDataStore extends DataStore {
   private core: CoreCapabilities;
+  private page: string = '';
 
-  constructor() {
+  constructor(page: string) {
     super();
+
+    this.page = page;
   }
 
   // Every core should have it's own function
@@ -35,7 +38,7 @@ class AppDataStore extends DataStore {
         fields: ['title_s', 'url_s', 'id'],
         defaultSearchFields: ['title_s', 'auto_transcript_txt_en'],
         pageSize: 16,
-        prefix: 'talks',
+        prefix: this.page,
         qt: 'tvrh'
       });
     }

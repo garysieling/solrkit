@@ -18,9 +18,10 @@ import {
 
 interface SearchPageProps {
   query: string;
+  page?: string;
 }
 
-const dataStore = new AppDataStore();
+const dataStore = new AppDataStore('topic');
 
 function embedUrl(url: String) {
   return (
@@ -209,7 +210,10 @@ class TopicPage extends React.Component<SearchPageProps, {}> {
   }
 
   componentDidMount() {
-    dataStore.talks.stateTransition({type: 'QUERY', query: this.props.query || '*'});
+    // this isn't taking url props
+    dataStore.talks.stateTransition(
+      {type: 'QUERY', query: this.props.query || '*'}
+    );
   }
 
   render() { 
