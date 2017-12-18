@@ -33,12 +33,15 @@ enum UrlParams {
   HL = 'highlight'
 }
 
-interface SearchParams {
+interface SavedSearch {
   type?: 'QUERY' | 'MLT' | 'DETAILS';
   query?: string;
   boost?: string;
-  start?: number;
   facets?: { [ key: string ]: string[] };
+}
+
+interface SearchParams extends SavedSearch {
+  start?: number;
 }
 
 type QueryParam = string | number;
@@ -1020,6 +1023,7 @@ export {
   NamespacedUrlParam,
   UrlFragment,
   PaginationData,
+  SavedSearch,
   SearchParams,  
   QueryBeingBuilt,
   SolrQueryBuilder,
