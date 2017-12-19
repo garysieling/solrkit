@@ -18,7 +18,8 @@ import {
 
 interface SearchPageProps {
   query: string;
-  page?: string;
+  page: number;
+  facets: { [ key: string ]: string[] };
 }
 
 const dataStore = new AppDataStore('topic');
@@ -218,7 +219,23 @@ class TopicPage extends React.Component<SearchPageProps, {}> {
   componentDidMount() {
     // this isn't taking url props
     dataStore.talks.stateTransition(
-      {type: 'QUERY', query: this.props.query || '*'}
+      {
+        type: 'QUERY', 
+        query: this.props.query,
+        page: this.props.page,
+        facets: this.props.facets
+      }
+    );
+  }
+
+  componentWillReceiveProps(newProps: SearchPageProps) {
+    dataStore.talks.stateTransition(
+      {
+        type: 'QUERY', 
+        query: newProps.query,
+        page: newProps.page,
+        facets: newProps.facets
+      }
     );
   }
 

@@ -374,6 +374,7 @@ interface SolrMoreLikeThis<T> {
 }
 
 interface SolrTransitions {
+  clearEvents: () => void;
   getCoreConfig: () => SolrConfig;
   getNamespace: () => string;
   getCurrentParameters: () => SearchParams;

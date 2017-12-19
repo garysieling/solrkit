@@ -36,7 +36,7 @@ class CheckFacet extends React.Component<FacetProps & { search?: boolean; minVal
   }
 
   onClick(value: string) {
-    return () => {
+    return () => {     
       let selections: string[] = get(this.context.searchState.facets, this.props.facet, []);
       if (includes(selections, value)) {
         selections = selections.filter(
@@ -136,19 +136,22 @@ class CheckFacet extends React.Component<FacetProps & { search?: boolean; minVal
             (thisFacet: FacetValue, i) => {
               let { value, count, checked } = thisFacet;
               
+              const onClick =
+                this.onClick(value);
+
               return (
                 <div key={i} style={{display: 'block'}} >
                   <div key="cb" className="ui checkbox">
                     <input 
                       key="input"
-                      onClick={this.onClick(value)} 
+                      onClick={onClick} 
                       checked={checked} 
                       type="checkbox" 
                       name={i + ''} 
                     />
                     <label 
                       key="label"
-                      onClick={this.onClick(value)}
+                      onClick={onClick}
                       style={{cursor: 'pointer'}}
                     >
                       {renderValue(value, count)}

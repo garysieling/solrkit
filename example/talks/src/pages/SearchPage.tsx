@@ -37,25 +37,6 @@ function thumbnailUrl(url: string) {
   );
 }
 
-/*function/ namespace(params: SearchParams, core: SolrCore<{}>, ns: string): [SolrCore<{}>, SearchParams] {
-  const result: [SolrCore<{}>, SearchParams] = [core, {
-    // TODO NAMESPACING
-    type: 'QUERY',
-    query: params.query,
-    start: params.start
-  }];
-
-  return result;
-}
-
-function fixParams(params: PageParams): SearchParams {
-  return {
-    type: 'QUERY',
-    query: params.query,
-    start: (parseInt(params.page || '1', 10) - 1) * 10
-  };
-}*/
-
 class VideoThumbnail extends React.Component<{url_s: string}, {on: boolean}> {
   private img: HTMLImageElement | null;
 
@@ -213,7 +194,7 @@ class SearchPageApp extends React.Component<{query: string}, {}> {
   }
   
   componentWillUnmount() {
-    // dataStore.clearEvents();
+    dataStore.talks.clearEvents();
   }
 
   render() { 

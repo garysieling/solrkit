@@ -111,8 +111,6 @@ class Bound extends React.Component<DataBoundProps<object>, DataBoundState<objec
       '/' + this.props.dataStore.getCoreConfig().prefix + '/' + newParams.query + '/' + 
       page + facets
     );
-
-    this.props.dataStore.stateTransition(newParams);
   }
 
   getChildContext() {
