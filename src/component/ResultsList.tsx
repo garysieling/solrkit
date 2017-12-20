@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { SingleComponent } from '../context/DataStore';
+import * as _ from 'lodash';
 
 interface ResultsListProps<T> {
   docs: T[];
@@ -16,13 +17,15 @@ class ResultsList<T> extends React.Component<ResultsListProps<T>> {
   render() {
     const { docs, render, height } = this.props;
 
-    let style = {};
+    let style = _.get(this.props, 'style', {});
     if (this.props.height) {
-      style = {
-        height: height + 'px',
-        float: 'left',
-        padding: '5px'
-      };
+      style = _.extend(
+        {
+          height: height + 'px',
+          float: 'left'
+        }, 
+        style
+      );
     }
 
     // sixteen means one column

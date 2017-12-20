@@ -60,6 +60,7 @@ class VideoThumbnail extends React.Component<{url_s: string}, {on: boolean}> {
           id="player" 
           height={this.img ? this.img.getBoundingClientRect().height : '100%'}
           width={this.img ? this.img.getBoundingClientRect().width : '100%'}
+          style={{cursor: 'pointer'}}
           src={embedUrl(this.props.url_s)} 
         />
       ) : (
@@ -67,9 +68,44 @@ class VideoThumbnail extends React.Component<{url_s: string}, {on: boolean}> {
           width="95%"
           ref={(img) => this.img = img}
           onClick={this.open} 
+          style={{borderRadius: '5px', cursor: 'pointer'}}
           src={thumbnailUrl(this.props.url_s)} 
         />
       );
+  }
+}
+
+class Hover extends React.Component<{}, {}> {
+  constructor() {
+    super();
+  }
+
+  render() {
+    return (
+      <div
+        className="ui divided selection list"
+      >
+        <div 
+          className="item"
+          style={{
+            paddingLeft: '16px',
+            paddingRight: '6px',
+            marginTop: '5px',
+            paddingTop: '15px',
+            marginBottom: '12px',
+            borderRadius: '10px'
+          }}
+        >
+          {
+            (this.props.children as object[]).map(
+              (child) => (
+                child
+              )
+            )
+          }  
+        </div>
+      </div>
+    );
   }
 }
 
@@ -174,16 +210,19 @@ class TopicPage extends React.Component<SearchPageProps, {}> {
           <ResultsList 
             columnWidth="four"
             docs={talks} 
+            style={{
+              padding: 0
+            }}
             render={
               (talk: Document) => 
-                <div>
+                <Hover>
                   <VideoThumbnail url_s={talk.url_s} />
                   <Link to={'/view/' + talk.id}>
                     <h5>
                       {talk.title_s}
                     </h5>
                   </Link>
-                </div>
+                </Hover>
             }
           />
         );
@@ -234,7 +273,7 @@ class TopicPage extends React.Component<SearchPageProps, {}> {
         type: 'QUERY', 
         query: newProps.query,
         page: newProps.page,
-        facets: newProps.facets
+        facets: this.props.facets
       }
     );
   }
