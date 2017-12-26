@@ -1,7 +1,7 @@
 import * as React from 'react';
+import * as _ from 'lodash';
 import { suggestions } from './data/suggestions';
 import { AppDataStore } from './data/AppDataStore';
-import { Link } from 'react-router-dom';
 import { Document } from './data/Document';
 
 import {
@@ -10,11 +10,14 @@ import {
   ResultsLayout,  
   SearchBox,
   CheckFacet,
-  ResultsList,
   Pagination,
   PaginationData,
   Bound
 } from 'solrkit';
+
+import 'slick-carousel/slick/slick.css';
+import 'slick-carousel/slick/slick-theme.css';
+import Slider from 'react-slick';
 
 interface SearchPageProps {
   query: string;
@@ -24,55 +27,12 @@ interface SearchPageProps {
 
 const dataStore = new AppDataStore('topic');
 
-function embedUrl(url: String) {
-  return (
-    'https://www.youtube.com/embed/' + 
-    url.replace(/.*v=/, '') +
-    '?modestbranding=true&autoplay=1'
-  );
-}
-
 function thumbnailUrl(url: string) {
   return (
     'http://img.youtube.com/vi/' + 
     url.replace(/.*v=/, '') +
     '/mqdefault.jpg'
   );
-}
-
-class VideoThumbnail extends React.Component<{url_s: string}, {on: boolean}> {
-  private img: HTMLImageElement | null;
-
-  constructor() {
-    super();
-
-    this.state = { on : false };
-    this.open = this.open.bind(this);
-  }
-
-  open() {
-    this.setState( { on: true });
-  }
-
-  render() {
-    return this.state.on ? (
-        <iframe 
-          id="player" 
-          height={this.img ? this.img.getBoundingClientRect().height : '100%'}
-          width={this.img ? this.img.getBoundingClientRect().width : '100%'}
-          style={{cursor: 'pointer'}}
-          src={embedUrl(this.props.url_s)} 
-        />
-      ) : (
-        <img         
-          width="95%"
-          ref={(img) => this.img = img}
-          onClick={this.open} 
-          style={{borderRadius: '5px', cursor: 'pointer'}}
-          src={thumbnailUrl(this.props.url_s)} 
-        />
-      );
-  }
 }
 
 class Hover extends React.Component<{}, {}> {
@@ -82,28 +42,26 @@ class Hover extends React.Component<{}, {}> {
 
   render() {
     return (
-      <div
-        className="ui divided selection list"
+      <div 
+        className="item"
+        style={{
+          // paddingLeft: '16px',
+          // paddingRight: '6px',
+          marginLeft: '30px',
+          marginRight: '30px',
+          marginTop: '5px',
+          paddingTop: '15px',
+          marginBottom: '12px',
+          borderRadius: '10px'
+        }}
       >
-        <div 
-          className="item"
-          style={{
-            paddingLeft: '16px',
-            paddingRight: '6px',
-            marginTop: '5px',
-            paddingTop: '15px',
-            marginBottom: '12px',
-            borderRadius: '10px'
-          }}
-        >
-          {
-            (this.props.children as object[]).map(
-              (child) => (
-                child
-              )
+        {
+          (_.flatten([this.props.children]) as object[]).map(
+            (child) => (
+              child
             )
-          }  
-        </div>
+          )
+        }  
       </div>
     );
   }
@@ -195,7 +153,7 @@ class TopicPage extends React.Component<SearchPageProps, {}> {
           }
         />
       </div>
-  );
+    );
 
     const databindTalksQuery = 
       (fn: ((talks: Document[], pagination: PaginationData) => JSX.Element)) => 
@@ -203,28 +161,55 @@ class TopicPage extends React.Component<SearchPageProps, {}> {
           dataStore.talks.onQuery,
           dataStore.talks,
           fn);
-
+          
     this.right = databindTalksQuery(
       (talks: Document[], pagination: PaginationData) => {
+        const settings = {
+          dots: false,
+          infinite: true,
+          speed: 500,
+          slidesToShow: 3,
+          slidesToScroll: 1,
+          swipeToSlide: true,
+          variableWidth: false
+        };
+
         return (
-          <ResultsList 
-            columnWidth="four"
-            docs={talks} 
-            style={{
-              padding: 0
-            }}
-            render={
-              (talk: Document) => 
-                <Hover>
-                  <VideoThumbnail url_s={talk.url_s} />
-                  <Link to={'/view/' + talk.id}>
-                    <h5>
-                      {talk.title_s}
-                    </h5>
-                  </Link>
-                </Hover>
-            }
-          />
+          <div>          
+            <h2>Topic #1</h2>
+            <Slider {...settings}>
+              {
+                talks.map(
+                  (talk: Document) => (
+                    <div>
+                      <div
+                        style={{              
+                          marginLeft: '30px',
+                          marginRight: '30px'
+                        }}
+                      >
+                        <Hover>
+                          <a
+                            href={'/view/' + talk.id}
+                            target="_new"
+                          >
+                            <img         
+                              style={{
+                                borderRadius: '5px', 
+                                cursor: 'pointer'
+                              }}
+                              src={thumbnailUrl(talk.url_s)} 
+                            />
+                            {talk.title_s}
+                          </a>
+                        </Hover>
+                      </div>
+                    </div>
+                  )
+                )
+              }
+            </Slider>
+          </div>
         );
       }
     );
