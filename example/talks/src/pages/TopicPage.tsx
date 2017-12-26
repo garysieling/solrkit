@@ -67,6 +67,65 @@ class Hover extends React.Component<{}, {}> {
   }
 }
 
+class VideoScroller extends React.Component<{
+  talks: Document[],
+  title: string
+}, {}> {
+  constructor() {
+    super();
+  }
+
+  render() {
+    const settings = {
+      dots: false,
+      infinite: true,
+      speed: 500,
+      slidesToShow: 3,
+      slidesToScroll: 1,
+      swipeToSlide: true,
+      variableWidth: false
+    };
+
+    return (
+      <div>          
+        <h3>{this.props.title}</h3>
+        <Slider {...settings}>
+          {
+            this.props.talks.map(
+              (talk: Document) => (
+                <div>
+                  <div
+                    style={{              
+                      marginLeft: '30px',
+                      marginRight: '30px'
+                    }}
+                  >
+                    <Hover>
+                      <a
+                        href={'/view/' + talk.id}
+                        target="_new"
+                      >
+                        <img         
+                          style={{
+                            borderRadius: '5px', 
+                            cursor: 'pointer'
+                          }}
+                          src={thumbnailUrl(talk.url_s)} 
+                        />
+                        {talk.title_s}
+                      </a>
+                    </Hover>
+                  </div>
+                </div>
+              )
+            )
+          }
+        </Slider>
+      </div>
+    );
+  }
+}
+
 class TopicPage extends React.Component<SearchPageProps, {}> {
   static dataStore = dataStore;
 
@@ -164,51 +223,19 @@ class TopicPage extends React.Component<SearchPageProps, {}> {
           
     this.right = databindTalksQuery(
       (talks: Document[], pagination: PaginationData) => {
-        const settings = {
-          dots: false,
-          infinite: true,
-          speed: 500,
-          slidesToShow: 3,
-          slidesToScroll: 1,
-          swipeToSlide: true,
-          variableWidth: false
-        };
-
         return (
-          <div>          
-            <h2>Topic #1</h2>
-            <Slider {...settings}>
-              {
-                talks.map(
-                  (talk: Document) => (
-                    <div>
-                      <div
-                        style={{              
-                          marginLeft: '30px',
-                          marginRight: '30px'
-                        }}
-                      >
-                        <Hover>
-                          <a
-                            href={'/view/' + talk.id}
-                            target="_new"
-                          >
-                            <img         
-                              style={{
-                                borderRadius: '5px', 
-                                cursor: 'pointer'
-                              }}
-                              src={thumbnailUrl(talk.url_s)} 
-                            />
-                            {talk.title_s}
-                          </a>
-                        </Hover>
-                      </div>
-                    </div>
-                  )
-                )
-              }
-            </Slider>
+          <div>
+            <VideoScroller 
+              key="1"
+              talks={talks} 
+              title="Topic #1"
+            />
+
+            <VideoScroller 
+              key="2"
+              talks={talks} 
+              title="Topic #1"
+            />
           </div>
         );
       }
