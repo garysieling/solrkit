@@ -8,8 +8,8 @@ import {
   databind,
   ResultsLayout,  
   SearchBox,
-  PaginationData
-  // Bound
+  PaginationData,
+  Bound
 } from 'solrkit';
 
 import 'slick-carousel/slick/slick.css';
@@ -262,26 +262,28 @@ class TopicPage extends React.Component<SearchPageProps, {}> {
           dataStore.talks.onQuery,
           dataStore.talks,
           fn);
-          
-    this.right = databindTalksQuery(
-      (talks: Document[], pagination: PaginationData) => {
-        return (
-          <div>
-            {
-              searches.map(
-                (savedSearch: SavedSearch, i: number) => (
-                  <VideoScroller 
-                    key={i + ''}
-                    talks={talks} 
-                    title={savedSearch.title}
-                  />
-                )
-              )
-            }
-          </div>
-        );
-      }
-    );
+      
+    this.right = 
+      () => (
+        <div>{
+          searches.map(
+            (savedSearch: SavedSearch, i: number) => (
+              <Bound
+                key={i + ''}
+                dataStore={dataStore.talks}
+                render={
+                  (talks: Document[], pagination: PaginationData) => 
+                    <VideoScroller 
+                      key={i + ''}
+                      talks={talks} 
+                      title={savedSearch.title}
+                    />
+                }
+              />
+            )
+          )
+        }</div>
+      );
 
     this.header = databindTalksQuery(
       (talks: Document[], pagination: PaginationData) => (
