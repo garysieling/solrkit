@@ -46,7 +46,10 @@ class ResultsLayout extends React.Component<ResultsLayoutProps, {}> {
     const rightColumns =
       rightRailComponent ? 
         'ten wide column' :
-        'twelve wide column';
+        (leftComponent 
+          ? 'twelve wide column' 
+          : 'sixteen wide column'
+        );
         
     const header = 
       this.props.headerComponent ? (
@@ -55,21 +58,30 @@ class ResultsLayout extends React.Component<ResultsLayoutProps, {}> {
         </div>
       ) : null;
 
+    const leftColumn = 
+      leftComponent ? (
+      <div className="three wide column">
+        <div className="container">
+          {leftComponent}
+        </div>
+      </div>
+      ) : null;
+
+    const rightColumn = (
+      <div className={rightColumns}>
+        <div className="container">
+          {rightComponent}
+        </div>
+      </div>
+    );
+
     return (
       <div className="ui segments" style={{height: '100%'}}>
         {header}
         <div className="main ui segment">
           <div className="ui grid">
-            <div className="three wide column">
-              <div className="container">
-                {leftComponent}
-              </div>
-            </div>
-            <div className={rightColumns}>
-              <div className="container">
-                {rightComponent}
-              </div>
-            </div>
+            {leftColumn}
+            {rightColumn}
             {rightRailComponent}
             <div className="three wide column" />
             <div className="ten wide column">

@@ -5,14 +5,11 @@ import { AppDataStore } from './data/AppDataStore';
 import { Document } from './data/Document';
 
 import {
-  SingleNumber,
   databind,
   ResultsLayout,  
   SearchBox,
-  CheckFacet,
-  Pagination,
-  PaginationData,
-  Bound
+  PaginationData
+  // Bound
 } from 'solrkit';
 
 import 'slick-carousel/slick/slick.css';
@@ -47,12 +44,13 @@ class Hover extends React.Component<{}, {}> {
         style={{
           // paddingLeft: '16px',
           // paddingRight: '6px',
-          marginLeft: '30px',
-          marginRight: '30px',
-          marginTop: '5px',
-          paddingTop: '15px',
-          marginBottom: '12px',
-          borderRadius: '10px'
+          // marginLeft: '10px',
+          // marginRight: '10px',
+          marginTop: '0px',
+          paddingTop: '0px',
+          marginBottom: '0px',
+          borderRadius: '10px',
+          width: '100%'
         }}
       >
         {
@@ -67,12 +65,80 @@ class Hover extends React.Component<{}, {}> {
   }
 }
 
+interface ArrowProps {
+  className?: string;
+  style?: object;
+  onClick?: () => void;
+}
+
+function NextArrow(props: ArrowProps) {
+  const {className, style, onClick} = props;
+
+  return (
+    <div
+      className={className}
+      style={{
+        ...style,         
+        height: '100%',        
+        width: '25px',
+        display: 'block', 
+        background: 'red'
+      }}
+      onClick={onClick}
+    />
+  );
+}
+
+function PrevArrow(props: ArrowProps) {
+  const {className, style, onClick} = props;
+
+  return (
+    <div
+      className={className}
+      style={{
+        ...style, 
+        height: '100%',        
+        width: '25px',
+        display: 'block', 
+        background: 'green'
+      }}
+      onClick={onClick}
+    />
+  );
+}
+
 class VideoScroller extends React.Component<{
   talks: Document[],
   title: string
 }, {}> {
+  private slider;
+  private prevArrow;
+  private nextArrow;
+  private dragging: boolean;
+
   constructor() {
     super();
+
+    this.prevArrow = (
+      <PrevArrow />
+    );
+
+    this.nextArrow = (
+      <NextArrow />
+    );
+
+    this.onClickVideo = this.onClickVideo.bind(this);
+    this.dragging = false;
+  }
+
+  onClickVideo(e: React.MouseEvent<HTMLAnchorElement>) {   
+    if (this.dragging) {
+      e.preventDefault();
+      
+      return true;
+    } else {
+      return false;
+    }
   }
 
   render() {
@@ -80,33 +146,51 @@ class VideoScroller extends React.Component<{
       dots: false,
       infinite: true,
       speed: 500,
-      slidesToShow: 3,
-      slidesToScroll: 1,
+      slidesToShow: 5,
+      slidesToScroll: 2,
       swipeToSlide: true,
-      variableWidth: false
+      variableWidth: false,
+      prevArrow: this.prevArrow,      
+      nextArrow: this.nextArrow,
+      beforeChange: () => this.dragging = true,
+      afterChange: () => this.dragging = false,
     };
 
     return (
-      <div>          
+      <div 
+        style={{
+          paddingLeft: '25px',
+          paddingRight: '25px',
+          paddingBottom: '35px'
+        }}
+      >          
         <h3>{this.props.title}</h3>
-        <Slider {...settings}>
+        <Slider 
+          {...settings}
+          ref={(slider) => this.slider = slider}
+        >
           {
             this.props.talks.map(
               (talk: Document) => (
                 <div>
                   <div
                     style={{              
-                      marginLeft: '30px',
-                      marginRight: '30px'
+                      marginLeft: '5px',
+                      marginRight: '5px'
                     }}
                   >
                     <Hover>
                       <a
                         href={'/view/' + talk.id}
                         target="_new"
+                        onClick={this.onClickVideo}
+                        style={{
+                          width: '100%',
+                        }}
                       >
                         <img         
                           style={{
+                            width: '100%',
                             borderRadius: '5px', 
                             cursor: 'pointer'
                           }}
@@ -138,82 +222,6 @@ class TopicPage extends React.Component<SearchPageProps, {}> {
   constructor() {
     super();
 
-    this.left = () => (
-      <div>
-        <Bound
-          dataStore={dataStore.talks}
-          event={dataStore.talks.registerFacet(['collection_l1_ss'])}
-          render={
-            (data: [string, number, boolean][]) => (
-              <CheckFacet 
-                title="Collection" 
-                values={data}
-                search={true}
-                facet="collection_l1_ss"
-                render={(label: string, value: number) => 
-                  label + ': ' + value.toLocaleString()}
-              />
-            )
-          }
-        />
-
-        <Bound
-          dataStore={dataStore.talks}
-          event={dataStore.talks.registerFacet(['speakerName_ss'])}
-          render={
-            (data: [string, number, boolean][]) => (
-              <CheckFacet 
-                title="Speaker" 
-                values={data}
-                search={true}
-                initialValues={[
-                  'Christena Cleveland',
-                  'James Cone',
-                  'Paulo Freire',
-                  'James Baldwin'
-                ]}
-                facet="speakerName_ss"
-                render={(label: string, value: number) => label}
-              />
-            )
-          }
-        />
-
-        <Bound
-          dataStore={dataStore.talks}
-          event={dataStore.talks.registerFacet(['entities_ss'])}
-          render={
-            (data: [string, number, boolean][]) => (
-              <CheckFacet 
-                title="Tag" 
-                values={data}
-                search={true}
-                facet="entities_ss"
-                render={(label: string, value: number) => label}
-              />
-            )
-          }
-        />
-
-        <Bound
-          dataStore={dataStore.talks}
-          event={dataStore.talks.registerFacet(['category_l1_ss'])}
-          render={
-            (data: [string, number, boolean][]) => (
-              <CheckFacet 
-                title="Topic" 
-                values={data}
-                search={true}
-                facet="category_l1_ss"
-                render={(label: string, value: number) => 
-                  label + ': ' + value.toLocaleString()}
-              />
-            )
-          }
-        />
-      </div>
-    );
-
     const databindTalksQuery = 
       (fn: ((talks: Document[], pagination: PaginationData) => JSX.Element)) => 
         databind(
@@ -234,7 +242,19 @@ class TopicPage extends React.Component<SearchPageProps, {}> {
             <VideoScroller 
               key="2"
               talks={talks} 
-              title="Topic #1"
+              title="Topic #2"
+            />
+
+            <VideoScroller 
+              key="3"
+              talks={talks} 
+              title="Topic #3"
+            />
+
+            <VideoScroller 
+              key="4"
+              talks={talks} 
+              title="Topic #4"
             />
           </div>
         );
@@ -244,10 +264,7 @@ class TopicPage extends React.Component<SearchPageProps, {}> {
     this.header = databindTalksQuery(
       (talks: Document[], pagination: PaginationData) => (
         <div className="ui grid">
-          <div className="three wide column">
-            <SingleNumber horizontal={true} value={pagination.numFound} label="Talks" />
-          </div>
-          <div className="thirteen wide column">
+          <div className="sixteen wide column">
             <SearchBox 
               placeholder="Search..."
               loading={false}
@@ -256,14 +273,6 @@ class TopicPage extends React.Component<SearchPageProps, {}> {
           </div>
         </div>
       )
-    );
-    
-    this.footer = databindTalksQuery(
-      (talks: Document[], pagination: PaginationData) => (
-        <Pagination
-          numRows={pagination.numFound}
-          pageSize={pagination.pageSize}
-        />)
     );
   }
 
