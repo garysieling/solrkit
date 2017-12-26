@@ -24,6 +24,40 @@ interface SearchPageProps {
 
 const dataStore = new AppDataStore('topic');
 
+interface SavedSearch {
+  title: string;
+  search: {
+    q: string;
+  };
+}
+
+const searches: SavedSearch[] = [
+  {
+    title: 'Economic Justice',
+    search: {
+      q: 'Economic Justice'
+    }
+  },
+  {
+    title: 'Jewish Theologians',
+    search: {
+      q: 'Abraham Heschel'
+    }
+  },
+  {
+    title: 'Civil Rights Movemenet',
+    search: {
+      q: 'Civil Rights Movement'
+    }
+  },
+  {
+    title: '...And Churches',
+    search: {
+      q: 'James Cone'
+    }
+  }
+];
+
 function thumbnailUrl(url: string) {
   return (
     'http://img.youtube.com/vi/' + 
@@ -233,29 +267,17 @@ class TopicPage extends React.Component<SearchPageProps, {}> {
       (talks: Document[], pagination: PaginationData) => {
         return (
           <div>
-            <VideoScroller 
-              key="1"
-              talks={talks} 
-              title="Topic #1"
-            />
-
-            <VideoScroller 
-              key="2"
-              talks={talks} 
-              title="Topic #2"
-            />
-
-            <VideoScroller 
-              key="3"
-              talks={talks} 
-              title="Topic #3"
-            />
-
-            <VideoScroller 
-              key="4"
-              talks={talks} 
-              title="Topic #4"
-            />
+            {
+              searches.map(
+                (savedSearch: SavedSearch, i: number) => (
+                  <VideoScroller 
+                    key={i + ''}
+                    talks={talks} 
+                    title={savedSearch.title}
+                  />
+                )
+              )
+            }
           </div>
         );
       }
