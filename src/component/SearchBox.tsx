@@ -84,7 +84,11 @@ class SearchBox extends React.Component<SearchBoxProps, SearchBoxState> {
     const query = 
       (self.state.searchEditedByUser ? 
         self.state.query :
-        self.context.searchState.query) || '';
+        self.context.searchState ? 
+          (
+            self.context.searchState.query
+          ) : ''
+        ) || '';
 
     const lc = query.toLowerCase();
     const filteredSearches = take(

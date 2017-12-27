@@ -5,7 +5,6 @@ import { AppDataStore } from './data/AppDataStore';
 import { Document } from './data/Document';
 
 import {
-  databind,
   ResultsLayout,  
   SearchBox,
   PaginationData,
@@ -256,13 +255,6 @@ class TopicPage extends React.Component<SearchPageProps, {}> {
   constructor() {
     super();
 
-    const databindTalksQuery = 
-      (fn: ((talks: Document[], pagination: PaginationData) => JSX.Element)) => 
-        databind(
-          dataStore.talks.onQuery,
-          dataStore.talks,
-          fn);
-      
     this.right = 
       () => (
         <div>{
@@ -285,18 +277,16 @@ class TopicPage extends React.Component<SearchPageProps, {}> {
         }</div>
       );
 
-    this.header = databindTalksQuery(
-      (talks: Document[], pagination: PaginationData) => (
-        <div className="ui grid">
-          <div className="sixteen wide column">
-            <SearchBox 
-              placeholder="Search..."
-              loading={false}
-              sampleSearches={suggestions}
-            />
-          </div>
+    this.header = () => (
+      <div className="ui grid">
+        <div className="sixteen wide column">
+          <SearchBox 
+            placeholder="Search..."
+            loading={false}
+            sampleSearches={suggestions}
+          />
         </div>
-      )
+      </div>
     );
   }
 
