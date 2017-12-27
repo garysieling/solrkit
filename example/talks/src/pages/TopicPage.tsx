@@ -29,7 +29,7 @@ interface SavedSearch {
   search: GenericSolrQuery;
 }
 
-const PlayIcon = () => (
+const PlayIcon = ({selected}: {selected: boolean}) => (
   <g 
     transform="translate(-30,-30)"
     fill="none" 
@@ -41,12 +41,12 @@ const PlayIcon = () => (
     <g id="play_store">
       <path 
         d="M30,60 C46.5685433,60 60,46.5685433 60,30 C60,13.4314567 46.5685433,0 30,0 C13.4314567,0 0,13.4314567 0,30 C0,46.5685433 13.4314567,60 30,60 Z" 
-        fill="#262626" 
+        fill={selected ? '#FF2626' : '#262626'}
         id="Play-Store"
       />
       <path 
         d="M51.2132037,8.78679626 C56.6421358,14.2157283 60,21.7157283 60,30 C60,46.5685433 46.5685433,60 30,60 C21.7157283,60 14.2157283,56.6421358 8.78679626,51.2132037 L51.2132037,8.78679626 Z" 
-        fill="#000000" 
+        fill={selected ? '#FF0000' : '#000000'}
         fill-opacity="0.400000006"
       />
       <g 
@@ -206,6 +206,54 @@ function NextArrow(props: ArrowProps) {
   );
 }
 
+class Video extends React.Component<{talk: Document}, {hover: boolean}> {
+  constructor() {
+    super();
+
+    this.state = {
+      hover: false
+    };
+
+    this.onMouseEnter = this.onMouseEnter.bind(this);
+    this.onMouseLeave = this.onMouseLeave.bind(this);
+  }
+
+  onMouseEnter() {
+    this.setState({hover: true});
+  }
+
+  onMouseLeave() {
+    this.setState({hover: false});
+  }
+
+  render() {
+    const talk = this.props.talk;
+    return (
+      <svg
+        onMouseEnter={this.onMouseEnter}
+        onMouseLeave={this.onMouseLeave}
+        viewBox="0 0 320 180"
+        style={{
+          width: '100%',
+          borderRadius: '5px'
+        }}
+      >
+        <image
+          xlinkHref={thumbnailUrl(talk.url_s)} 
+          width="320"
+          height="180"
+        />        
+        <Watched id={talk.id} />
+        <g
+          transform="translate(160,90) scale(0.75)"
+        >
+          <PlayIcon selected={this.state.hover} />
+        </g>
+      </svg>
+    );
+  }
+}
+
 function PrevArrow(props: ArrowProps) {
   const {className, style, onClick} = props;
 
@@ -305,25 +353,7 @@ class VideoScroller extends React.Component<{
                           width: '100%',
                         }}
                       >
-                        <svg
-                          viewBox="0 0 320 180"
-                          style={{
-                            width: '100%',
-                            borderRadius: '5px'
-                          }}
-                        >
-                          <image
-                            xlinkHref={thumbnailUrl(talk.url_s)} 
-                            width="320"
-                            height="180"
-                          />
-                          <g
-                            transform="translate(160,90) scale(0.75)"
-                          >
-                            <PlayIcon />
-                          </g>
-                          <Watched id={talk.id} />
-                        </svg>
+                        <Video talk={talk} />
                         {talk.title_s}
                       </a>
                     </Hover>
