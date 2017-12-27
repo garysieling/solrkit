@@ -28,7 +28,12 @@ import { SelectedFilters } from './component/facet/SelectedFilters';
 import { DetailLayout } from './layout/DetailLayout';
 import { ResultsLayout } from './layout/ResultsLayout';
 
-export { 
+import {
+  initializePage,
+  PageParams
+} from './context/Routing';
+
+export {   
   PaginationData,
   SolrCore,
   SearchParams,
@@ -58,5 +63,8 @@ export {
   Bound, 
   databind,
 
-  AutoConfiguredDataStore
+  AutoConfiguredDataStore,
+ 
+  initializePage,
+  PageParams
 };

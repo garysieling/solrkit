@@ -1,11 +1,10 @@
 import { SearchParams, SolrCore, DataStore } from './DataStore';
 import * as _ from 'lodash';
 
-import './App.css';
-
 interface PageParams {
   page: string;
   query: string;
+  facets: { [ key: string ]: string[] };  
 }
 
 function namespace(params: SearchParams, core: SolrCore<{}>, ns: string): [SolrCore<{}>, SearchParams] {
@@ -37,12 +36,7 @@ function initializePage(dataStore: DataStore, params: PageParams) {
   );
 }
 
-interface PageParams {
-  page: string;
-  query: string;
-}
-
 export {
-  initializePage,
-  PageParams
+  PageParams,
+  initializePage  
 };

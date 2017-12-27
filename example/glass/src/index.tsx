@@ -1,6 +1,7 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 
+import { PageParams } from 'solrkit';
 import { SearchPageApp } from './pages/SearchPage';
 
 import { DetailPageApp } from './pages/DetailPage';
@@ -12,11 +13,6 @@ import './App.css';
 
 interface RequiredAppProps {
   dataStore: DataStore;
-}
-
-interface PageParams {
-  page: string;
-  query: string;
 }
 
 interface SearchAppProps {
