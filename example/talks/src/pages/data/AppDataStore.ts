@@ -35,8 +35,16 @@ class AppDataStore extends DataStore {
         // Unfortunately these have to be repeated 
         // since there is no apparent way to sync
         // this with Typescript
-        fields: ['title_s', 'url_s', 'id'],
-        defaultSearchFields: ['title_s', 'auto_transcript_txt_en'],
+        fields: [
+          'title_s', 
+          'speakerName_ss',
+          'url_s', 
+          'id'
+        ],
+        defaultSearchFields: [
+          'title_s', 
+          'auto_transcript_txt_en'
+        ],
         pageSize: 16,
         prefix: this.page,
         qt: 'tvrh'

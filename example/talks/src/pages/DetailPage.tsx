@@ -3,6 +3,7 @@ import { AppDataStore } from './data/AppDataStore';
 import { Document } from './data/Document';
 import { suggestions } from './data/suggestions';
 import { Link } from 'react-router-dom';
+import { get } from 'lodash';
 
 import { 
   databind,
@@ -36,6 +37,23 @@ class VideoPlayer extends React.Component<Document, {}> {
         <h2>
           {this.props.title_s}
         </h2>
+        {
+          get(
+            this,
+            'props.speakerName_ss',
+            []
+          ).map(
+            (speaker: String) => (
+              <p>
+                More by <a 
+                  href={'https://www.findlectures.com/?p=1&speaker=' + speaker.replace(/ /g, '%20')}
+                >
+                  {speaker}
+                </a>
+              </p>
+            )
+          )
+        }
       </div>
     );
   }
