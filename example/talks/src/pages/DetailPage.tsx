@@ -123,6 +123,9 @@ class DetailPageApp extends React.Component<DetailAppProps, {}> {
 
   componentDidMount() {
     this.init();
+
+    const key = 'watched' + this.props.id;
+    window.localStorage[key] = true;  
   }
 
   componentWillUnmount() {
