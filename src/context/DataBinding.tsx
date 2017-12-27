@@ -91,11 +91,16 @@ class Bound extends React.Component<DataBoundProps<object>, DataBoundState<objec
     );
 
     if (args.facets) {
-      newParams.facets = _.extend({}, currentParams.facets, args.facets);      
+      newParams.facets = _.extend(
+        {}, 
+        currentParams.facets, 
+        args.facets);      
     }
 
     // TODO - should handle different classes of route
-    const page: number = (newParams.start || 0) / this.props.dataStore.getCoreConfig().pageSize + 1;
+    const page: number = (
+      newParams.start || 0
+    ) / this.props.dataStore.getCoreConfig().pageSize + 1;
 
     let facets = '';
     if (newParams.facets) {
@@ -123,7 +128,13 @@ class Bound extends React.Component<DataBoundProps<object>, DataBoundState<objec
   render() {
     // TODO these need to be named or something
     return (
-      this.props.render(this.state.data || [], this.state.paging || { numFound: 0, start: 0, pageSize: 10 })
+      this.props.render(
+        this.state.data || [], 
+        this.state.paging || { 
+          numFound: 0, 
+          start: 0, 
+          pageSize: 10 
+        })
     );
   }
 }

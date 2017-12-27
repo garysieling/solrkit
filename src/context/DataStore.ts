@@ -362,6 +362,7 @@ interface SolrQuery<T> {
   doExport: (q: GenericSolrQuery) => void;
   onQuery: (cb: QueryEvent<T>) => void;
   registerFacet: (facet: string[]) => (cb: FacetEvent) => void;
+  refine: (q: GenericSolrQuery) => SolrQuery<T>;
 }
 
 interface SolrHighlight<T> {
@@ -387,6 +388,25 @@ type SolrSchemaFieldDefinition = {
   dynamicBase: string;
   docs: number;
 };
+
+function mergeQuery(
+  q1?: GenericSolrQuery,
+  q2?: GenericSolrQuery
+): GenericSolrQuery {
+  if (!q1) {
+    return q2 || { query: '*:* /* q2 */'};
+  }
+
+  if (!q2) {
+    return q1 || { query: '*:* /* q1 */'};
+  }
+
+  return {
+    query: '(' + q1.query + ') AND (' + q2.query + ')',
+    rows: q1.rows || q2.rows,
+    boost: q1.boost || q2.boost
+  };
+}
 
 type SolrSchemaDefinition = {
   responseHeader: { status: number; QTime: number };
@@ -455,6 +475,10 @@ interface SolrConfig {
   qt?: string;
 }
 
+// This needs to be a global in case you trigger
+// a bunch of JSONP requests all at once
+let requestId: number = 0;
+
 class SolrCore<T> implements SolrTransitions {
   solrConfig: SolrConfig;
   private events: {
@@ -465,11 +489,12 @@ class SolrCore<T> implements SolrTransitions {
     facet: { [key: string]: FacetEvent[] };
   };
 
-  private requestId: number = 0;
   private currentParameters: SearchParams = {};
   
+  private query?: GenericSolrQuery;
   private getCache = {};
   private mltCache = {};
+  private refinements: SolrCore<T>[] = [];
 
   constructor(solrConfig: SolrConfig) {
     this.solrConfig = solrConfig;
@@ -502,6 +527,34 @@ class SolrCore<T> implements SolrTransitions {
 
   onQuery(op: QueryEvent<T>) {
     this.events.query.push(op);
+  }
+
+  refine(query: GenericSolrQuery) {
+    // TODO - decide if the events should proxy
+
+    // https://stackoverflow.com/questions/728360/how-do-i-correctly-clone-a-javascript-object#728694
+    const obj = this;
+    if (null == obj || 'object' !== typeof obj) {
+      return obj;
+    }
+
+    const copy: SolrCore<T> = new SolrCore<T>(this.solrConfig);
+    for (let attr in obj) {
+      if (
+        obj.hasOwnProperty(attr) &&  
+        attr !== 'events' && 
+        attr !== 'refinements'
+      ) {
+        copy[attr] = obj[attr];
+      }
+    }
+
+    copy.clearEvents();
+
+    copy.query = mergeQuery(query, this.query);
+    this.refinements.push(copy);    
+    
+    return copy;
   }
 
   registerFacet(facetNames: string[]) {
@@ -538,7 +591,7 @@ class SolrCore<T> implements SolrTransitions {
     const self = this;
    
     if (!self.mltCache[id]) {
-      const callback = 'cb_' + self.requestId++;
+      const callback = 'cb_' + requestId++;
 
       const qb = 
         new SolrQueryBuilder(
@@ -611,7 +664,7 @@ class SolrCore<T> implements SolrTransitions {
   
   doGet(id: string | number) {
     const self = this;
-    const callback = 'cb_' + this.requestId++;
+    const callback = 'cb_' + requestId++;
 
     const qb = 
       new SolrQueryBuilder(() => new QueryBeingBuilt('', null)).get(
@@ -651,119 +704,133 @@ class SolrCore<T> implements SolrTransitions {
     }
   } 
   
-  doQuery(query: GenericSolrQuery, cb?: (qb: SolrQueryBuilder<{}>) => SolrQueryBuilder<{}>)  {
+  doQuery(desiredQuery: GenericSolrQuery, cb?: (qb: SolrQueryBuilder<{}>) => SolrQueryBuilder<{}>)  {
     const self = this;
-    const callback = 'cb_' + this.requestId++;
 
-    let qb = 
-      new SolrQueryBuilder(
-        () => new QueryBeingBuilt('', null),
+    // this lets you make one master datastore and refine off it,
+    // and if no controls need it, it won't be run
+    if (self.events.query.length > 0) {
+      const callback = 'cb_' + requestId++;
+
+      // this lets the provided query override rows/boost
+      const query: GenericSolrQuery = 
+        mergeQuery(desiredQuery, this.query);
+
+      let qb = 
+        new SolrQueryBuilder(
+          () => new QueryBeingBuilt('', null),
+        );
+        
+      qb = qb.select().q(
+        this.solrConfig.defaultSearchFields,
+        query.query
       );
       
-    qb = qb.select().q(
-      this.solrConfig.defaultSearchFields,
-      query.query
-    );
-    
-    if (this.solrConfig.qt) {
-      qb = qb.qt(this.solrConfig.qt);
-    }
+      if (this.solrConfig.qt) {
+        qb = qb.qt(this.solrConfig.qt);
+      }
 
-    qb = qb.fl(this.solrConfig.fields).rows(
+      qb = qb.fl(this.solrConfig.fields).rows(
         query.rows || this.solrConfig.pageSize
       );
 
-    if (this.solrConfig.fq) {
-      qb = qb.fq(this.solrConfig.fq[0], [this.solrConfig.fq[1]]);
-    }
-
-    if (query.boost) {
-      qb = qb.bq(query.boost);
-    }
-
-    _.map(
-      this.events.facet,
-      (v, k) => {
-        qb = qb.requestFacet(k);
+      if (this.solrConfig.fq) {
+        qb = qb.fq(this.solrConfig.fq[0], [this.solrConfig.fq[1]]);
       }
-    );
-    
-    if (cb) {
-     qb = cb(qb); 
-    }
+
+      if (query.boost) {
+        qb = qb.bq(query.boost);
+      }
+
+      _.map(
+        this.events.facet,
+        (v, k) => {
+          qb = qb.requestFacet(k);
+        }
+      );
       
-    qb = qb.jsonp(
-      callback
-    );
-
-    const url = this.solrConfig.url + this.solrConfig.core + '/' + qb.buildSolrUrl();
-
-    fetchJsonp(url, {
-      jsonpCallbackFunction: callback
-    }).then(
-      (data) => {
-        this.currentParameters = qb.buildCurrentParameters();
-
-        data.json().then( 
-          (responseData) => {           
-            self.events.query.map(
-              (event) => 
-                event(
-                  Immutable(responseData.response.docs),
-                  Immutable({
-                    numFound: responseData.response.numFound,
-                    start: responseData.response.start,
-                    pageSize: query.rows || 10
-                  })
-                )
-              );
-
-            const facetCounts = responseData.facet_counts;
-            if (facetCounts) {
-              const facetFields = facetCounts.facet_fields;
-              if (facetFields) {
-                _.map(
-                  self.events.facet,
-                  (events, k) => {
-                    if (facetFields[k]) {
-                      const previousValues = (this.currentParameters.facets || {})[k];
-
-                      const facetLabels = facetFields[k].filter( (v, i) => i % 2 === 0 );
-                      const facetLabelCount = facetFields[k].filter( (v, i) => i % 2 === 1 );
-                      const facetSelections = facetLabels.map(
-                        (value) => _.includes(previousValues, value)
-                      );
-
-                      events.map(
-                        (event) => {
-                          event(
-                            _.zipWith(facetLabels, facetLabelCount, facetSelections).map(
-                              (facetData: [string, number, boolean]) => {
-                                return {
-                                  value: facetData[0],
-                                  count: facetData[1],
-                                  checked: facetData[2]
-                                };
-                              }
-                            ));
-                        }
-                      );
-                    }
-                  }
-                );
-              }
-            }
-            
-          }
-        ).catch(
-          (error) => {
-            self.events.error.map(
-              (event) => event(error)
-            );
-          }
-        );
+      if (cb) {
+      qb = cb(qb); 
       }
-    );    
+        
+      qb = qb.jsonp(
+        callback
+      );
+
+      const url = this.solrConfig.url + this.solrConfig.core + '/' + qb.buildSolrUrl();
+
+      fetchJsonp(url, {
+        jsonpCallbackFunction: callback,
+        timeout: 30000
+      }).then(
+        (data) => {
+          this.currentParameters = qb.buildCurrentParameters();
+
+          data.json().then( 
+            (responseData) => {           
+              self.events.query.map(
+                (event) => 
+                  event(
+                    Immutable(responseData.response.docs),
+                    Immutable({
+                      numFound: responseData.response.numFound,
+                      start: responseData.response.start,
+                      pageSize: query.rows || 10
+                    })
+                  )
+                );
+
+              const facetCounts = responseData.facet_counts;
+              if (facetCounts) {
+                const facetFields = facetCounts.facet_fields;
+                if (facetFields) {
+                  _.map(
+                    self.events.facet,
+                    (events, k) => {
+                      if (facetFields[k]) {
+                        const previousValues = (this.currentParameters.facets || {})[k];
+
+                        const facetLabels = facetFields[k].filter( (v, i) => i % 2 === 0 );
+                        const facetLabelCount = facetFields[k].filter( (v, i) => i % 2 === 1 );
+                        const facetSelections = facetLabels.map(
+                          (value) => _.includes(previousValues, value)
+                        );
+
+                        events.map(
+                          (event) => {
+                            event(
+                              _.zipWith(facetLabels, facetLabelCount, facetSelections).map(
+                                (facetData: [string, number, boolean]) => {
+                                  return {
+                                    value: facetData[0],
+                                    count: facetData[1],
+                                    checked: facetData[2]
+                                  };
+                                }
+                              ));
+                          }
+                        );
+                      }
+                    }
+                  );
+                }
+              }
+              
+            }
+          ).catch(
+            (error) => {
+              self.events.error.map(
+                (event) => event(error)
+              );
+            }
+          );
+        }
+      );    
+    }
+
+    this.refinements.map(
+      (refinement) => refinement.doQuery(desiredQuery, cb)
+    );
   }
 
   doUpdate(id: string | number, attr: string, value: string) {

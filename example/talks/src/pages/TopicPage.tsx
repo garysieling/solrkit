@@ -8,7 +8,8 @@ import {
   ResultsLayout,  
   SearchBox,
   PaginationData,
-  Bound
+  Bound,
+  GenericSolrQuery
 } from 'solrkit';
 
 import 'slick-carousel/slick/slick.css';
@@ -25,34 +26,32 @@ const dataStore = new AppDataStore('topic');
 
 interface SavedSearch {
   title: string;
-  search: {
-    q: string;
-  };
+  search: GenericSolrQuery;
 }
 
 const searches: SavedSearch[] = [
   {
     title: 'Economic Justice',
     search: {
-      q: 'Economic Justice'
+      query: 'Economic'
     }
   },
   {
-    title: 'Jewish Theologians',
+    title: 'Rights',
     search: {
-      q: 'Abraham Heschel'
+      query: 'Rights'
     }
   },
   {
     title: 'Civil Rights Movemenet',
     search: {
-      q: 'Civil Rights Movement'
+      query: 'Civil'
     }
   },
   {
     title: '...And Churches',
     search: {
-      q: 'James Cone'
+      query: 'James'
     }
   }
 ];
@@ -262,7 +261,9 @@ class TopicPage extends React.Component<SearchPageProps, {}> {
             (savedSearch: SavedSearch, i: number) => (
               <Bound
                 key={i + ''}
-                dataStore={dataStore.talks}
+                dataStore={dataStore.talks.refine(
+                  savedSearch.search
+                )}
                 render={
                   (talks: Document[], pagination: PaginationData) => 
                     <VideoScroller 
