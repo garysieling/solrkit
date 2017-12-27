@@ -533,7 +533,7 @@ class SolrCore<T> implements SolrTransitions {
     // TODO - decide if the events should proxy
 
     // https://stackoverflow.com/questions/728360/how-do-i-correctly-clone-a-javascript-object#728694
-    const obj = this;
+    const obj: SolrCore<T> = this;
     if (null == obj || 'object' !== typeof obj) {
       return obj;
     }
