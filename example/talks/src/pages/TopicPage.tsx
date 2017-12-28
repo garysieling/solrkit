@@ -3,6 +3,7 @@ import * as _ from 'lodash';
 import { suggestions } from './data/suggestions';
 import { AppDataStore } from './data/AppDataStore';
 import { Talk } from './data/Document';
+import { Dropdown } from 'semantic-ui-react';
 
 import {
   ResultsLayout,  
@@ -331,7 +332,13 @@ class VideoScroller extends React.Component<{
 
     return (
       <div>
-        <h4>{this.props.title}</h4>
+        <h4
+          style={{
+            marginLeft: '5px'                          
+          }}
+        >
+          {this.props.title}
+        </h4>
         <Slider 
           {...settings}
           ref={(slider) => this.slider = slider}
@@ -365,7 +372,9 @@ class VideoScroller extends React.Component<{
             )
           }
         </Slider>
-        <div className="ui divider" />
+        <div 
+          className="ui divider" 
+        />
       </div>
     );
   }
@@ -389,26 +398,93 @@ class TopicPage extends React.Component<SearchPageProps, {}> {
           style={{
             paddingLeft: '25px',
             paddingRight: '25px',
-            paddingBottom: '35px'
+            paddingBottom: '35px',
           }}
         >          
-          <h3>Topic > Social Justice</h3>
-          <h4>
-            Related Topics:&nbsp;
-              <a>Socialism,&nbsp;</a> 
-              <a>Feminism,&nbsp;</a> 
-              <a>Black History,&nbsp;</a>
-              <a>Liberation Theology,&nbsp;</a>
-              <a>Non-profit management</a>
-          </h4>
-          <p>
-            Social justice is a concept of fair and just relations 
-            between the individual and society.
+          <div
+            style={{
+              marginLeft: '5px'                          
+            }}
+          >
+            <Dropdown 
+              text="Topic > Social Justice" 
+              pointing={true} 
+              className="link item"
+            >
+              <Dropdown.Menu>
+                <Dropdown.Header>Computer Science</Dropdown.Header>
+                <Dropdown.Item>
+                  <Dropdown text="Trending Topics">
+                    <Dropdown.Menu>
+                      <Dropdown.Item>Artificial Intelligence</Dropdown.Item>
+                      <Dropdown.Item>Cryptocurrency</Dropdown.Item>
+                      <Dropdown.Item>Javascript</Dropdown.Item>
+                    </Dropdown.Menu>
+                  </Dropdown>
+                </Dropdown.Item>
+                <Dropdown.Item>                  
+                  <Dropdown text="Software Engineering">
+                    <Dropdown.Menu>
+                      <Dropdown.Item>Build Engineering</Dropdown.Item>
+                      <Dropdown.Item>Project Management</Dropdown.Item>
+                    </Dropdown.Menu>
+                  </Dropdown>
+                </Dropdown.Item>
+                <Dropdown.Item>                  
+                  <Dropdown text="Data">
+                    <Dropdown.Menu>
+                      <Dropdown.Item>Data Science</Dropdown.Item>
+                      <Dropdown.Item>Big Data</Dropdown.Item>
+                      <Dropdown.Item>Databases</Dropdown.Item>
+                    </Dropdown.Menu>
+                  </Dropdown>
+                </Dropdown.Item>                
+                <Dropdown.Header>Other Topics</Dropdown.Header>
+                <Dropdown.Item>
+                  <Dropdown text="Social Issues">
+                    <Dropdown.Menu>
+                      <Dropdown.Item>Social Justice</Dropdown.Item>
+                      <Dropdown.Item>Feminism</Dropdown.Item>
+                      <Dropdown.Item>Liberation Theology</Dropdown.Item>
+                    </Dropdown.Menu>
+                  </Dropdown>
+                </Dropdown.Item>
+                <Dropdown.Item>
+                  <Dropdown text="History">
+                    <Dropdown.Menu>
+                      <Dropdown.Item>Black History</Dropdown.Item>
+                    </Dropdown.Menu>
+                  </Dropdown>
+                </Dropdown.Item>
+                <Dropdown.Divider />
+                <Dropdown.Header>Order</Dropdown.Header>
+                <Dropdown.Item>Status</Dropdown.Item>
+                <Dropdown.Item>Cancellations</Dropdown.Item>
+              </Dropdown.Menu>
+            </Dropdown>
+            <h4>
+              Related Topics:&nbsp;
+                <a>Socialism,&nbsp;</a> 
+                <a>Feminism,&nbsp;</a> 
+                <a>Black History,&nbsp;</a>
+                <a>Liberation Theology,&nbsp;</a>
+                <a>Non-profit management</a>
+            </h4>
+            <p>
+              Social justice is a concept of fair and just relations 
+              between the individual and society.
 
-            The lectures below include major themes, influential speakers, 
-            and primary source materials.
-          </p>
-          <div className="ui divider" />
+              The lectures below include major themes, influential speakers, 
+              and primary source materials.
+            </p>
+          </div>
+          <div
+            style={{
+              marginLeft: '5px',
+              marginRight: '5px'
+            }}
+            className="ui divider" 
+          />
           {
             searches.map(
               (savedSearch: SavedSearch, i: number) => (
@@ -434,8 +510,14 @@ class TopicPage extends React.Component<SearchPageProps, {}> {
 
     this.header = () => (
       <div className="ui grid">
-        <div className="sixteen wide column">
-          <SearchBox 
+        <div         
+          style={{
+            marginLeft: '30px',
+            marginRight: '30px'
+          }}
+          className="sixteen wide column"
+        >
+          <SearchBox
             placeholder="Search..."
             loading={false}
             sampleSearches={suggestions}
