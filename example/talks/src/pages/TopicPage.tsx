@@ -2,7 +2,7 @@ import * as React from 'react';
 import * as _ from 'lodash';
 import { suggestions } from './data/suggestions';
 import { AppDataStore } from './data/AppDataStore';
-import { Document } from './data/Document';
+import { Talk } from './data/Document';
 
 import {
   ResultsLayout,  
@@ -113,7 +113,6 @@ const Watched = ({id}: {id: string}) => (
   ) : null
 );
 
-
 const searches: SavedSearch[] = [
   {
     title: 'Economic Justice',
@@ -206,7 +205,7 @@ function NextArrow(props: ArrowProps) {
   );
 }
 
-class Video extends React.Component<{talk: Document}, {hover: boolean}> {
+class Video extends React.Component<{talk: Talk}, {hover: boolean}> {
   constructor() {
     super();
 
@@ -273,7 +272,7 @@ function PrevArrow(props: ArrowProps) {
 }
 
 class VideoScroller extends React.Component<{
-  talks: Document[],
+  talks: Talk[],
   title: string
 }, {}> {
   private slider;
@@ -336,7 +335,7 @@ class VideoScroller extends React.Component<{
         >
           {
             this.props.talks.map(
-              (talk: Document) => (
+              (talk: Talk) => (
                 <div>
                   <div
                     style={{              
@@ -391,7 +390,7 @@ class TopicPage extends React.Component<SearchPageProps, {}> {
                   savedSearch.search
                 )}
                 render={
-                  (talks: Document[], pagination: PaginationData) => 
+                  (talks: Talk[], pagination: PaginationData) => 
                     <VideoScroller 
                       key={i + ''}
                       talks={talks} 

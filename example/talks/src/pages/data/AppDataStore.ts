@@ -1,6 +1,6 @@
 import { DataStore, SolrCore, SolrGet, SolrQuery, SolrMoreLikeThis } from 'solrkit';
 
-import { Document } from './Document';
+import { Talk, Book } from './Document';
 // Ideally you want to write code like this:
 // 
 //  DataStore.books.get = (talk: Talk) => <Detail {...talk} />
@@ -9,9 +9,12 @@ import { Document } from './Document';
 //  Which would suggest that...
 //    We need a different type T for each core
 //    get needs to be a property?
-type CoreCapabilities = SolrCore<Document> & SolrGet<Document> & SolrMoreLikeThis<Document> & SolrQuery<Document>;
+type TalkCapabilities = SolrCore<Talk> & SolrGet<Talk> & SolrMoreLikeThis<Talk> & SolrQuery<Talk>;
+type BookCapabilities = SolrCore<Book> & SolrQuery<Book>;
 class AppDataStore extends DataStore {
-  private core: CoreCapabilities;
+  private talkCore: TalkCapabilities;
+  private bookCore: BookCapabilities;
+
   private page: string = '';
 
   constructor(page: string) {
@@ -26,9 +29,9 @@ class AppDataStore extends DataStore {
   // If you want to have some UI controls use
   // different subsets of the data in the index
   // you should register one entry per use case.
-  get talks(): CoreCapabilities {
-    if (!this.core) {
-      this.core = super.registerCore({
+  get talks(): TalkCapabilities {
+    if (!this.talkCore) {
+      this.talkCore = super.registerCore({
         url: 'http://40.87.64.225:8983/solr/',
         core: 'talks',
         primaryKey: 'id',
@@ -51,7 +54,32 @@ class AppDataStore extends DataStore {
       });
     }
 
-    return this.core;
+    return this.talkCore;
+  }
+
+  get books(): BookCapabilities {
+    if (!this.bookCore) {
+      this.bookCore = super.registerCore({
+        url: 'http://40.87.64.225:8983/solr/',
+        core: 'books',
+        primaryKey: 'id',
+        // Unfortunately these have to be repeated 
+        // since there is no apparent way to sync
+        // this with Typescript
+        fields: [
+          'title_s', 
+          'thumbnail_url_s', 
+          'author_key_s',
+          'id'
+        ],
+        defaultSearchFields: [
+          'author_name_ss'
+        ],
+        pageSize: 5
+      });
+    }
+
+    return this.bookCore;
   }
 }
 

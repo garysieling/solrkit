@@ -2,7 +2,7 @@ import * as React from 'react';
 import { suggestions } from './data/suggestions';
 import { AppDataStore } from './data/AppDataStore';
 import { Link } from 'react-router-dom';
-import { Document } from './data/Document';
+import { Talk } from './data/Document';
 
 import {
   SingleNumber,
@@ -123,20 +123,20 @@ class SearchPageApp extends React.Component<{query: string}, {}> {
       );
 
     const databindTalksQuery = 
-      (fn: ((talks: Document[], pagination: PaginationData) => JSX.Element)) => 
+      (fn: ((talks: Talk[], pagination: PaginationData) => JSX.Element)) => 
         databind(
           dataStore.talks.onQuery,
           dataStore.talks,
           fn);
 
     this.right = databindTalksQuery(
-      (talks: Document[], pagination: PaginationData) => {
+      (talks: Talk[], pagination: PaginationData) => {
         return (
           <ResultsList 
             columnWidth="four"
             docs={talks} 
             render={
-              (talk: Document) => 
+              (talk: Talk) => 
                 <div>
                   <VideoThumbnail url_s={talk.url_s} />
                   <Link to={'/view/' + talk.id}>
@@ -152,7 +152,7 @@ class SearchPageApp extends React.Component<{query: string}, {}> {
     );
 
     this.header = databindTalksQuery(
-      (talks: Document[], pagination: PaginationData) => (
+      (talks: Talk[], pagination: PaginationData) => (
         <div className="ui grid">
           <div className="three wide column">
             <SingleNumber horizontal={true} value={pagination.numFound} label="Talks" />
@@ -169,7 +169,7 @@ class SearchPageApp extends React.Component<{query: string}, {}> {
     );
     
     this.footer = databindTalksQuery(
-      (talks: Document[], pagination: PaginationData) => (
+      (talks: Talk[], pagination: PaginationData) => (
         <Pagination
           numRows={pagination.numFound}
           pageSize={pagination.pageSize}

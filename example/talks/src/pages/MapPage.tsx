@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { AppDataStore } from './data/AppDataStore';
 import { Link } from 'react-router-dom';
-import { Document } from './data/Document';
+import { Talk } from './data/Document';
 import * as _ from 'lodash';
 
 import {
@@ -125,21 +125,21 @@ class MapSearchApp extends React.Component<MapProps, {display: string[]}> {
       );
 
     const databindTalksQuery = 
-      (fn: ((talks: Document[], pagination: PaginationData) => JSX.Element)) => 
+      (fn: ((talks: Talk[], pagination: PaginationData) => JSX.Element)) => 
         databind(
           dataStore.talks.onQuery,
           dataStore.talks,
           fn);
 
     this.right = databindTalksQuery(
-      (talks: Document[], pagination: PaginationData) => {
+      (talks: Talk[], pagination: PaginationData) => {
         return (
           <div>
             <ResultsList 
               columnWidth="two"
               docs={talks} 
               render={
-                (talk: Document) => 
+                (talk: Talk) => 
                   <div>
                     <VideoThumbnail url_s={talk.url_s} />
                     <Link to={'/view/' + talk.id}>
@@ -188,8 +188,6 @@ class MapSearchApp extends React.Component<MapProps, {display: string[]}> {
       self.setState( {
         display
       });
-
-      
 
       dataStore.talks.doQuery({
         query: (
