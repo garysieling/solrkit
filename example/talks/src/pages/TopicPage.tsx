@@ -330,14 +330,8 @@ class VideoScroller extends React.Component<{
     };
 
     return (
-      <div 
-        style={{
-          paddingLeft: '25px',
-          paddingRight: '25px',
-          paddingBottom: '35px'
-        }}
-      >          
-        <h3>{this.props.title}</h3>
+      <div>
+        <h4>{this.props.title}</h4>
         <Slider 
           {...settings}
           ref={(slider) => this.slider = slider}
@@ -371,6 +365,7 @@ class VideoScroller extends React.Component<{
             )
           }
         </Slider>
+        <div className="ui divider" />
       </div>
     );
   }
@@ -390,26 +385,51 @@ class TopicPage extends React.Component<SearchPageProps, {}> {
 
     this.right = 
       () => (
-        <div>{
-          searches.map(
-            (savedSearch: SavedSearch, i: number) => (
-              <Bound
-                key={i + ''}
-                dataStore={dataStore.talks.refine(
-                  savedSearch.search
-                )}
-                render={
-                  (talks: Talk[], pagination: PaginationData) => 
-                    <VideoScroller 
-                      key={i + ''}
-                      talks={talks} 
-                      title={savedSearch.title}
-                    />
-                }
-              />
+        <div        
+          style={{
+            paddingLeft: '25px',
+            paddingRight: '25px',
+            paddingBottom: '35px'
+          }}
+        >          
+          <h3>Topic > Social Justice</h3>
+          <h4>
+            Related Topics:&nbsp;
+              <a>Socialism,&nbsp;</a> 
+              <a>Feminism,&nbsp;</a> 
+              <a>Black History,&nbsp;</a>
+              <a>Liberation Theology,&nbsp;</a>
+              <a>Non-profit management</a>
+          </h4>
+          <p>
+            Social justice is a concept of fair and just relations 
+            between the individual and society.
+
+            The lectures below include major themes, influential speakers, 
+            and primary source materials.
+          </p>
+          <div className="ui divider" />
+          {
+            searches.map(
+              (savedSearch: SavedSearch, i: number) => (
+                <Bound
+                  key={i + ''}
+                  dataStore={dataStore.talks.refine(
+                    savedSearch.search
+                  )}
+                  render={
+                    (talks: Talk[], pagination: PaginationData) => 
+                      <VideoScroller 
+                        key={i + ''}
+                        talks={talks} 
+                        title={savedSearch.title}
+                      />
+                  }
+                />
+              )
             )
-          )
-        }</div>
+          }
+        </div>
       );
 
     this.header = () => (
