@@ -23,6 +23,7 @@ function thumbnailUrl(url: string) {
 }
 
 
+
 const PlayIcon = ({selected}: {selected: boolean}) => (
   <g 
     transform="translate(-30,-30)"
@@ -33,15 +34,23 @@ const PlayIcon = ({selected}: {selected: boolean}) => (
     stroke-width="1"
   >
     <g id="play_store">
+      <circle 
+        r="35"
+        cx="30"
+        cy="30"
+        fill="#FFFFFF"
+        id="around"
+      />
       <path 
         d="M30,60 C46.5685433,60 60,46.5685433 60,30 C60,13.4314567 46.5685433,0 30,0 C13.4314567,0 0,13.4314567 0,30 C0,46.5685433 13.4314567,60 30,60 Z" 
         fill={selected ? '#FF2626' : '#262626'}
+        fill-opacity="0.1"
         id="Play-Store"
       />
       <path 
         d="M51.2132037,8.78679626 C56.6421358,14.2157283 60,21.7157283 60,30 C60,46.5685433 46.5685433,60 30,60 C21.7157283,60 14.2157283,56.6421358 8.78679626,51.2132037 L51.2132037,8.78679626 Z" 
         fill={selected ? '#FF0000' : '#000000'}
-        fill-opacity="0.400000006"
+        fill-opacity="0.1"
       />
       <g 
         id="Play-Store" 
