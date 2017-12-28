@@ -16,6 +16,33 @@ import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import Slider from 'react-slick';
 
+const searches: SavedSearch[] = [
+  {
+    title: 'Economic Justice',
+    search: {
+      query: 'Economic'
+    }
+  },
+  {
+    title: 'Rights',
+    search: {
+      query: 'Rights'
+    }
+  },
+  {
+    title: 'Civil Rights Movemenet',
+    search: {
+      query: 'Civil'
+    }
+  },
+  {
+    title: '...And Churches',
+    search: {
+      query: 'James'
+    }
+  }
+];
+
 interface SearchPageProps {
   query: string;
   page: number;
@@ -27,7 +54,7 @@ const dataStore = new AppDataStore('topic');
 interface SavedSearch {
   title: string;
   search: GenericSolrQuery;
-}
+};
 
 const PlayIcon = ({selected}: {selected: boolean}) => (
   <g 
@@ -113,39 +140,60 @@ const Watched = ({id}: {id: string}) => (
   ) : null
 );
 
-const searches: SavedSearch[] = [
-  {
-    title: 'Economic Justice',
-    search: {
-      query: 'Economic'
-    }
-  },
-  {
-    title: 'Rights',
-    search: {
-      query: 'Rights'
-    }
-  },
-  {
-    title: 'Civil Rights Movemenet',
-    search: {
-      query: 'Civil'
-    }
-  },
-  {
-    title: '...And Churches',
-    search: {
-      query: 'James'
-    }
-  }
-];
-
 function thumbnailUrl(url: string) {
   return (
     'http://img.youtube.com/vi/' + 
     url.replace(/.*v=/, '') +
     '/mqdefault.jpg'
   );
+}
+
+class VideoThumbnail extends React.Component<{talk: Talk}, {hover: boolean}> {
+  constructor() {
+    super();
+
+    this.state = {
+      hover: false
+    };
+
+    this.onMouseEnter = this.onMouseEnter.bind(this);
+    this.onMouseLeave = this.onMouseLeave.bind(this);
+  }
+
+  onMouseEnter() {
+    this.setState({hover: true});
+  }
+
+  onMouseLeave() {
+    this.setState({hover: false});
+  }
+
+  render() {
+    const talk = this.props.talk;
+    return (
+      <svg
+        onMouseEnter={this.onMouseEnter}
+        onMouseLeave={this.onMouseLeave}
+        viewBox="0 0 320 180"
+        style={{
+          width: '100%',
+          borderRadius: '5px'
+        }}
+      >
+        <image
+          xlinkHref={thumbnailUrl(talk.url_s)} 
+          width="320"
+          height="180"
+        />        
+        <Watched id={talk.id} />
+        <g
+          transform="translate(160,90) scale(0.75)"
+        >
+          <PlayIcon selected={this.state.hover} />
+        </g>
+      </svg>
+    );
+  }
 }
 
 class Hover extends React.Component<{}, {}> {
@@ -203,54 +251,6 @@ function NextArrow(props: ArrowProps) {
       onClick={onClick}
     />
   );
-}
-
-class Video extends React.Component<{talk: Talk}, {hover: boolean}> {
-  constructor() {
-    super();
-
-    this.state = {
-      hover: false
-    };
-
-    this.onMouseEnter = this.onMouseEnter.bind(this);
-    this.onMouseLeave = this.onMouseLeave.bind(this);
-  }
-
-  onMouseEnter() {
-    this.setState({hover: true});
-  }
-
-  onMouseLeave() {
-    this.setState({hover: false});
-  }
-
-  render() {
-    const talk = this.props.talk;
-    return (
-      <svg
-        onMouseEnter={this.onMouseEnter}
-        onMouseLeave={this.onMouseLeave}
-        viewBox="0 0 320 180"
-        style={{
-          width: '100%',
-          borderRadius: '5px'
-        }}
-      >
-        <image
-          xlinkHref={thumbnailUrl(talk.url_s)} 
-          width="320"
-          height="180"
-        />        
-        <Watched id={talk.id} />
-        <g
-          transform="translate(160,90) scale(0.75)"
-        >
-          <PlayIcon selected={this.state.hover} />
-        </g>
-      </svg>
-    );
-  }
 }
 
 function PrevArrow(props: ArrowProps) {
@@ -352,7 +352,7 @@ class VideoScroller extends React.Component<{
                           width: '100%',
                         }}
                       >
-                        <Video talk={talk} />
+                        <VideoThumbnail talk={talk} />
                         {talk.title_s}
                       </a>
                     </Hover>
