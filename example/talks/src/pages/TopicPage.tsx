@@ -450,6 +450,14 @@ class TopicPage extends React.Component<SearchPageProps, {}> {
                   </Dropdown>
                 </Dropdown.Item>
                 <Dropdown.Item>
+                  <Dropdown text="Economics">
+                    <Dropdown.Menu>
+                      <Dropdown.Item>Socialism</Dropdown.Item>
+                      <Dropdown.Item>Libertarianism</Dropdown.Item>
+                    </Dropdown.Menu>
+                  </Dropdown>
+                </Dropdown.Item>
+                <Dropdown.Item>
                   <Dropdown text="History">
                     <Dropdown.Menu>
                       <Dropdown.Item>Black History</Dropdown.Item>
