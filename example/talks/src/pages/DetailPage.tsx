@@ -174,8 +174,8 @@ class VideoPlayer extends React.Component<Talk, {}> {
         'https://www.youtube.com/embed/' + this.youtubeId(url) 
         + '?modestbranding=true'
       ) : undefined;
-    
-    return (
+
+      return (
       <div>
         <iframe 
           id="player" 
