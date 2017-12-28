@@ -33,6 +33,7 @@ function databind<T>(
 }
 
 interface DataBoundProps<T> {
+  autoload?: SearchParams;  
   event: Function;
   dataStore: SolrGet<T> & SolrMoreLikeThis<T> & SolrQuery<T> & SolrTransitions;
   render: RenderLambda<T>;
@@ -87,7 +88,10 @@ class Bound extends React.Component<DataBoundProps<object>, DataBoundState<objec
     const newParams: SearchParams = _.extend(
       {},
       currentParams,
-      args      
+      args,
+      {
+        type: 'QUERY'
+      }  
     );
 
     if (args.facets) {
@@ -98,11 +102,11 @@ class Bound extends React.Component<DataBoundProps<object>, DataBoundState<objec
     }
 
     // TODO - should handle different classes of route
-    const page: number = (
+    /*const page: number = (
       newParams.start || 0
-    ) / this.props.dataStore.getCoreConfig().pageSize + 1;
+    ) / this.props.dataStore.getCoreConfig().pageSize + 1;*/
 
-    let facets = '';
+    /*let facets = '';
     if (newParams.facets) {
       facets = '?' + _.map(
         newParams.facets,
@@ -110,12 +114,22 @@ class Bound extends React.Component<DataBoundProps<object>, DataBoundState<objec
           _.isArray(k) ? k.join(',') : k
         )
       ).join('&');
-    }
+    }*/
     
-    this.context.router.history.push(
+    /*this.context.router.history.push(
       '/' + this.props.dataStore.getCoreConfig().prefix + '/' + newParams.query + '/' + 
       page + facets
+    );*/
+
+    this.props.dataStore.stateTransition(
+      newParams
     );
+  }
+
+  componentDidMount() {
+    if (this.props.autoload) {
+      this.transition(this.props.autoload);
+    }
   }
 
   getChildContext() {

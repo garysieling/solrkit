@@ -709,9 +709,9 @@ class SolrCore<T> implements SolrTransitions {
 
     // this lets you make one master datastore and refine off it,
     // and if no controls need it, it won't be run
-    if (self.events.query.length > 0) {
-      const callback = 'cb_' + requestId++;
 
+    if (self.events.query.length > 0) {  
+      const callback = 'cb_' + (requestId++);   
       // this lets the provided query override rows/boost
       const query: GenericSolrQuery = 
         mergeQuery(desiredQuery, this.query);

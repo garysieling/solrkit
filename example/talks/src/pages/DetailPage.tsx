@@ -11,7 +11,8 @@ import {
   SearchBox,
   MoreLikeThis,
   DetailLayout,
-  PaginationData
+  PaginationData,
+  SearchParams
 } from 'solrkit';
 
 class VideoPlayer extends React.Component<Talk, {}> {
@@ -179,6 +180,12 @@ class DetailPageApp extends React.Component<DetailAppProps, {}> {
           placeholder="Search..."
           loading={false}
           sampleSearches={suggestions}
+          transition={
+            (params: SearchParams) => {
+              console.log(params);
+              (window as any).location = 'https://www.findlectures.com/?q=' + params.query.replace(/ /g, '%20');
+            }
+          }
         />
       )
     );

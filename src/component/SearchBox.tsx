@@ -3,11 +3,13 @@ import { PropTypes } from 'react';
 
 import { Search, SearchResultData, SearchProps } from 'semantic-ui-react';
 import { take } from 'lodash';
+import { SearchParams } from '../context/DataStore';
 
 interface SearchBoxProps {
   placeholder: string;
   loading: boolean;
   sampleSearches?: string[];
+  transition?: (params: SearchParams) => void;
 }
 
 interface SearchBoxState {
@@ -71,7 +73,16 @@ class SearchBox extends React.Component<SearchBoxProps, SearchBoxState> {
   }
 
   onDoSearch(value: string) {
-    this.context.transition({query: value, start: 0});
+    const query: SearchParams = {
+      query: value, 
+      start: 0
+    };
+
+    if (this.props.transition) {
+      this.props.transition(query);
+    } else {
+      this.context.transition(query);
+    }
   }
 
   onBlur() {
