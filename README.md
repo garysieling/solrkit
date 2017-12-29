@@ -4,10 +4,10 @@
 
 UI Components for Solr, using TypeScript, React, Semantic UI
 
-Usage:
+*Usage:*
 npm install solrkit
 
-Developer instructions:
+*Developer instructions:*
 Fork & clone repository
 
 cd solrkit
