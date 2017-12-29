@@ -67,47 +67,45 @@ const PlayIcon = ({selected}: {selected: boolean}) => (
     stroke="none" 
     stroke-width="1"
   >
-    <g id="play_store">
+    <g>
       <circle 
         r="35"
         cx="30"
         cy="30"
-        fill="#FFFFFF"
+        fill="#EEE"
         id="around"
       />
       <path 
         d="M30,60 C46.5685433,60 60,46.5685433 60,30 C60,13.4314567 46.5685433,0 30,0 C13.4314567,0 0,13.4314567 0,30 C0,46.5685433 13.4314567,60 30,60 Z" 
         fill={selected ? '#FF2626' : '#262626'}
         fill-opacity="0.1"
-        id="Play-Store"
       />
       <path 
         d="M51.2132037,8.78679626 C56.6421358,14.2157283 60,21.7157283 60,30 C60,46.5685433 46.5685433,60 30,60 C21.7157283,60 14.2157283,56.6421358 8.78679626,51.2132037 L51.2132037,8.78679626 Z" 
-        fill={selected ? '#FF0000' : '#000000'}
+        fill={selected ? '#C00' : '#000'}
         fill-opacity="0.1"
       />
       <g 
-        id="Play-Store" 
-        transform="translate(17.461538, 13.000000)"
+        transform="translate(17.46, 13)"
       >
         <path 
           d="M18.3076923,10.6203459 L2.52728106,2 C1.70485715,2 1.03846154,2.66475248 1.03846154,3.48514851 L1.03846154,30.5148515 C1.03846154,31.3352475 1.70485715,32 2.52728106,32 C2.52728106,32 11.1806001,27.244086 18.3076923,23.3439795 L18.3076923,10.6203459 Z" 
-          fill="#FFFFFF"
+          fill="#EEE"
           id="Mask"
         />
         <path 
           d="M21.5106871,12.370042 L27.5394489,15.6633663 C30.2199196,17.1072277 27.5394489,18.3366337 27.5394489,18.3366337 C27.5394489,18.2531683 2.52728106,32 2.52728106,32 C2.4790684,32 2.43139195,31.9977155 2.38435454,31.9932491 L21.5106871,12.370042 Z" 
-          fill="#CCCCCC" 
+          fill="#CCC" 
           id="Mask"
         />
         <path 
           d="M2.52823098,2.00051891 L27.5394489,15.6633663 C30.2199196,17.1072277 27.5394489,18.3366337 27.5394489,18.3366337 C27.5394489,18.3101555 25.0222692,19.6755337 21.5849861,21.552341 L2.52823098,2.00051891 Z"
-          fill="#CCCCCC" 
+          fill="#CCC" 
           id="Mask"
         />
         <path 
           d="M21.5430894,12.3877424 L27.5394489,15.6633663 C30.2199196,17.1072277 27.5394489,18.3366337 27.5394489,18.3366337 C27.5394489,18.3101555 25.0222692,19.6755337 21.5849861,21.552341 L17.0977657,16.9485492 L21.5430894,12.3877424 Z"
-          fill="#FFFFFF" 
+          fill="#EEE" 
           id="Mask"
         />
       </g>
@@ -115,25 +113,36 @@ const PlayIcon = ({selected}: {selected: boolean}) => (
   </g>
 );
 
-const CheckmarkIcon = () => (
+const CheckmarkIcon = ({selected}: {selected: boolean}) => (
   <g>
     <g>
       <circle 
         cx="64" 
         cy="64" 
-        r="64"
+        r="66"
+        fill={selected ? '#9F9' : '#999'}
+      />      
+      <circle 
+        cx="64" 
+        cy="64" 
+        r="60"
       />
     </g>
     <g>
       <path 
-        fill="#FFF"
+        fill={selected ? '#7E7' : '#EEE'}
         d="M54.3,97.2L24.8,67.7c-0.4-0.4-0.4-1,0-1.4l8.5-8.5c0.4-0.4,1-0.4,1.4,0L55,78.1l38.2-38.2   c0.4-0.4,1-0.4,1.4,0l8.5,8.5c0.4,0.4,0.4,1,0,1.4L55.7,97.2C55.3,97.6,54.7,97.6,54.3,97.2z"
       />
     </g>
   </g>
 );
 
-const Watched = ({id}: {id: string}) => (
+const Watched = (
+  {id, selected}: {
+    id: string, 
+    selected: boolean
+  }
+) => (
   (_.get(localStorage, 'watched' + id, '') + '' === 'true') ? (
     <g>
       <rect
@@ -144,7 +153,7 @@ const Watched = ({id}: {id: string}) => (
       <g
         transform="translate(275,135) scale(0.3)"
       >
-        <CheckmarkIcon />
+        <CheckmarkIcon selected={selected} />
       </g>
     </g>
   ) : null
@@ -195,7 +204,7 @@ class VideoThumbnail extends React.Component<{talk: Talk}, {hover: boolean}> {
           width="320"
           height="180"
         />        
-        <Watched id={talk.id} />
+        <Watched id={talk.id} selected={this.state.hover}  />
         <g
           transform="translate(160,90) scale(0.75)"
         >
@@ -240,45 +249,89 @@ class Hover extends React.Component<{}, {}> {
 }
 
 interface ArrowProps {
+  left: boolean;
   className?: string;
   style?: object;
   onClick?: () => void;
 }
 
-function NextArrow(props: ArrowProps) {
-  const {className, style, onClick} = props;
+class Arrow extends React.Component<ArrowProps, {hover: boolean}> {
+  constructor() {
+    super();
 
-  return (
-    <div
-      className={className}
-      style={{
-        ...style,         
-        height: '100%',        
-        width: '25px',
-        display: 'block', 
-        background: 'red'
-      }}
-      onClick={onClick}
-    />
-  );
-}
+    this.state = {
+      hover: false
+    };
 
-function PrevArrow(props: ArrowProps) {
-  const {className, style, onClick} = props;
+    this.onMouseEnter = this.onMouseEnter.bind(this);
+    this.onMouseLeave = this.onMouseLeave.bind(this);
+  }
 
-  return (
-    <div
-      className={className}
-      style={{
-        ...style, 
-        height: '100%',        
-        width: '25px',
-        display: 'block', 
-        background: 'green'
-      }}
-      onClick={onClick}
-    />
-  );
+  onMouseEnter() {
+    this.setState({hover: true});
+  }
+
+  onMouseLeave() {
+    this.setState({hover: false});
+  }
+
+  render() {
+    const { onClick, style } = this.props;
+
+    return (
+      <div
+        onMouseOver={this.onMouseEnter}
+        onMouseOut={this.onMouseLeave}
+        style={this.props.left ? {
+          height: '100%',
+          width: '25px',
+          display: 'block',
+          position: 'absolute',
+          top: '0px',
+          cursor: 'pointer',
+          right: '-25px',
+          paddingLeft: '5px'
+        } : {
+          ...style,
+          height: '100%',
+          width: '25px',
+          display: 'block',
+          position: 'absolute',
+          paddingLeft: '5px',
+          left: '-25px',
+          top: '0px',
+          cursor: 'pointer'
+        }}
+        onClick={onClick}
+      >
+        <div
+          style={{
+            paddingTop: '60px'
+          }}
+        >
+          <svg
+            enableBackground="new 0 0 25 180" 
+            height="180px" 
+            viewBox="0 0 25 180" 
+            width="25" 
+            xmlSpace="preserve" 
+            xmlns="http://www.w3.org/2000/svg" 
+            xmlnsXlink="http://www.w3.org/1999/xlink"
+          >
+            <g
+              transform={this.props.left ? 'translate(20, 0) scale(-1, 1)' : 'translate(0, 0)'} 
+              stroke={this.state.hover ? '#999' : '#222'}
+            >
+              <polygon 
+                fill={this.state.hover ? '#AAA' : '#222'}
+                points="12.885,0.58 14.969,2.664 4.133,13.5 14.969,24.336 12.885,26.42 2.049,15.584 -0.035,13.5 "
+              />
+            </g>
+          </svg>
+        </div>
+      </div>
+    );
+  }
 }
 
 class VideoScroller extends React.Component<{
@@ -294,11 +347,11 @@ class VideoScroller extends React.Component<{
     super();
 
     this.prevArrow = (
-      <PrevArrow />
+      <Arrow left={false} />
     );
 
     this.nextArrow = (
-      <NextArrow />
+      <Arrow left={true} />
     );
 
     this.onClickVideo = this.onClickVideo.bind(this);
