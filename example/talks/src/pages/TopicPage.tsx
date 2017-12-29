@@ -20,27 +20,21 @@ import Slider from 'react-slick';
 
 const searches: SavedSearch[] = [
   {
-    title: 'Economic Justice',
+    title: 'Historic Speeches',
     search: {
       query: 'Economic'
     }
   },
   {
-    title: 'Rights',
+    title: 'Economic Justice',
     search: {
       query: 'Rights'
     }
   },
   {
-    title: 'Civil Rights Movemenet',
+    title: 'Civil Rights Movement',
     search: {
       query: 'Civil'
-    }
-  },
-  {
-    title: '...And Churches',
-    search: {
-      query: 'James'
     }
   }
 ];
@@ -137,29 +131,75 @@ class CheckmarkIcon extends React.Component<
   }
 
   render() {
-    return (
-      <g       
-        onMouseEnter={this.onMouseEnter}
-        onMouseLeave={this.onMouseLeave}
-      >
-        <g>
-          <circle 
-            cx="64" 
-            cy="64" 
-            r="66"
-            fill={this.state.hover ? '#9F9' : '#999'}
-          />      
-          <circle 
-            cx="64" 
-            cy="64" 
-            r="60"
+    const hover = 
+      this.state.hover ? (
+        <g>          
+          <rect 
+            x="108" 
+            y="140" 
+            width="180" 
+            height="30" 
+            fill="#000000"        
+            fillOpacity="0.6"
+          />
+          
+          <text 
+            x="115"
+            y="160"  
+            fontFamily="Lato" 
+            fontSize="16" 
+            fill="#BBB"
+          >
+            Watched 29 Dec 2017
+          </text>
+
+          <rect 
+            x="109" 
+            y="140" 
+            width="180" 
+            height="30" 
+            fillOpacity="0"
+            strokeOpacity="1"
+            stroke="#9F9"
+            strokeWidth="2px"
           />
         </g>
-        <g>
-          <path 
-            fill={this.state.hover ? '#7E7' : '#EEE'}
-            d="M54.3,97.2L24.8,67.7c-0.4-0.4-0.4-1,0-1.4l8.5-8.5c0.4-0.4,1-0.4,1.4,0L55,78.1l38.2-38.2   c0.4-0.4,1-0.4,1.4,0l8.5,8.5c0.4,0.4,0.4,1,0,1.4L55.7,97.2C55.3,97.6,54.7,97.6,54.3,97.2z"
-          />
+      ) : null;
+    return (
+      <g>        
+        <rect
+          fill="#0006" 
+          width="320" 
+          height="180" 
+        />
+        {hover}
+        <g
+          transform="translate(275,135) scale(0.3)"
+        >
+          <g       
+            onMouseEnter={this.onMouseEnter}
+            onMouseLeave={this.onMouseLeave}
+          >
+            <g>
+              <circle 
+                cx="64" 
+                cy="64" 
+                r="66"
+                fill={this.state.hover ? '#9F9' : '#999'}
+              />      
+              <circle 
+                cx="64" 
+                cy="64" 
+                r="60"
+              />
+            </g>
+            <g>
+              <path 
+                fill={this.state.hover ? '#7E7' : '#EEE'}
+                d="M54.3,97.2L24.8,67.7c-0.4-0.4-0.4-1,0-1.4l8.5-8.5c0.4-0.4,1-0.4,1.4,0L55,78.1l38.2-38.2   c0.4-0.4,1-0.4,1.4,0l8.5,8.5c0.4,0.4,0.4,1,0,1.4L55.7,97.2C55.3,97.6,54.7,97.6,54.3,97.2z"
+              />
+            </g>
+          </g>
         </g>
       </g>
     );
@@ -173,18 +213,7 @@ const Watched = (
   }
 ) => (
   (_.get(localStorage, 'watched' + id, '') + '' === 'true') ? (
-    <g>
-      <rect
-        fill="#0006" 
-        width="320" 
-        height="180" 
-      />
-      <g
-        transform="translate(275,135) scale(0.3)"
-      >
-        <CheckmarkIcon />
-      </g>
-    </g>
+    <CheckmarkIcon />
   ) : null
 );
 
