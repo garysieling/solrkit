@@ -355,7 +355,14 @@ class DetailPageApp extends React.Component<DetailAppProps, {}> {
     this.init();
 
     const key = 'watched' + this.props.id;
-    window.localStorage[key] = true;  
+    const today = new Date();
+    window.localStorage[key] =       
+      'Watched ' + 
+      today.getDate() + 
+      ' ' +
+      ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][today.getMonth()] +
+      ' ' +
+      today.getFullYear();
   }
 
   componentWillUnmount() {

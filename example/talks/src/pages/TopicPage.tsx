@@ -108,7 +108,7 @@ const PlayIcon = ({selected}: {selected: boolean}) => (
 );
 
 class CheckmarkIcon extends React.Component<
-  {}, 
+  {value: string}, 
   {hover: boolean}
 > {
   constructor() {
@@ -131,6 +131,10 @@ class CheckmarkIcon extends React.Component<
   }
 
   render() {
+    if (this.props.value === '') {
+      return null;
+    }
+
     const hover = 
       this.state.hover ? (
         <g>          
@@ -150,7 +154,7 @@ class CheckmarkIcon extends React.Component<
             fontSize="16" 
             fill="#BBB"
           >
-            Watched 29 Dec 2017
+            {this.props.value}
           </text>
 
           <rect 
@@ -165,6 +169,7 @@ class CheckmarkIcon extends React.Component<
           />
         </g>
       ) : null;
+      
     return (
       <g>        
         <rect
@@ -212,9 +217,7 @@ const Watched = (
     selected: boolean
   }
 ) => (
-  (_.get(localStorage, 'watched' + id, '') + '' === 'true') ? (
-    <CheckmarkIcon />
-  ) : null
+  <CheckmarkIcon value={_.get(localStorage, 'watched' + id, '')} />
 );
 
 function thumbnailUrl(url: string) {
