@@ -108,70 +108,141 @@ const PlayIcon = ({selected}: {selected: boolean}) => (
 );
 
 class CheckmarkIcon extends React.Component<
-  {value: string}, 
-  {hover: boolean}
+  {value: string, id: string}, 
+  {}
 > {
   constructor() {
     super();
-    
-    this.state = {
-      hover: false
-    };
-
-    this.onMouseEnter = this.onMouseEnter.bind(this);
-    this.onMouseLeave = this.onMouseLeave.bind(this);
   }
 
-  onMouseEnter() {
-    this.setState({hover: true});
-  }
-
-  onMouseLeave() {
-    this.setState({hover: false});
+  shouldComponentUpdate() {
+    return false;
   }
 
   render() {
-    if (this.props.value === '') {
+    if (!this.props.value) {
+      // video has not been opened
       return null;
     }
 
-    const hover = 
-      this.state.hover ? (
-        <g>          
-          <rect 
-            x="108" 
-            y="140" 
-            width="180" 
-            height="30" 
-            fill="#000000"        
-            fillOpacity="0.6"
-          />
-          
-          <text 
-            x="115"
-            y="160"  
-            fontFamily="Lato" 
-            fontSize="16" 
-            fill="#BBB"
-          >
-            {this.props.value}
-          </text>
+    const mainElementId = this.props.id + '_watchedOverlay';
+    const animationTrigger = mainElementId + '.mouseover';
+    const duration = '0.4s';
 
-          <rect 
-            x="109" 
-            y="140" 
-            width="180" 
-            height="30" 
-            fillOpacity="0"
-            strokeOpacity="1"
-            stroke="#9F9"
-            strokeWidth="2px"
+    const hover = (
+      <g>
+        <rect 
+          x="289" 
+          y="140" 
+          width="0" 
+          height="30" 
+          fill="#000000"        
+          fillOpacity="0.6"
+          id={this.props.id + '_1'}
+        >
+          <animate 
+            xlinkHref={'#' + this.props.id + '_1'}
+            attributeType="XML" 
+            attributeName="width" 
+            from="0" 
+            to="180"
+            dur={duration}  
+            repeatCount="0"
+            fill="freeze"      
+            restart="never"
+            begin={animationTrigger}
           />
-        </g>
-      ) : null;
+          <animate 
+            xlinkHref={'#' + this.props.id + '_1'}
+            attributeType="XML" 
+            attributeName="x" 
+            from="289" 
+            to="109"
+            dur={duration}
+            repeatCount="0"
+            fill="freeze"
+            restart="never"
+            begin={animationTrigger}
+          />
+        </rect>
+        
+        <text 
+          x="289"
+          y="160"  
+          width="0"
+          fontFamily="Lato" 
+          fontSize="16" 
+          fill="#BBB"
+          id={this.props.id + '_2'}
+        >
+          <animate 
+            xlinkHref={'#' + this.props.id + '_2'}
+            attributeType="XML" 
+            attributeName="width" 
+            from="0" 
+            to="180"
+            dur={duration}  
+            repeatCount="0"
+            fill="freeze"
+            restart="never"
+            begin={animationTrigger}
+          />
+          <animate 
+            xlinkHref={'#' + this.props.id + '_2'}
+            attributeType="XML" 
+            attributeName="x" 
+            from="289" 
+            to="113"
+            dur={duration}
+            repeatCount="0"
+            fill="freeze"
+            restart="never"
+            begin={animationTrigger}
+          />
+          {this.props.value}
+        </text>
+
+        <rect 
+          id={this.props.id + '_3'}
+          x="289" 
+          y="140" 
+          width="0"
+          height="30" 
+          fillOpacity="0"
+          strokeOpacity="1"
+          stroke="#9F9"
+          strokeWidth="2px"
+        >          
+          <animate 
+            xlinkHref={'#' + this.props.id + '_3'}           
+            attributeType="XML" 
+            attributeName="width" 
+            from="0" 
+            to="180"
+            dur={duration}
+            repeatCount="0"
+            begin={animationTrigger}
+            fill="freeze"
+            restart="never"
+          />
+          <animate 
+            xlinkHref={'#' + this.props.id + '_3'}
+            attributeType="XML" 
+            attributeName="x" 
+            from="289" 
+            to="109"
+            dur={duration}
+            repeatCount="0"
+            begin={animationTrigger}
+            fill="freeze"
+            restart="never"
+          />
+        </rect>
+      </g>
+    );
       
     return (
-      <g>        
+      <g id={mainElementId}>        
         <rect
           fill="#0006" 
           width="320" 
@@ -181,17 +252,14 @@ class CheckmarkIcon extends React.Component<
         <g
           transform="translate(275,135) scale(0.3)"
         >
-          <g       
-            onMouseEnter={this.onMouseEnter}
-            onMouseLeave={this.onMouseLeave}
-          >
+          <g>
             <g>
               <circle 
                 cx="64" 
                 cy="64" 
                 r="66"
-                fill={this.state.hover ? '#9F9' : '#999'}
-              />      
+                fill="#9F9"
+              />
               <circle 
                 cx="64" 
                 cy="64" 
@@ -200,7 +268,7 @@ class CheckmarkIcon extends React.Component<
             </g>
             <g>
               <path 
-                fill={this.state.hover ? '#7E7' : '#EEE'}
+                fill="#EEE"
                 d="M54.3,97.2L24.8,67.7c-0.4-0.4-0.4-1,0-1.4l8.5-8.5c0.4-0.4,1-0.4,1.4,0L55,78.1l38.2-38.2   c0.4-0.4,1-0.4,1.4,0l8.5,8.5c0.4,0.4,0.4,1,0,1.4L55.7,97.2C55.3,97.6,54.7,97.6,54.3,97.2z"
               />
             </g>
@@ -217,7 +285,7 @@ const Watched = (
     selected: boolean
   }
 ) => (
-  <CheckmarkIcon value={_.get(localStorage, 'watched' + id, '')} />
+  <CheckmarkIcon key={id} id={id} value={_.get(localStorage, 'watched' + id, '')} />
 );
 
 function thumbnailUrl(url: string) {
@@ -248,6 +316,7 @@ class VideoThumbnail extends React.Component<{talk: Talk}, {hover: boolean}> {
     this.setState({hover: false});
   }
 
+  
   render() {
     const talk = this.props.talk;
     return (
