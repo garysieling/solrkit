@@ -64,7 +64,7 @@
     "url": "https://github.com/garysieling/solrkit/issues"
   },
   "scripts": {
-    "build": "tsc",
+    "build": "tsc --watch",
     "test": "jest"
   },
   "main": "build/module.js",
