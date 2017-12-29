@@ -113,29 +113,58 @@ const PlayIcon = ({selected}: {selected: boolean}) => (
   </g>
 );
 
-const CheckmarkIcon = ({selected}: {selected: boolean}) => (
-  <g>
-    <g>
-      <circle 
-        cx="64" 
-        cy="64" 
-        r="66"
-        fill={selected ? '#9F9' : '#999'}
-      />      
-      <circle 
-        cx="64" 
-        cy="64" 
-        r="60"
-      />
-    </g>
-    <g>
-      <path 
-        fill={selected ? '#7E7' : '#EEE'}
-        d="M54.3,97.2L24.8,67.7c-0.4-0.4-0.4-1,0-1.4l8.5-8.5c0.4-0.4,1-0.4,1.4,0L55,78.1l38.2-38.2   c0.4-0.4,1-0.4,1.4,0l8.5,8.5c0.4,0.4,0.4,1,0,1.4L55.7,97.2C55.3,97.6,54.7,97.6,54.3,97.2z"
-      />
-    </g>
-  </g>
-);
+class CheckmarkIcon extends React.Component<
+  {}, 
+  {hover: boolean}
+> {
+  constructor() {
+    super();
+    
+    this.state = {
+      hover: false
+    };
+
+    this.onMouseEnter = this.onMouseEnter.bind(this);
+    this.onMouseLeave = this.onMouseLeave.bind(this);
+  }
+
+  onMouseEnter() {
+    this.setState({hover: true});
+  }
+
+  onMouseLeave() {
+    this.setState({hover: false});
+  }
+
+  render() {
+    return (
+      <g       
+        onMouseEnter={this.onMouseEnter}
+        onMouseLeave={this.onMouseLeave}
+      >
+        <g>
+          <circle 
+            cx="64" 
+            cy="64" 
+            r="66"
+            fill={this.state.hover ? '#9F9' : '#999'}
+          />      
+          <circle 
+            cx="64" 
+            cy="64" 
+            r="60"
+          />
+        </g>
+        <g>
+          <path 
+            fill={this.state.hover ? '#7E7' : '#EEE'}
+            d="M54.3,97.2L24.8,67.7c-0.4-0.4-0.4-1,0-1.4l8.5-8.5c0.4-0.4,1-0.4,1.4,0L55,78.1l38.2-38.2   c0.4-0.4,1-0.4,1.4,0l8.5,8.5c0.4,0.4,0.4,1,0,1.4L55.7,97.2C55.3,97.6,54.7,97.6,54.3,97.2z"
+          />
+        </g>
+      </g>
+    );
+  }
+}
 
 const Watched = (
   {id, selected}: {
@@ -153,7 +182,7 @@ const Watched = (
       <g
         transform="translate(275,135) scale(0.3)"
       >
-        <CheckmarkIcon selected={selected} />
+        <CheckmarkIcon />
       </g>
     </g>
   ) : null
