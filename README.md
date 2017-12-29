@@ -4,7 +4,23 @@
 
 UI Components for Solr, using TypeScript, React, Semantic UI
 
+Usage:
 npm install solrkit
+
+Developer instructions:
+Fork & clone repository
+
+cd solrkit
+npm install
+npm link
+
+Open a second location, in solrkit\example\talks
+npm install
+npm link solrkit
+npm start
+
+Open a page:
+http://localhost:3001/topic/social%20justice/
 
 API Documentation:
 https://garysieling.gitbooks.io/solrkit/
