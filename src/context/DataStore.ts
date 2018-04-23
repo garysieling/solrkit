@@ -23,6 +23,20 @@ function escape(value: QueryParam): string {
   );
 }
 
+function escapeNoQuote(value: QueryParam): string {
+  if (value === '*') {
+    return value;
+  }
+  
+  return (
+    (value.toString().indexOf(' ') > 0) ? (
+      value.toString().replace(/ /g, '%20')
+    ) : (
+      value.toString()
+    )
+  );
+}
+
 // Note that the stored versions of these end up namespaced and/or aliased
 enum UrlParams {
   ID = 'id',
@@ -37,6 +51,7 @@ interface SavedSearch {
   type?: 'QUERY' | 'MLT' | 'DETAILS';
   query?: string;
   boost?: string;
+  sort?: string[];
   facets?: { [ key: string ]: string[] };
 }
 
@@ -262,7 +277,7 @@ class SolrQueryBuilder<T> {
     return new SolrQueryBuilder<T>(
       () => 
         new QueryBeingBuilt(
-          'sort=' + fields.map(escape).join(','),
+          'sort=' + fields.map(escapeNoQuote).join(','),
           // TODO: I think this should add a 'named sort' to the URL, because
           // this could have a large amount of Solr specific stuff in it - i.e.
           // add(field1, mul(field2, field3)) and you don't want to expose the
@@ -404,7 +419,8 @@ function mergeQuery(
   return {
     query: '(' + q1.query + ') AND (' + q2.query + ')',
     rows: q1.rows || q2.rows,
-    boost: q1.boost || q2.boost
+    boost: q1.boost || q2.boost,
+    sort: q1.sort || q2.sort
   };
 }
 
@@ -441,6 +457,7 @@ interface SolrSchema {
 interface GenericSolrQuery {
   query: string;
   boost?: string;
+  sort?: string[];
   rows?: number;
 }
 
@@ -742,6 +759,10 @@ class SolrCore<T> implements SolrTransitions {
         qb = qb.bq(query.boost);
       }
 
+      if (query.sort) {
+        qb = qb.sort(query.sort);
+      }
+
       _.map(
         this.events.facet,
         (v, k) => {
@@ -932,7 +953,8 @@ class SolrCore<T> implements SolrTransitions {
         {
           rows: this.solrConfig.pageSize,
           query: newState.query || '*',
-          boost: newState.boost
+          boost: newState.boost,
+          sort: newState.sort
         }, 
         (qb: SolrQueryBuilder<{}>) => {
           let response = qb.start(
