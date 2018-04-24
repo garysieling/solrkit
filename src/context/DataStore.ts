@@ -111,10 +111,41 @@ class SolrQueryBuilder<T> {
       this
     );
   }  
-  
-  moreLikeThis(handler: string, col: string, id: QueryParam) {
+
+  moreLikeThis(handler: string, col: string, id: QueryParam, props: MoreLikeThisProps) {
+    
+    function joinProp(useProps: MoreLikeThisProps, propertyName: string): string | null {
+      if (!useProps || !useProps[propertyName]) {
+        return null;
+      } else {
+        return 'mlt.' + propertyName + '=' + useProps[propertyName].join(',');
+      }
+    }
+    function prop(useProps: MoreLikeThisProps, propertyName: string): string | null {
+      if (!useProps || !useProps[propertyName]) {
+        return null;
+      } else {
+        return 'mlt.' + propertyName + '=' + useProps[propertyName];
+      }
+    }
+
     return new SolrQueryBuilder<T>(
-      () => new QueryBeingBuilt(handler + '?q=' + col + ':' + id, [UrlParams.ID, id]),
+      () => new QueryBeingBuilt(
+        handler + '?q=' + col + ':' + id + '&' +
+        [
+          joinProp(props, 'fl'),
+          prop(props, 'mintf'),
+          prop(props, 'mindf'),
+          prop(props, 'maxdf'),
+          prop(props, 'minwl'),
+          prop(props, 'maxwl'),
+          prop(props, 'maxqt'),
+          prop(props, 'maxntp'),
+          prop(props, 'boost'),
+          joinProp(props, 'qf')
+        ].filter( (x) => !!x ).join(','), 
+        [UrlParams.ID, id]
+      ),
       this
     );
   }
@@ -385,7 +416,7 @@ interface SolrHighlight<T> {
 }
 
 interface SolrMoreLikeThis<T> {
-  doMoreLikeThis: (id: string | number) => void;
+  doMoreLikeThis: (id: string | number, props: MoreLikeThisProps) => void;
   onMoreLikeThis: (cb: MoreLikeThisEvent<T>) => void;
 }
 
@@ -496,6 +527,19 @@ interface SolrConfig {
 // a bunch of JSONP requests all at once
 let requestId: number = 0;
 
+interface MoreLikeThisProps {
+  fl: string[];
+  mintf: number;
+  mindf: number;
+  maxdf: number;
+  minwl: number;
+  maxwl: number;
+  maxqt: number;
+  maxntp: number;
+  boost: number;
+  qf: string[];
+}
+
 class SolrCore<T> implements SolrTransitions {
   solrConfig: SolrConfig;
   private events: {
@@ -596,15 +640,15 @@ class SolrCore<T> implements SolrTransitions {
     this.events.error.push(op);
   }
 
-  doMoreLikeThis(id: string | number) {
-    this.prefetchMoreLikeThis(id, true);
+  doMoreLikeThis(id: string | number, mltProps: MoreLikeThisProps) {
+    this.prefetchMoreLikeThis(id, mltProps, true);
   }  
 
   getNamespace() {
     return '';
   }
 
-  prefetchMoreLikeThis(id: string | number, prefetch: boolean) {
+  prefetchMoreLikeThis(id: string | number, mltProps: MoreLikeThisProps, prefetch: boolean) {
     const self = this;
    
     if (!self.mltCache[id]) {
@@ -616,7 +660,8 @@ class SolrCore<T> implements SolrTransitions {
         ).moreLikeThis(
           'mlt', // TODO - configurable
           self.solrConfig.primaryKey,
-          id
+          id,
+          mltProps
         ).fl(self.solrConfig.fields).jsonp(
           callback
         );
@@ -641,6 +686,7 @@ class SolrCore<T> implements SolrTransitions {
                   (doc) => {
                     self.prefetchMoreLikeThis(
                       doc[this.solrConfig.primaryKey],
+                      mltProps,
                       false
                     );
                   }
@@ -1106,6 +1152,7 @@ type SingleComponent<T> =
   (data: T, index?: number) => object | null | undefined;
 
 export { 
+  MoreLikeThisProps,
   ErrorEvent,
   UrlParams,
   QueryParam,
